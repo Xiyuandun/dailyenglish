@@ -42,6 +42,15 @@ const Speech = {
     this.audio = new Audio();
     this.audio.preload = 'auto';
 
+    // 检测环境：GitHub Pages 等纯静态托管无 Python 后端，自动禁用云端 TTS
+    const host = location.hostname;
+    const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('lhr.life');
+    const isRender = host.includes('onrender.com');
+    if (!isLocal && !isRender) {
+      this.useCloudTTS = false;
+      console.log('[语音] 静态托管环境，使用浏览器内置语音合成');
+    }
+
     // Audio 播放失败 → 回退到 Web Speech
     this.audio.addEventListener('error', () => {
       // 队列模式下错误也继续下一句
