@@ -328,7 +328,29 @@ const Speech = {
       if (v) u.voice = v;
       u.onerror = (e) => {
         console.warn('[语音] 朗读错误:', e.error || e);
-        Toast.show('朗读失败，请尝试 Chrome 浏览器');
+        // 如果浏览器内置语音失败，尝试动态加载 Puter.js
+        if (!this._puterTried) {
+          this._puterTried = true;
+          if (typeof puter !== 'undefined' && puter.ai && puter.ai.txt2speech) {
+            console.log('[语音] 浏览器语音失败，切换到 Puter.js');
+            this.usePuter = true;
+            this._speakPuter(text, rate);
+          } else {
+            // 动态加载 Puter.js
+            console.log('[语音] 浏览器语音失败，动态加载 Puter.js');
+            const script = document.createElement('script');
+            script.src = 'https://js.puter.com/v2/';
+            script.onload = () => {
+              setTimeout(() => {
+                this.usePuter = true;
+                this._speakPuter(text, rate);
+              }, 500);
+            };
+            document.head.appendChild(script);
+          }
+        } else {
+          Toast.show('朗读失败，请刷新页面重试');
+        }
       };
       u.onend = () => {
         if (this._queue && this._queue.length) this._advanceQueue();
