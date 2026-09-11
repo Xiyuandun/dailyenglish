@@ -242,17 +242,51 @@ const Speech = {
 
   // Web Speech API fallback（浏览器内置语音）
   _speakFallback(text, rate) {
-    if (!this.synth) { Toast.show('语音合成不可用，请使用 Chrome 浏览器'); return; }
-    this.synth.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-US';
-    u.rate = rate;
-    // 优先选择 Google 语音（较自然）
-    let v = this.voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'));
-    if (!v) v = this.voices.find(v => v.lang.startsWith('en-US'));
-    if (!v) v = this.voices.find(v => v.lang.startsWith('en'));
-    if (v) u.voice = v;
-    this.synth.speak(u);
+    if (!this.synth) {
+      console.warn('[语音] 浏览器不支持语音合成');
+      Toast.show('语音合成不可用，请使用 Chrome 或 Safari 浏览器');
+      return;
+    }
+    // 取消之前的朗读
+    try { this.synth.cancel(); } catch {}
+    // Safari/IOS 需要 voices 已加载才能朗读，延迟一帧确保就绪
+    const doSpeak = () => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = rate;
+      // 优先选择 Google 语音（较自然），其次选 en-US/en 语音
+      let v = this.voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'));
+      if (!v) v = this.voices.find(v => v.lang.startsWith('en-US'));
+      if (!v) v = this.voices.find(v => v.lang.startsWith('en'));
+      if (v) u.voice = v;
+      // 错误处理
+      u.onerror = (e) => console.warn('[语音] 朗读错误:', e.error || e);
+      u.onend = () => {
+        // 队列模式：播完一句自动播下一句
+        if (this._queue && this._queue.length) {
+          this._advanceQueue();
+        }
+      };
+      this.synth.speak(u);
+      console.log('[语音] 浏览器内置语音朗读:', text.substring(0, 30));
+    };
+    // Safari 上 voices 可能异步加载，确保有 voices 再朗读
+    if (this.voices.length === 0 && this.synth.getVoices) {
+      this.voices = this.synth.getVoices();
+      if (this.voices.length === 0) {
+        this.synth.onvoiceschanged = () => {
+          this.voices = this.synth.getVoices();
+          doSpeak();
+        };
+        // 兜底：500ms 后强制朗读（不等 voices）
+        setTimeout(() => {
+          if (this.synth.speaking) return;
+          doSpeak();
+        }, 500);
+        return;
+      }
+    }
+    doSpeak();
   },
 
   // 停止所有朗读（取消当前 + 清空队列）
@@ -279,9 +313,13 @@ const Speech = {
       // 切换语音 → 清空旧缓存（voice 变了，旧音频不可复用）
       if (this.voice !== voiceId) this.clearCache();
       this.voice = voiceId;
-      // 切换后重新启用云端 TTS
-      this.useCloudTTS = true;
-      this._cloudFailedCount = 0;
+      // 仅在有后端 TTS 的环境重新启用云端 TTS
+      const host = location.hostname;
+      const isStaticHost = !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('lhr.life') && !host.includes('onrender.com');
+      if (!isStaticHost) {
+        this.useCloudTTS = true;
+        this._cloudFailedCount = 0;
+      }
     }
   },
 
