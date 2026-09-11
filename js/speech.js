@@ -42,27 +42,32 @@ const Speech = {
     this.audio = new Audio();
     this.audio.preload = 'auto';
 
-    // 检测环境：GitHub Pages 等纯静态托管无 Python 后端，自动禁用云端 TTS
+    // 检测环境：GitHub Pages 等纯静态托管无 Python 后端，使用 Puter.js TTS
     const host = location.hostname;
     const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('lhr.life');
     const isRender = host.includes('onrender.com');
     if (!isLocal && !isRender) {
       this.useCloudTTS = false;
-      console.log('[语音] 静态托管环境，使用浏览器内置语音合成');
+      // 静态环境优先用 Puter.js（免费云端 TTS，支持微软 Neural voices）
+      this.usePuter = (typeof puter !== 'undefined');
+      if (this.usePuter) {
+        console.log('[语音] 静态环境，使用 Puter.js 云端 TTS');
+      } else {
+        console.log('[语音] 静态环境，Puter.js 未加载，回退浏览器内置语音');
+      }
     }
 
-    // Audio 播放失败 → 回退到 Web Speech
+    // Audio 播放失败 → 回退
     this.audio.addEventListener('error', () => {
-      // 队列模式下错误也继续下一句
       if (this._queue && this._queue.length) {
         this._advanceQueue();
         return;
       }
       this._cloudFailedCount++;
-      console.warn(`云端 TTS 失败 (${this._cloudFailedCount}次)，回退到浏览器语音`);
+      console.warn(`云端 TTS 失败 (${this._cloudFailedCount}次)`);
       if (this._cloudFailedCount >= 3) {
-        this.useCloudTTS = false;
-        console.warn('云端 TTS 连续失败 3 次，已切换到浏览器内置语音');
+        this.usePuter = false;
+        console.warn('Puter.js 连续失败 3 次，切换到浏览器内置语音');
       }
       if (this._lastText) {
         this._speakFallback(this._lastText, this._lastRate);
@@ -117,9 +122,11 @@ const Speech = {
     const item = this._queue.shift();
     this._lastText = item.text;
     this._lastRate = item.rate;
-    // 直接调用 _speakCloud，绕过 speak() 内部的 stop()
+    // 直接调用朗读，绕过 speak() 内部的 stop()
     if (this.useCloudTTS) {
       this._speakCloud(item.text, item.rate);
+    } else if (this.usePuter) {
+      this._speakPuter(item.text, item.rate);
     } else {
       this._speakFallback(item.text, item.rate);
     }
@@ -133,9 +140,41 @@ const Speech = {
 
     if (this.useCloudTTS) {
       this._speakCloud(text, rate);
+    } else if (this.usePuter) {
+      this._speakPuter(text, rate);
     } else {
       this._speakFallback(text, rate);
     }
+  },
+
+  // Puter.js TTS 朗读（静态环境使用，免费云端 TTS）
+  _speakPuter(text, rate) {
+    if (typeof puter === 'undefined' || !puter.ai || !puter.ai.txt2speech) {
+      console.warn('[语音] Puter.js 不可用，回退浏览器内置语音');
+      this.usePuter = false;
+      this._speakFallback(text, rate);
+      return;
+    }
+    console.log('[语音] Puter.js TTS 请求:', text.substring(0, 30));
+    puter.ai.txt2speech(text, 'en-US')
+      .then(audio => {
+        // audio 是 HTMLAudioElement
+        this.audio.src = audio.src;
+        this.audio.playbackRate = rate || 1;
+        this.audio.play().catch(err => {
+          console.error('[语音] Puter 音频播放失败:', err);
+          this._speakFallback(text, rate);
+        });
+      })
+      .catch(err => {
+        console.error('[语音] Puter.js TTS 失败:', err);
+        this._cloudFailedCount++;
+        if (this._cloudFailedCount >= 3) {
+          this.usePuter = false;
+          console.warn('Puter.js 连续失败，切换到浏览器内置语音');
+        }
+        this._speakFallback(text, rate);
+      });
   },
 
   // 生成缓存 key
