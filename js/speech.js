@@ -42,26 +42,15 @@ const Speech = {
     this.audio = new Audio();
     this.audio.preload = 'auto';
 
-    // 检测环境：GitHub Pages 等纯静态托管无 Python 后端，使用 Puter.js TTS
+    // 检测环境：GitHub Pages 等纯静态托管无 Python 后端，使用 FreeTTS API
     const host = location.hostname;
     const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('lhr.life');
     const isRender = host.includes('onrender.com');
     if (!isLocal && !isRender) {
       this.useCloudTTS = false;
-      // 静态环境优先用 Puter.js（免费云端 TTS，支持微软 Neural voices）
-      // Puter.js 可能异步加载，延迟检测
-      const checkPuter = (tries = 0) => {
-        if (typeof puter !== 'undefined' && puter.ai && puter.ai.txt2speech) {
-          this.usePuter = true;
-          console.log('[语音] 静态环境，使用 Puter.js 云端 TTS ✓');
-        } else if (tries < 10) {
-          setTimeout(() => checkPuter(tries + 1), 300);
-        } else {
-          this.usePuter = false;
-          console.warn('[语音] Puter.js 未加载（超时），回退浏览器内置语音');
-        }
-      };
-      checkPuter();
+      // 静态环境使用 FreeTTS（免费云端 TTS，无需 API key，无登录跳转）
+      this.usePuter = true;
+      console.log('[语音] 静态环境，使用 FreeTTS 云端 TTS');
     }
 
     // Audio 播放失败 → 回退
@@ -155,33 +144,48 @@ const Speech = {
   },
 
   // Puter.js TTS 朗读（静态环境使用，免费云端 TTS）
+  // FreeTTS API 朗读（免费云端 TTS，无需 API key，无登录跳转）
+  // 文档：https://www.freetts.org/
   _speakPuter(text, rate) {
-    if (typeof puter === 'undefined' || !puter.ai || !puter.ai.txt2speech) {
-      console.warn('[语音] Puter.js 不可用（调用时），回退浏览器内置语音');
-      this.usePuter = false;
-      this._speakFallback(text, rate);
-      return;
-    }
-    console.log('[语音] Puter.js TTS 请求:', text.substring(0, 30));
-    puter.ai.txt2speech(text, 'en-US')
-      .then(audio => {
-        // audio 是 HTMLAudioElement
-        this.audio.src = audio.src;
-        this.audio.playbackRate = rate || 1;
+    console.log('[语音] FreeTTS 请求:', text.substring(0, 30));
+    const voiceName = (this.voiceOptions[this.voice] || this.voiceOptions.jenny).edge;
+    // FreeTTS 速率格式：+0%, -10%, +20% 等
+    const ratePct = rate >= 1 ? `+${Math.round((rate - 1) * 100)}%` : `${Math.round((rate - 1) * 100)}%`;
+    
+    fetch('https://freetts.org/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: text,
+        voice: voiceName,
+        rate: ratePct,
+        pitch: '+0Hz'
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.file_id) {
+        const audioUrl = `https://freetts.org/api/audio/${data.file_id}`;
+        this.audio.src = audioUrl;
+        this.audio.playbackRate = 1; // FreeTTS 已在服务端处理 rate
         this.audio.play().catch(err => {
-          console.error('[语音] Puter 音频播放失败:', err);
+          console.error('[语音] FreeTTS 音频播放失败:', err);
           this._speakFallback(text, rate);
         });
-      })
-      .catch(err => {
-        console.error('[语音] Puter.js TTS 失败:', err);
-        this._cloudFailedCount++;
-        if (this._cloudFailedCount >= 3) {
-          this.usePuter = false;
-          console.warn('Puter.js 连续失败，切换到浏览器内置语音');
-        }
-        this._speakFallback(text, rate);
-      });
+        console.log('[语音] FreeTTS 播放中');
+      } else {
+        throw new Error('无 file_id');
+      }
+    })
+    .catch(err => {
+      console.error('[语音] FreeTTS 失败:', err);
+      this._cloudFailedCount++;
+      if (this._cloudFailedCount >= 3) {
+        this.usePuter = false;
+        console.warn('FreeTTS 连续失败 3 次，切换到浏览器内置语音');
+      }
+      this._speakFallback(text, rate);
+    });
   },
 
   // 生成缓存 key
@@ -327,27 +331,13 @@ const Speech = {
       if (!v) v = this.voices.find(v => v.lang.startsWith('en'));
       if (v) u.voice = v;
       u.onerror = (e) => {
-        console.warn('[语音] 朗读错误:', e.error || e);
-        // 如果浏览器内置语音失败，尝试动态加载 Puter.js
+        console.warn('[语音] 浏览器朗读错误:', e.error || e);
+        // 浏览器语音失败时，尝试用 FreeTTS 云端 TTS
         if (!this._puterTried) {
           this._puterTried = true;
-          if (typeof puter !== 'undefined' && puter.ai && puter.ai.txt2speech) {
-            console.log('[语音] 浏览器语音失败，切换到 Puter.js');
-            this.usePuter = true;
-            this._speakPuter(text, rate);
-          } else {
-            // 动态加载 Puter.js
-            console.log('[语音] 浏览器语音失败，动态加载 Puter.js');
-            const script = document.createElement('script');
-            script.src = 'https://js.puter.com/v2/';
-            script.onload = () => {
-              setTimeout(() => {
-                this.usePuter = true;
-                this._speakPuter(text, rate);
-              }, 500);
-            };
-            document.head.appendChild(script);
-          }
+          console.log('[语音] 浏览器语音失败，切换到 FreeTTS');
+          this.usePuter = true;
+          this._speakPuter(text, rate);
         } else {
           Toast.show('朗读失败，请刷新页面重试');
         }
