@@ -49,12 +49,19 @@ const Speech = {
     if (!isLocal && !isRender) {
       this.useCloudTTS = false;
       // 静态环境优先用 Puter.js（免费云端 TTS，支持微软 Neural voices）
-      this.usePuter = (typeof puter !== 'undefined');
-      if (this.usePuter) {
-        console.log('[语音] 静态环境，使用 Puter.js 云端 TTS');
-      } else {
-        console.log('[语音] 静态环境，Puter.js 未加载，回退浏览器内置语音');
-      }
+      // Puter.js 可能异步加载，延迟检测
+      const checkPuter = (tries = 0) => {
+        if (typeof puter !== 'undefined' && puter.ai && puter.ai.txt2speech) {
+          this.usePuter = true;
+          console.log('[语音] 静态环境，使用 Puter.js 云端 TTS ✓');
+        } else if (tries < 10) {
+          setTimeout(() => checkPuter(tries + 1), 300);
+        } else {
+          this.usePuter = false;
+          console.warn('[语音] Puter.js 未加载（超时），回退浏览器内置语音');
+        }
+      };
+      checkPuter();
     }
 
     // Audio 播放失败 → 回退
@@ -150,7 +157,7 @@ const Speech = {
   // Puter.js TTS 朗读（静态环境使用，免费云端 TTS）
   _speakPuter(text, rate) {
     if (typeof puter === 'undefined' || !puter.ai || !puter.ai.txt2speech) {
-      console.warn('[语音] Puter.js 不可用，回退浏览器内置语音');
+      console.warn('[语音] Puter.js 不可用（调用时），回退浏览器内置语音');
       this.usePuter = false;
       this._speakFallback(text, rate);
       return;
