@@ -1,0 +1,24 @@
+/* DailyEnglish - 自定义样式 */
+.tab-btn { transition: all .2s; }
+.tab-panel { animation: fade .25s ease; }
+@keyframes fade { from { opacity:0; transform: translateY(4px);} to { opacity:1; transform:none;} }
+
+.btn-record.recording {
+  background: #ef4444 !important;
+  animation: pulse 1.2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,.5);}
+  50% { box-shadow: 0 0 0 10px rgba(239,68,68,0);}
+}
+
+.word-pop { animation: pop .3s ease; }
+@keyframes pop { from{transform:scale(.9);opacity:0;} to{transform:scale(1);opacity:1;} }
+
+.choice-correct { background:#dcfce7 !important; border-color:#16a34a !important; }
+.choice-wrong { background:#fee2e2 !important; border-color:#dc2626 !important; }
+
+/* 滚动条美化 */
+::-webkit-scrollbar { height:6px; width:6px;}
+::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px;}
+.dark ::-webkit-scrollbar-thumb { background:#475569;}
