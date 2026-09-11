@@ -83,9 +83,22 @@ const Speech = {
 
     // 初始化 Web Speech API（作为 fallback）
     if (this.synth) {
-      const load = () => { this.voices = this.synth.getVoices(); };
+      const load = () => {
+        const vs = this.synth.getVoices();
+        if (vs && vs.length) {
+          this.voices = vs;
+          console.log('[语音] 加载到', vs.length, '个语音');
+        }
+      };
       load();
       this.synth.onvoiceschanged = load;
+      // 某些浏览器需要触发一次空朗读才能激活语音引擎
+      // Safari/IOS 上首次调用可能无声，用这个"热身"
+      try {
+        const warmup = new SpeechSynthesisUtterance('');
+        warmup.volume = 0;
+        this.synth.speak(warmup);
+      } catch {}
     }
   },
 
@@ -249,44 +262,70 @@ const Speech = {
     }
     // 取消之前的朗读
     try { this.synth.cancel(); } catch {}
-    // Safari/IOS 需要 voices 已加载才能朗读，延迟一帧确保就绪
+
     const doSpeak = () => {
+      // 重新获取 voices（可能已加载）
+      if (this.voices.length === 0 && this.synth.getVoices) {
+        const vs = this.synth.getVoices();
+        if (vs && vs.length) this.voices = vs;
+      }
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'en-US';
-      u.rate = rate;
-      // 优先选择 Google 语音（较自然），其次选 en-US/en 语音
+      u.rate = rate || 1;
+      u.volume = 1;
+      u.pitch = 1;
+      // 优先选择 Google/Samantha 等较自然语音
       let v = this.voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'));
+      if (!v) v = this.voices.find(v => v.name.includes('Samantha'));
       if (!v) v = this.voices.find(v => v.lang.startsWith('en-US'));
       if (!v) v = this.voices.find(v => v.lang.startsWith('en'));
       if (v) u.voice = v;
-      // 错误处理
-      u.onerror = (e) => console.warn('[语音] 朗读错误:', e.error || e);
-      u.onend = () => {
-        // 队列模式：播完一句自动播下一句
-        if (this._queue && this._queue.length) {
-          this._advanceQueue();
-        }
+      u.onerror = (e) => {
+        console.warn('[语音] 朗读错误:', e.error || e);
+        Toast.show('朗读失败，请尝试 Chrome 浏览器');
       };
-      this.synth.speak(u);
-      console.log('[语音] 浏览器内置语音朗读:', text.substring(0, 30));
-    };
-    // Safari 上 voices 可能异步加载，确保有 voices 再朗读
-    if (this.voices.length === 0 && this.synth.getVoices) {
-      this.voices = this.synth.getVoices();
-      if (this.voices.length === 0) {
-        this.synth.onvoiceschanged = () => {
-          this.voices = this.synth.getVoices();
-          doSpeak();
-        };
-        // 兜底：500ms 后强制朗读（不等 voices）
-        setTimeout(() => {
-          if (this.synth.speaking) return;
-          doSpeak();
-        }, 500);
-        return;
+      u.onend = () => {
+        if (this._queue && this._queue.length) this._advanceQueue();
+      };
+      try {
+        this.synth.speak(u);
+        console.log('[语音] 朗读开始:', text.substring(0, 30));
+      } catch (err) {
+        console.error('[语音] speak() 异常:', err);
+        Toast.show('朗读失败：' + (err.message || '未知错误'));
       }
+    };
+
+    // Safari/IOS 上 voices 异步加载，延迟一帧确保就绪
+    // 即使没有 voices，也强制朗读（浏览器会用默认语音）
+    if (this.voices.length === 0) {
+      // 尝试再获取一次
+      const vs = this.synth.getVoices ? this.synth.getVoices() : [];
+      if (vs && vs.length) {
+        this.voices = vs;
+        doSpeak();
+      } else {
+        // voices 未就绪，等 200ms 再试，最多等 1 秒
+        let tries = 0;
+        const wait = () => {
+          tries++;
+          const vs2 = this.synth.getVoices ? this.synth.getVoices() : [];
+          if (vs2 && vs2.length) {
+            this.voices = vs2;
+            doSpeak();
+          } else if (tries < 5) {
+            setTimeout(wait, 200);
+          } else {
+            // 超时，强制朗读（Safari 会用默认语音）
+            console.warn('[语音] voices 未加载，强制朗读');
+            doSpeak();
+          }
+        };
+        setTimeout(wait, 200);
+      }
+    } else {
+      doSpeak();
     }
-    doSpeak();
   },
 
   // 停止所有朗读（取消当前 + 清空队列）
