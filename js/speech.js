@@ -22,11 +22,6 @@ const Speech = {
   _lastText: '',        // 记录上次朗读文本（用于 fallback）
   _lastRate: 1,         // 记录上次速率
   _cloudFailedCount: 0, // 云端失败计数（连续失败则禁用）
-
-  // 云端语音识别（优先通道，替代 Vosk 离线模型 / Web Speech）
-  _sttBase: '',         // 后端 /stt 地址；GitHub Pages 时由 DAILY_CFG.sttBase 指向 Render 绝对地址
-  _useCloud: false,     // 当前是否使用云端识别
-
   // 预缓存：key = voice|rate|text → value = objectURL
   _cache: new Map(),
   _pending: new Map(),  // 进行中的请求（避免重复请求）
@@ -92,8 +87,6 @@ const Speech = {
     const host = location.hostname;
     const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('lhr.life');
     const isRender = host.includes('onrender.com');
-    // 云端语音识别后端地址：显式配置(DAILY_CFG.sttBase) > 同源后端(onrender/本地)
-    this._sttBase = this._detectBackend();
     if (!isLocal && !isRender) {
       this.useCloudTTS = false;
       this.useGoogleTTS = false;
@@ -161,8 +154,8 @@ const Speech = {
     }
 
     // 预加载 Vosk 离线语音识别模型（Web Speech API 在中国大陆不可用时的备选方案）
-    // 仅在静态环境（GitHub Pages）且未配置云端识别时预加载；已用云端识别则跳过 40MB 模型下载
-    if (!isLocal && !isRender && !this._sttBase && typeof Vosk !== 'undefined') {
+    // 仅在静态环境（GitHub Pages）预加载，本地开发用 Web Speech API 即可
+    if (!isLocal && !isRender && typeof Vosk !== 'undefined') {
       this._preloadVoskModel();
     }
   },
@@ -930,8 +923,6 @@ const Speech = {
           // 释放上一次的 URL
           if (this._lastRecordingUrl) URL.revokeObjectURL(this._lastRecordingUrl);
           this._lastRecordingUrl = URL.createObjectURL(blob);
-          // 保存 blob 供云端识别上传（与回放共用同一次录音）
-          this._lastRecordingBlob = blob;
           console.log('[录音存档] 录制完成, 大小:', blob.size, '字节, 时长:', elapsed, 'ms, 类型:', blob.type);
           resolve(this._lastRecordingUrl);
         };
@@ -1046,21 +1037,7 @@ const Speech = {
     this._recLastInterim = '';
     this._recDone = false;
     this._recError = '';
-    this._useCloud = false;
-    this._useVosk = false;
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    // 优先使用云端识别（阿里云百炼）：无需下载 40MB 模型、不依赖 Google 网络，
-    // 安卓/iOS 都能稳定识别。录音结束后将音频上传后端 → DashScope 返回文字。
-    if (this._sttBase) {
-      this._useCloud = true;
-      this._useVosk = false;
-      this._recActive = true;
-      // 仅做录音存档（回放 + 云端上传共用一个音频）
-      this.startRecording();
-      if (typeof this.onStatus === 'function') this.onStatus('cloud-recording');
-      return true;
-    }
 
     // 优先使用 Vosk 离线识别：在中国大陆，Chrome/安卓的 Web Speech API 需要连接 Google，
     // 常被网络屏蔽导致"录到了音却识别不出文字"。Vosk 完全离线、模型内置，录音即可识别，
@@ -1170,11 +1147,6 @@ const Speech = {
       this._completeRecognition();
       return;
     }
-    if (this._useCloud) {
-      // 云端模式：停止录音 → 上传识别（录音在 _cloudComplete 内停止）
-      this._cloudComplete();
-      return;
-    }
     // 停止语音识别（会异步触发 onend，但 _recActive 已为 false，不会重复执行）
     if (this._recSR) {
       try { this._recSR.stop(); } catch {}
@@ -1213,68 +1185,6 @@ const Speech = {
         this.onRecordingReady(recUrl);
       }
     });
-  },
-
-  // 云端识别：通知进行中，停止录音后上传识别
-  _cloudComplete() {
-    if (this._recDone) return;
-    this._recDone = true;
-    const self = this;
-    if (typeof this.onStatus === 'function') this.onStatus('cloud-recognizing');
-    // 先停止录音拿到音频 blob，再上传识别（录音同时用于回放）
-    this.stopRecording().then(recUrl => {
-      const blob = self._lastRecordingBlob;
-      self._cloudRecognize(blob).then(({ text, error }) => {
-        console.log('[录音] 云端识别完成, 文本:', text, '错误:', error || '无');
-        if (typeof self.onResult === 'function') self.onResult(text, error);
-        if (typeof self.onRecordingReady === 'function') self.onRecordingReady(recUrl);
-      });
-    });
-  },
-
-  // 经后端调用阿里云百炼语音识别，返回 { text, error }
-  async _cloudRecognize(blob) {
-    const base = this._sttBase;
-    if (!base) return { text: '', error: 'cloud-not-configured' };
-    if (!blob || blob.size < 100) return { text: '', error: 'no-speech' };
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 60000);
-    try {
-      const resp = await fetch(base, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/octet-stream' },
-        body: blob,
-        signal: ctrl.signal
-      });
-      clearTimeout(timer);
-      if (!resp.ok) {
-        let code = 'HTTP ' + resp.status;
-        try { const j = await resp.json(); if (j && j.error) code = j.error; } catch (e) {}
-        if (code === 'no_key') return { text: '', error: 'cloud-not-configured' };
-        return { text: '', error: code };
-      }
-      const data = await resp.json();
-      const text = ((data && data.text) || '').trim();
-      return { text, error: text ? '' : 'no-speech' };
-    } catch (e) {
-      clearTimeout(timer);
-      return { text: '', error: (e && e.name === 'AbortError') ? 'timeout' : 'network' };
-    }
-  },
-
-  // 判断后端 /stt 地址是否可用（云端识别是否启用）
-  isCloudSttSet() {
-    return !!this._sttBase;
-  },
-
-  // 确定云端识别后端地址：DAILY_CFG.sttBase 显式配置 > 同源后端（onrender/本地）
-  _detectBackend() {
-    if (window.DAILY_CFG && window.DAILY_CFG.sttBase) {
-      return String(window.DAILY_CFG.sttBase).replace(/\/+$/, '');
-    }
-    const host = location.hostname;
-    if (/onrender\.com|localhost|127\.0\.0\.1|lhr\.life/i.test(host)) return '/stt';
-    return '';
   },
 
   // 是否正在录音

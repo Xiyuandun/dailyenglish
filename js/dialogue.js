@@ -182,8 +182,7 @@ const DialogueModule = {
     }
 
     // 未在录音 → 开始
-    // 云端识别可用时无需浏览器 Web Speech（安卓无 Web Speech 也能识别）
-    if (!Speech.isSupported() && !Speech.isCloudSttSet()) {
+    if (!Speech.isSupported()) {
       status.innerHTML = '<span class="text-red-500">⚠️ 当前浏览器不支持语音识别，请使用 Chrome 或 Edge 浏览器<br>（Safari/Firefox 暂不支持）</span>';
       return;
     }
@@ -205,10 +204,7 @@ const DialogueModule = {
           'start-failed': '录音启动失败。请检查麦克风是否被其他程序占用',
           'no-speech': '未检测到语音，请对着麦克风大声说出英文台词',
           'audio-capture': '无法访问麦克风设备，请检查浏览器麦克风权限',
-          'vosk-load-failed': '离线语音识别模型加载失败，请检查网络后刷新页面重试',
-          'cloud-not-configured': '云端识别未启用：请先在 Render 配置阿里云 API Key 与识别后端地址',
-          'timeout': '云端识别超时，请检查网络后重试',
-          'no_key': '云端识别未配置 API Key，请先在 Render 环境变量中设置 DASHSCOPE_API_KEY'
+          'vosk-load-failed': '离线语音识别模型加载失败，请检查网络后刷新页面重试'
         }[error] || `语音识别失败（${error}），建议使用录音回放功能对照练习`;
         status.innerHTML = `<span class="text-red-500">⚠️ ${errMsg}</span>`;
       } else if (!text) {
@@ -247,20 +243,14 @@ const DialogueModule = {
       if (pb && pb.textContent.includes('暂停')) pb.textContent = '▶ 回放录音';
     };
 
-    // 识别过程中的状态反馈
+    // 识别过程中的状态反馈（主要是 Vosk 离线模型首次下载）
     Speech.onStatus = (key, extra) => {
       const st = document.getElementById('recStatus');
-      if (!st) return;
-      if (key === 'cloud-recording') {
-        st.innerHTML = '<span class="text-slate-400">🎤 云端识别已就绪，正在录音…说完后点击"停止录音"</span>';
-      } else if (key === 'cloud-recognizing') {
-        st.innerHTML = '<span class="text-sky-600">⏳ 正在云端识别你刚才说的话，请稍候…</span>';
-      } else if (key === 'vosk-loading') {
-        if (Speech.isRecording()) {
-          st.innerHTML = `<span class="text-sky-600">⏳ 正在下载语音识别模型（约 40MB，首次约 1-3 分钟，已 ${extra || 0} 秒），下载完成后录音即可识别，请稍候…</span>`;
-        }
+      if (!st || !Speech.isRecording()) return;
+      if (key === 'vosk-loading') {
+        st.innerHTML = `<span class="text-sky-600">⏳ 正在下载语音识别模型（约 40MB，首次约 1-3 分钟，已 ${extra || 0} 秒），下载完成后录音即可识别，请稍候…</span>`;
       } else if (key === 'vosk-ready') {
-        if (Speech.isRecording()) st.innerHTML = '<span class="text-slate-400">🎤 识别模型已就绪，正在录音…说完后点击"停止录音"</span>';
+        st.innerHTML = '<span class="text-slate-400">🎤 识别模型已就绪，正在录音…说完后点击"停止录音"</span>';
       } else if (key === 'vosk-load-failed') {
         st.innerHTML = '<span class="text-red-500">⚠️ 离线识别模型下载失败（网络原因）。已回退到系统识别，若仍无结果请检查网络后刷新重试</span>';
       }
