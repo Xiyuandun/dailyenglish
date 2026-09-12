@@ -138,6 +138,137 @@ const Speech = {
       load();
       this.synth.onvoiceschanged = load;
     }
+
+    // 预加载 Vosk 离线语音识别模型（Web Speech API 在中国大陆不可用时的备选方案）
+    // 仅在静态环境（GitHub Pages）预加载，本地开发用 Web Speech API 即可
+    if (!isLocal && !isRender && typeof Vosk !== 'undefined') {
+      this._preloadVoskModel();
+    }
+  },
+
+  // 预加载 Vosk 语音识别模型（约 40MB，首次加载后浏览器会缓存）
+  _voskModel: null,
+  _voskLoading: false,
+  _voskLoadError: null,
+  async _preloadVoskModel() {
+    if (this._voskModel || this._voskLoading) return;
+    this._voskLoading = true;
+    try {
+      console.log('[语音识别] 开始加载 Vosk 离线模型...');
+      this._voskModel = await Vosk.createModel('models/model.tar.gz');
+      console.log('[语音识别] Vosk 模型加载完成');
+    } catch (err) {
+      this._voskLoadError = err;
+      console.warn('[语音识别] Vosk 模型加载失败:', err && (err.message || err));
+    } finally {
+      this._voskLoading = false;
+    }
+  },
+
+  // Vosk 识别器相关状态
+  _voskRecognizer: null,
+  _voskAudioContext: null,
+  _voskSource: null,
+  _voskProcessor: null,
+  _voskStream: null,
+  _voskText: '',
+
+  // 使用 Vosk 进行语音识别（离线，国内可用）
+  async _startVoskRecognition(lang) {
+    if (!this._voskModel) {
+      if (this._voskLoading) {
+        console.log('[语音识别] Vosk 模型加载中，等待...');
+        await new Promise((resolve) => {
+          const check = () => {
+            if (this._voskModel || this._voskLoadError) resolve();
+            else setTimeout(check, 200);
+          };
+          check();
+        });
+      }
+      if (!this._voskModel) {
+        if (typeof this.onResult === 'function') this.onResult('', 'vosk-load-failed');
+        return false;
+      }
+    }
+
+    try {
+      this._voskText = '';
+      // 创建识别器
+      this._voskRecognizer = new this._voskModel.KaldiRecognizer();
+      this._voskRecognizer.on('result', (msg) => {
+        if (msg.result && msg.result.text) {
+          this._voskText += (this._voskText ? ' ' : '') + msg.result.text;
+        }
+      });
+      this._voskRecognizer.on('partialresult', (msg) => {
+        // 中间结果可用于实时显示
+      });
+
+      // 获取麦克风
+      this._voskStream = await navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          channelCount: 1,
+          sampleRate: 16000
+        }
+      });
+
+      // 设置音频处理
+      this._voskAudioContext = new AudioContext();
+      const source = this._voskAudioContext.createMediaStreamSource(this._voskStream);
+      this._voskSource = source;
+      const processor = this._voskAudioContext.createScriptProcessor(4096, 1, 1);
+      this._voskProcessor = processor;
+      processor.onaudioprocess = (event) => {
+        try {
+          this._voskRecognizer.acceptWaveform(event.inputBuffer);
+        } catch (e) {}
+      };
+      source.connect(processor);
+      processor.connect(this._voskAudioContext.destination);
+
+      console.log('[语音识别] Vosk 识别已启动');
+      return true;
+    } catch (err) {
+      console.error('[语音识别] Vosk 启动失败:', err);
+      const errType = err && err.name;
+      let mapped = 'start-failed';
+      if (errType === 'NotAllowedError') mapped = 'no-permission';
+      if (typeof this.onResult === 'function') this.onResult('', mapped);
+      return false;
+    }
+  },
+
+  // 停止 Vosk 识别并返回结果
+  _stopVoskRecognition() {
+    try {
+      if (this._voskRecognizer) {
+        this._voskRecognizer.removeAllListeners();
+        this._voskRecognizer = null;
+      }
+      if (this._voskProcessor) {
+        this._voskProcessor.disconnect();
+        this._voskProcessor = null;
+      }
+      if (this._voskSource) {
+        this._voskSource.disconnect();
+        this._voskSource = null;
+      }
+      if (this._voskStream) {
+        this._voskStream.getTracks().forEach(t => t.stop());
+        this._voskStream = null;
+      }
+      if (this._voskAudioContext) {
+        this._voskAudioContext.close();
+        this._voskAudioContext = null;
+      }
+    } catch (e) {}
+    const text = this._voskText.trim();
+    this._voskText = '';
+    return text;
   },
 
   // 队列模式：依次朗读多句文本（事件驱动，非定时器）
@@ -714,6 +845,7 @@ const Speech = {
   _recLastInterim: '',       // 最后一次 interim 文本（兜底）
   _recActive: false,         // 是否正在录音
   _recDone: false,           // 本次识别是否已完成（防止重复回调）
+  _useVosk: false,           // 当前是否使用 Vosk 识别
 
   // 开始录音+识别（手动模式，无超时）
   // onResult(text, error) 回调在停止后触发
@@ -733,10 +865,26 @@ const Speech = {
       this._recSR = null;
     }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    // 优先使用 Web Speech API；不可用时尝试 Vosk 离线识别
     if (!SR) {
-      if (typeof this.onResult === 'function') this.onResult('', 'unsupported');
-      return false;
+      console.log('[录音] Web Speech API 不可用，尝试 Vosk 离线识别');
+      this._useVosk = true;
+      this._recActive = true;
+      this._recDone = false;
+      this._recError = '';
+      // 同步启动录音存档
+      this.startRecording();
+      // 异步启动 Vosk 识别
+      this._startVoskRecognition(lang).then((ok) => {
+        if (!ok) {
+          this._recActive = false;
+        }
+      });
+      return true;
     }
+
+    this._useVosk = false;
     // 重置状态
     this._recChunksText = [];
     this._recLastInterim = '';
@@ -764,11 +912,20 @@ const Speech = {
     r.onerror = (e) => {
       const errType = e.error || 'unknown';
       console.warn('[录音] 错误:', errType);
-      // 错误不立即停止，记录错误类型，等 stopRecognition 时返回
+      // 记录所有错误类型，便于 UI 给出准确提示
       if (errType === 'not-allowed' || errType === 'service-not-allowed') {
         this._recError = 'no-permission';
       } else if (errType === 'network') {
         this._recError = 'network';
+      } else if (errType === 'no-speech') {
+        this._recError = 'no-speech';
+      } else if (errType === 'audio-capture') {
+        this._recError = 'audio-capture';
+      } else if (errType === 'not-allowed') {
+        this._recError = 'no-permission';
+      } else {
+        // 其他错误（如 language-not-supported、aborted 等）
+        this._recError = errType;
       }
     };
     r.onend = () => {
@@ -801,6 +958,11 @@ const Speech = {
     if (!this._recActive) return;
     // 先将 _recActive 设为 false，防止 onend 异步回调重复触发 _completeRecognition
     this._recActive = false;
+    if (this._useVosk) {
+      // Vosk 模式：直接完成
+      this._completeRecognition();
+      return;
+    }
     // 停止语音识别（会异步触发 onend，但 _recActive 已为 false，不会重复执行）
     if (this._recSR) {
       try { this._recSR.stop(); } catch {}
@@ -814,11 +976,20 @@ const Speech = {
   _completeRecognition() {
     if (this._recDone) return;
     this._recDone = true;
-    // 汇总识别文本（final 优先，interim 兜底）
-    let text = this._recChunksText.join(' ').trim();
-    if (!text && this._recLastInterim) text = this._recLastInterim.trim();
-    const error = this._recError || '';
-    console.log('[录音] 完成, 文本:', text, '错误:', error || '无');
+
+    let text, error;
+    if (this._useVosk) {
+      // Vosk 模式：停止 Vosk 识别并获取结果
+      text = this._stopVoskRecognition();
+      error = this._recError || '';
+      console.log('[录音] Vosk 完成, 文本:', text, '错误:', error || '无');
+    } else {
+      // Web Speech 模式：汇总识别文本（final 优先，interim 兜底）
+      text = this._recChunksText.join(' ').trim();
+      if (!text && this._recLastInterim) text = this._recLastInterim.trim();
+      error = this._recError || '';
+      console.log('[录音] 完成, 文本:', text, '错误:', error || '无');
+    }
 
     // 立即回调识别结果
     if (typeof this.onResult === 'function') this.onResult(text, error);

@@ -200,12 +200,15 @@ const DialogueModule = {
       if (error && error !== 'unsupported') {
         const errMsg = {
           'no-permission': '麦克风权限被拒绝。请点击地址栏左侧的锁图标，将麦克风权限设为"允许"后刷新页面重试',
-          'network': '网络错误，语音识别服务不可用。请检查网络连接后重试',
-          'start-failed': '录音启动失败。请检查麦克风是否被其他程序占用'
-        }[error] || '录音出错，请重试';
+          'network': '语音识别服务不可用（需连接 Google 服务，中国大陆网络可能受限）。建议使用录音回放功能对照练习',
+          'start-failed': '录音启动失败。请检查麦克风是否被其他程序占用',
+          'no-speech': '未检测到语音，请对着麦克风大声说出英文台词',
+          'audio-capture': '无法访问麦克风设备，请检查浏览器麦克风权限',
+          'vosk-load-failed': '离线语音识别模型加载失败，请检查网络后刷新页面重试'
+        }[error] || `语音识别失败（${error}），建议使用录音回放功能对照练习`;
         status.innerHTML = `<span class="text-red-500">⚠️ ${errMsg}</span>`;
       } else if (!text) {
-        status.innerHTML = '<span class="text-amber-600">⚠️ 未识别到内容。请对着麦克风用英文说出你的台词</span>';
+        status.innerHTML = '<span class="text-amber-600">⚠️ 未识别到内容。请对着麦克风用英文说出你的台词（或使用录音回放对照练习）</span>';
       }
       this.lastResult = { transcript: text, error, recording: '' };
       this.showFeedback(s, this.lastResult);
