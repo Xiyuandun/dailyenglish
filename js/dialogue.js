@@ -98,7 +98,7 @@ const DialogueModule = {
       <div class="border-t border-slate-200 dark:border-slate-700 pt-2">
         <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-2">
           <div class="text-sm font-medium mb-1">🎤 录音挑战</div>
-          <div class="text-sm text-slate-500 dark:text-slate-400 mb-2">请根据上面的中文对话，把你需要说的英文台词（${s.roles.user}的台词）一口气说出来。</div>
+          <div class="text-sm text-slate-500 dark:text-slate-400 mb-2">请根据上面的中文对话，把整段对话（${s.roles.user}和${s.roles.clerk}双方的英文台词）一口气说出来，扮演两个角色完成这段场景。</div>
           <div class="flex items-center justify-center gap-2">
             <button id="recBtn" class="btn-record px-6 py-3 rounded-full bg-red-500 text-white text-lg">🎤 点击录音</button>
             <button id="playRecBtn" class="px-4 py-3 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 text-base hidden">▶ 回放录音</button>
@@ -295,29 +295,30 @@ const DialogueModule = {
 
   // 展示点评
   showFeedback(s, result) {
-    const userTurns = s.turns.filter(t => t.role === 'user');
-    const expected = userTurns.map(t => t.en).join('. ');
+    // 录音挑战要求把整段对话（双方）都说出来，故按所有 turn 评测
+    const turns = s.turns;
+    const expected = turns.map(t => t.en).join('. ').replace(/\.(\.|\?|!)*/g, '. ');
     const transcript = result.transcript || '';
 
     // 整体相似度评分
     const simScore = Speech.scorePron(transcript, expected);
 
-    // 关键词命中
-    const allKeys = userTurns.flatMap(t => t.keywords || []);
+    // 关键词命中（所有轮次的关键词）
+    const allKeys = turns.flatMap(t => t.keywords || []);
     const hits = allKeys.filter(k => transcript.toLowerCase().includes(k.toLowerCase()));
     const missKeys = allKeys.filter(k => !transcript.toLowerCase().includes(k.toLowerCase()));
     const keyRate = allKeys.length ? Math.round((hits.length / allKeys.length) * 100) : 0;
 
-    // 句子覆盖：用户台词覆盖了几条 user turn
+    // 句子覆盖
     let covered = 0;
-    userTurns.forEach(t => {
+    turns.forEach(t => {
       const words = t.en.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter(w => w.length > 3);
       const hitCount = words.filter(w => transcript.toLowerCase().includes(w)).length;
       if (hitCount / Math.max(1, words.length) >= 0.4) covered++;
     });
 
     // 综合分：相似度 40% + 关键词 40% + 覆盖率 20%
-    const finalScore = Math.round(simScore * 0.4 + keyRate * 0.4 + (covered / userTurns.length) * 100 * 0.2);
+    const finalScore = Math.round(simScore * 0.4 + keyRate * 0.4 + (covered / turns.length) * 100 * 0.2);
 
     let lvl = '需改进', col = 'text-red-600', emoji = '❌';
     if (finalScore >= 75) { lvl = '表现优秀！'; col = 'text-emerald-600'; emoji = '🎉'; }
@@ -327,7 +328,7 @@ const DialogueModule = {
     result.hits = hits;
     result.missKeys = missKeys;
     result.covered = covered;
-    result.totalUserTurns = userTurns.length;
+    result.totalUserTurns = turns.length;
 
     const fa = document.getElementById('feedbackArea');
     if (!fa) return;
@@ -345,7 +346,7 @@ const DialogueModule = {
             <div class="text-slate-400">关键词</div><div class="font-bold text-emerald-600 text-base">${hits.length}/${allKeys.length}</div>
           </div>
           <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-2">
-            <div class="text-slate-400">台词覆盖</div><div class="font-bold text-amber-600 text-base">${covered}/${userTurns.length}</div>
+            <div class="text-slate-400">台词覆盖</div><div class="font-bold text-amber-600 text-base">${covered}/${turns.length}</div>
           </div>
         </div>
         <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-2.5 mb-2">
