@@ -193,12 +193,11 @@
   <script src="data/audio.js?v=10"></script>
   <script src="js/store.js?v=10"></script>
   <script>
-    // 云端语音识别后端地址（承载阿里云 DashScope Key，后端需设置 DASHSCOPE_API_KEY 环境变量）。
-    // 填上真实后端地址后，手机录音将优先走云端识别（方案A），不再需要下载 40MB 离线模型。
-    // 地址示例：https://xxx.onrender.com/ 或 https://xxxvercel.app/ ，需带 CORS（见 server.py）。
-    window.DAILY_CFG = { sttUrl: '' };
+    // 云端语音识别后端地址（阿里云函数计算 /stt，零依赖手写 WebSocket 直连百炼）。
+    // 手机录音优先走云端识别，不再需要下载 40MB 离线模型。
+    window.DAILY_CFG = { sttUrl: 'https://dailyenglish-jdewireiku.cn-hangzhou.fcapp.run/stt' };
   </script>
-  <script src="js/speech.js?v=15"></script>
+  <script src="js/speech.js?v=16"></script>
   <script src="js/words.js?v=10"></script>
   <script src="js/dialogue.js?v=12"></script>
   <script src="js/reading.js?v=10"></script>
