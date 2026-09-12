@@ -9,6 +9,13 @@
   <title>DailyEnglish · 每日英语精进</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // 站点配置：语音识别后端地址。
+    // - 站点部署在 Render 后端（xxx.onrender.com 或自定义域名）时，无需配置即可用 /stt
+    // - 站点部署在 GitHub Pages 纯静态站时，需把下方 sttBase 指向 Render 后端的 /stt：
+    //   sttBase: 'https://你的render服务名.onrender.com/stt'
+    window.DAILY_CFG = {
+      sttBase: ''   // 留空 = 自动检测（同源后端）；填绝对地址可让 GitHub Pages 前端接到 Render 后端
+    };
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -181,22 +188,22 @@
   </main>
 
   <footer class="text-center text-xs text-slate-400 py-6">
-    DailyEnglish · 专为四级学习者打造 · 语音识别基于浏览器 Web Speech API
+    DailyEnglish · 专为四级学习者打造 · 语音识别基于浏览器 Web Speech API / 阿里云百炼云端识别
   </footer>
 
   <!-- 提示 Toast -->
   <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity z-50 text-sm"></div>
 
-  <script src="data/words.js?v=10"></script>
-  <script src="data/scenarios.js?v=10"></script>
-  <script src="data/article.js?v=10"></script>
-  <script src="data/audio.js?v=10"></script>
-  <script src="js/store.js?v=10"></script>
-  <script src="js/speech.js?v=10"></script>
-  <script src="js/words.js?v=10"></script>
-  <script src="js/dialogue.js?v=10"></script>
-  <script src="js/reading.js?v=10"></script>
-  <script src="js/report.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="data/words.js?v=11"></script>
+  <script src="data/scenarios.js?v=11"></script>
+  <script src="data/article.js?v=11"></script>
+  <script src="data/audio.js?v=11"></script>
+  <script src="js/store.js?v=11"></script>
+  <script src="js/speech.js?v=11"></script>
+  <script src="js/words.js?v=11"></script>
+  <script src="js/dialogue.js?v=11"></script>
+  <script src="js/reading.js?v=11"></script>
+  <script src="js/report.js?v=11"></script>
+  <script src="js/app.js?v=11"></script>
 </body>
 </html>
