@@ -131,6 +131,15 @@ const Speech = {
       }
     });
 
+    // 记录 audio 真实播放进度（队列监视用）
+    // 有的通道（如有道）加载会挂起：audio 即使没播放数据，play() 后 paused 也是 false，
+    // 只有真的在出声音时才会不断触发 playing/timeupdate，以此区分"在播"与"网络挂起"。
+    this._audioActiveAt = 0;
+    const markAudioActive = () => { this._audioActiveAt = Date.now(); };
+    this.audio.addEventListener('playing', markAudioActive);
+    this.audio.addEventListener('timeupdate', markAudioActive);
+    this.audio.addEventListener('canplay', markAudioActive);
+
     // 初始化 Web Speech API（作为 fallback）
     if (this.synth) {
       const load = () => {
@@ -277,8 +286,23 @@ const Speech = {
   },
 
   // 判断当前是否使用有道 TTS（用于长文本分句判断）
+  // 有道 TTS 可靠性差、连续请求易被限流/挂起；只在确实没有更可靠通道时才启用
   _willUseYoudao() {
-    return !this.useCloudTTS && !this.useGoogleTTS && (this.isAndroid || !this.synth);
+    if (this.useCloudTTS || this.useGoogleTTS) return false;
+    // 安卓：若浏览器自带英语语音则优先用 Web Speech（原生连续朗读最稳定、无限流），否则才用有道
+    if (this.isAndroid) return !(this.synth && this._hasEnglishVoice());
+    // 非安卓：无 speechSynthesis 时才用有道（如微信内置浏览器）
+    return !this.synth;
+  },
+
+  // 浏览器是否已加载英语语音（决定安卓能否用原生语音合成替代不稳定的有道 TTS）
+  _hasEnglishVoice() {
+    // getVoices 可能异步加载：内存为空时尝试同步刷新一次
+    if (!this.voices.length && this.synth && this.synth.getVoices) {
+      const vs = this.synth.getVoices();
+      if (vs && vs.length) this.voices = vs;
+    }
+    return this.voices.some(v => v.lang && String(v.lang).toLowerCase().startsWith('en'));
   },
 
   // 队列模式：依次朗读多句文本（事件驱动，非定时器）
@@ -315,8 +339,13 @@ const Speech = {
     } else if (this.useGoogleTTS) {
       this._speakGoogleTTS(text, rate);
     } else if (this.isAndroid) {
-      // 安卓：直接用有道 TTS（Web Speech 在安卓上不可靠，很多国产机无 Google TTS 引擎）
-      this._speakYoudaoTTS(text, rate);
+      // 安卓：优先用浏览器自带英语语音（native 连续朗读稳定、不限流，可整段朗读）
+      // 仅当手机没有英语语音时，才回退到不那么稳定的有道 TTS
+      if (this.synth && this._hasEnglishVoice()) {
+        this._speakFallback(text, rate);
+      } else {
+        this._speakYoudaoTTS(text, rate);
+      }
     } else if (this.synth) {
       this._speakFallback(text, rate);   // iOS / 桌面：浏览器内置语音合成
     } else {
@@ -337,23 +366,30 @@ const Speech = {
   },
 
   // 队列卡死监视：估算该句朗读时长，超时仍未播放/推进则强制跳下一句
-  // 解决：iOS 首句偶发无声、iOS/有道某句卡住导致整段静默
+  // 解决：安卓有道挂起、iOS 首句偶发无声、某句卡住导致整段静默
   _armQueueWatcher(item) {
     this._clearQueueWatcher();
-    // iOS/桌面 Web Speech 用 synth.speaking 判断是否在播；安卓有道走 audio 播放状态
-    const useSpeech = !!this.synth && !this.isAndroid && !this._willUseYoudao();
-    // 估时：约 13 字符/秒 + 2 秒余量，最短 1.5s
-    const est = Math.max(1500, Math.round((item.text.length / 13 + 2) * 1000));
+    // 该项朗读是否走 Web Speech（原生语音合成）：云端/Google 及安卓有道都走 audio
+    const useSpeech = !this.useCloudTTS && !this.useGoogleTTS && !this._willUseYoudao() && !!this.synth;
+    // 估时：约 12 字符/秒 + 2.5 秒余量，最短 1.8s
+    const est = Math.max(1800, Math.round((item.text.length / 12 + 2.5) * 1000));
     const self = this;
     let attempts = 0;
     const tick = () => {
       self._queueWatcher = setTimeout(() => {
         // 已推进完毕或队列被清空，结束监视
         if (!self._queue || !self._queue.length) { self._queueWatcher = null; return; }
-        const playing = useSpeech
-          ? !!(self.synth && self.synth.speaking)
-          : !self.audio.paused;
-        if (playing && attempts < 3) { attempts++; tick(); return; } // 仍在播，继续观察
+        let stillPlaying;
+        if (useSpeech) {
+          // Web Speech：以 synth.speaking 为准
+          stillPlaying = !!(self.synth && self.synth.speaking);
+        } else {
+          // audio：以「未暂停 且 最近确有播放进度」为准，
+          // 避免网络/加载挂起时（paused 已是 false 却没出声音）被误判为在播放
+          const active = (Date.now() - (self._audioActiveAt || 0)) < 2500;
+          stillPlaying = !self.audio.paused && active;
+        }
+        if (stillPlaying && attempts < 4) { attempts++; tick(); return; } // 仍在播，继续观察
         self._queueWatcher = null;
         console.warn('[语音] 队列监视超时，强制跳下一句:', item.text.substring(0, 20));
         try { if (useSpeech) self.synth.cancel(); else self.audio.pause(); } catch (e) {}
