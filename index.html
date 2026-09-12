@@ -193,10 +193,9 @@
   <script src="data/audio.js?v=10"></script>
   <script src="js/store.js?v=10"></script>
   <script>
-    // 可选后端配置：部署 Render 后端后，把模型托管地址填到这里（如
-    // https://你的服务名.onrender.com/models/model.tar.gz），可绕开 GitHub Pages 下载 40MB 模型超时。
-    // 留空则回退为从 GitHub Pages 直接下载。
-    window.DAILY_CFG = { renderModelUrl: '' };
+    // 可选后端配置：模型托管地址（不必非 Render，Vercel 等免卡静态托管也可，需带 CORS）。
+    // 填了就从该地址下载 40MB 模型，绕开 GitHub Pages 下载超时；留空则回退 GitHub Pages 直下。
+    window.DAILY_CFG = { renderModelUrl: 'https://dailyenglish-pcw30twad-dailyenglish.vercel.app/models/model.tar.gz' };
   </script>
   <script src="js/speech.js?v=13"></script>
   <script src="js/words.js?v=10"></script>
