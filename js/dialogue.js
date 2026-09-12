@@ -212,12 +212,28 @@ const DialogueModule = {
     };
     Speech.onRecordingReady = (recUrl) => {
       const pb = document.getElementById('playRecBtn');
-      if (pb) { pb.classList.remove('hidden'); pb.textContent = '▶ 回放录音'; }
       const st = document.getElementById('recStatus');
-      if (st && (!Speech._recError)) {
-        st.innerHTML = '<span class="text-emerald-600">✓ 录音完成，点击"▶ 回放录音"听听自己说的怎么样</span>';
+      if (recUrl) {
+        // 录音成功：显示回放按钮
+        if (pb) { pb.classList.remove('hidden'); pb.textContent = '▶ 回放录音'; pb.disabled = false; }
+        if (st && !Speech._recError) {
+          st.innerHTML = '<span class="text-emerald-600">✓ 录音完成，点击"▶ 回放录音"听听自己说的怎么样</span>';
+        }
+        if (this.lastResult) this.lastResult.recording = recUrl;
+      } else {
+        // 录音失败：显示原因，禁用回放按钮
+        if (pb) { pb.classList.add('hidden'); pb.disabled = true; }
+        const reason = Speech.getRecordingFailReason();
+        let msg = '录音回放不可用';
+        if (reason === 'unsupported') {
+          msg = '当前浏览器不支持录音回放（如微信内置浏览器），请使用 Chrome 或 Safari 打开本页面';
+        } else if (reason === 'NotAllowedError') {
+          msg = '麦克风权限被拒绝，无法录音回放';
+        } else {
+          msg = '录音回放功能不可用，请使用 Chrome 或 Safari 浏览器';
+        }
+        if (st) st.innerHTML = `<span class="text-amber-600">⚠️ ${msg}</span>`;
       }
-      if (this.lastResult) this.lastResult.recording = recUrl;
     };
     Speech.onRecordingEnded = () => {
       const pb = document.getElementById('playRecBtn');

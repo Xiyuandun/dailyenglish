@@ -532,10 +532,19 @@ const Speech = {
   },
 
   // 开始录音（与语音识别并行进行）
-  // 返回 Promise<void>，失败时不影响语音识别
+  // 返回 Promise<void>，失败时不影响语音识别，但会设置 _recArchiveFailed 标记
   async startRecording() {
+    // 保存本次启动的 Promise，供 stopRecording 等待（避免 getUserMedia 未完成就 stop 导致空录音）
+    this._recStartPromise = this._doStartRecording();
+    return this._recStartPromise;
+  },
+
+  async _doStartRecording() {
+    this._recArchiveFailed = false;
     if (!this.isRecordingSupported()) {
       console.log('[录音存档] 浏览器不支持 MediaRecorder，跳过录音存档');
+      this._recArchiveFailed = true;
+      this._recArchiveFailReason = 'unsupported';
       return;
     }
     try {
@@ -575,41 +584,60 @@ const Speech = {
       console.log('[录音存档] 开始录制, 格式:', mime || '默认');
     } catch (err) {
       console.warn('[录音存档] 启动失败:', err.name || err.message);
+      this._recArchiveFailed = true;
+      this._recArchiveFailReason = err.name || 'error';
       // 录音存档失败不影响语音识别
     }
+  },
+
+  // 录音存档是否失败（用于 UI 反馈）
+  isRecordingArchiveFailed() {
+    return !!this._recArchiveFailed;
+  },
+  getRecordingFailReason() {
+    return this._recArchiveFailReason || '';
   },
 
   // 停止录音，返回 objectURL（可 <audio> 播放）；无录音则返回空字符串
   stopRecording() {
     return new Promise((resolve) => {
-      const recorder = this._mediaRecorder;
-      if (!recorder || recorder.state === 'inactive') {
-        this._releaseRecording();
-        resolve('');
-        return;
-      }
-      // 用局部变量捕获本次的 chunks，避免并发覆盖
-      const chunks = this._recChunks;
-      const mime = this._recMimeType || 'audio/webm';
-      recorder.onstop = () => {
-        // 立即释放 stream（onstop 时数据已全部就绪）
-        this._releaseRecording();
-        const elapsed = this._recStartTime ? Date.now() - this._recStartTime : 0;
-        if (!chunks.length) {
-          console.warn('[录音存档] 无数据块, 时长:', elapsed, 'ms');
+      // 如果 startRecording 还在进行中（getUserMedia 未完成），先等待它完成
+      const finish = () => {
+        const recorder = this._mediaRecorder;
+        if (!recorder || recorder.state === 'inactive') {
+          this._releaseRecording();
           resolve('');
           return;
         }
-        const blob = new Blob(chunks, { type: chunks[0].type || mime });
-        // 释放上一次的 URL
-        if (this._lastRecordingUrl) URL.revokeObjectURL(this._lastRecordingUrl);
-        this._lastRecordingUrl = URL.createObjectURL(blob);
-        console.log('[录音存档] 录制完成, 大小:', blob.size, '字节, 时长:', elapsed, 'ms, 类型:', blob.type);
-        resolve(this._lastRecordingUrl);
+        // 用局部变量捕获本次的 chunks，避免并发覆盖
+        const chunks = this._recChunks;
+        const mime = this._recMimeType || 'audio/webm';
+        recorder.onstop = () => {
+          // 立即释放 stream（onstop 时数据已全部就绪）
+          this._releaseRecording();
+          const elapsed = this._recStartTime ? Date.now() - this._recStartTime : 0;
+          if (!chunks.length) {
+            console.warn('[录音存档] 无数据块, 时长:', elapsed, 'ms');
+            resolve('');
+            return;
+          }
+          const blob = new Blob(chunks, { type: chunks[0].type || mime });
+          // 释放上一次的 URL
+          if (this._lastRecordingUrl) URL.revokeObjectURL(this._lastRecordingUrl);
+          this._lastRecordingUrl = URL.createObjectURL(blob);
+          console.log('[录音存档] 录制完成, 大小:', blob.size, '字节, 时长:', elapsed, 'ms, 类型:', blob.type);
+          resolve(this._lastRecordingUrl);
+        };
+        // requestData：强制输出当前缓冲数据，再 stop
+        try { recorder.requestData(); } catch {}
+        try { recorder.stop(); } catch { resolve(''); }
       };
-      // requestData：强制输出当前缓冲数据，再 stop
-      try { recorder.requestData(); } catch {}
-      try { recorder.stop(); } catch { resolve(''); }
+      if (this._recStartPromise) {
+        this._recStartPromise.then(finish).catch(finish);
+        this._recStartPromise = null;
+      } else {
+        finish();
+      }
     });
   },
 
@@ -795,10 +823,10 @@ const Speech = {
     // 立即回调识别结果
     if (typeof this.onResult === 'function') this.onResult(text, error);
 
-    // 停止录音，完成后回调录音 URL
+    // 停止录音，完成后回调录音 URL（即使失败也通知 UI）
     this.stopRecording().then(recUrl => {
-      console.log('[录音] 录音 URL 就绪:', !!recUrl);
-      if (recUrl && typeof this.onRecordingReady === 'function') {
+      console.log('[录音] 录音 URL 就绪:', !!recUrl, '失败:', this._recArchiveFailed);
+      if (typeof this.onRecordingReady === 'function') {
         this.onRecordingReady(recUrl);
       }
     });

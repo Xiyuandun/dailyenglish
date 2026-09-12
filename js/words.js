@@ -115,10 +115,19 @@ const WordModule = {
     Speech.onRecordingReady = (recUrl) => {
       this._lastRecording = recUrl;
       const pb = document.getElementById('playRecBtn');
-      if (pb) { pb.classList.remove('hidden'); pb.textContent = '▶ 回放录音'; }
       const st = document.getElementById('pronResult');
-      if (st && !Speech._recError) {
-        st.insertAdjacentHTML('beforeend', '<div class="text-emerald-600 text-xs mt-1">✓ 录音完成，点击"▶ 回放录音"听听自己说的怎么样</div>');
+      if (recUrl) {
+        if (pb) { pb.classList.remove('hidden'); pb.textContent = '▶ 回放录音'; pb.disabled = false; }
+        if (st && !Speech._recError) {
+          st.insertAdjacentHTML('beforeend', '<div class="text-emerald-600 text-xs mt-1">✓ 录音完成，点击"▶ 回放录音"听听自己说的怎么样</div>');
+        }
+      } else {
+        if (pb) { pb.classList.add('hidden'); pb.disabled = true; }
+        const reason = Speech.getRecordingFailReason();
+        let msg = '录音回放不可用';
+        if (reason === 'unsupported') msg = '当前浏览器不支持录音回放，请使用 Chrome 或 Safari';
+        else if (reason === 'NotAllowedError') msg = '麦克风权限被拒绝，无法录音回放';
+        if (st) st.insertAdjacentHTML('beforeend', `<div class="text-amber-600 text-xs mt-1">⚠️ ${msg}</div>`);
       }
     };
     Speech.onRecordingEnded = () => {
@@ -308,7 +317,8 @@ const WordModule = {
     Speech.onRecordingReady = (recUrl) => {
       this._lastRecording = recUrl;
       const pb = document.getElementById('quizPlayRec');
-      if (pb) { pb.classList.remove('hidden'); pb.textContent = '▶ 回放录音'; }
+      if (recUrl && pb) { pb.classList.remove('hidden'); pb.textContent = '▶ 回放录音'; pb.disabled = false; }
+      else if (pb) { pb.classList.add('hidden'); pb.disabled = true; }
     };
     Speech.onRecordingEnded = () => {
       const pb = document.getElementById('quizPlayRec');
