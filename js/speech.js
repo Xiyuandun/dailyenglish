@@ -188,24 +188,45 @@ const Speech = {
   _voskText: '',
 
   // 使用 Vosk 进行语音识别（离线，国内可用）
+  // 返回 {ok, error}(或 Promise<boolean>)，ok 为 true 表示识别器已就绪
   async _startVoskRecognition(lang) {
+    // 模型未加载：先确保开始加载，再等待就绪（带进度/超时反馈）
     if (!this._voskModel) {
-      if (this._voskLoading) {
-        console.log('[语音识别] Vosk 模型加载中，等待...');
-        await new Promise((resolve) => {
-          const check = () => {
-            if (this._voskModel || this._voskLoadError) resolve();
-            else setTimeout(check, 200);
-          };
-          check();
-        });
-      }
-      if (!this._voskModel) {
-        if (typeof this.onResult === 'function') this.onResult('', 'vosk-load-failed');
-        return false;
-      }
+      if (!this._voskLoading && !this._voskLoadError) this._preloadVoskModel();
+      const ok = await this._waitVoskModel();
+      if (!ok) return false;
     }
+    // 模型已就绪：启动识别流
+    return this._runVoskRecognition(lang);
+  },
 
+  // 等待 Vosk 模型就绪：通过 onStatus 反馈进度，超时后放弃
+  // 这样用户在模型下载中点击录音时能看到明确提示，而不是静默卡住/识别为空
+  async _waitVoskModel() {
+    const WAIT_MS = 180000; // 首次下载 40MB 模型，中国网络下一般较慢，最多等 3 分钟
+    const start = Date.now();
+    const self = this;
+    const fire = (key, extra) => { if (typeof self.onStatus === 'function') self.onStatus(key, extra); };
+    fire('vosk-loading', 0);
+    return new Promise((resolve) => {
+      const check = () => {
+        const elapsed = Math.round((Date.now() - start) / 1000);
+        if (self._voskModel) { fire('vosk-ready'); return resolve(true); }
+        if (self._voskLoadError) { fire('vosk-load-failed'); return resolve(false); }
+        if (Date.now() - start > WAIT_MS) {
+          if (!self._voskLoadError) self._voskLoadError = new Error('load-timeout');
+          fire('vosk-load-failed');
+          return resolve(false);
+        }
+        fire('vosk-loading', elapsed);
+        setTimeout(check, 2000);
+      };
+      check();
+    });
+  },
+
+  // 真正启动 Vosk 识别流（模型已就绪时）
+  async _runVoskRecognition(lang) {
     try {
       this._voskText = '';
       // 创建识别器
@@ -219,14 +240,14 @@ const Speech = {
         // 中间结果可用于实时显示
       });
 
-      // 获取麦克风
+      // 获取麦克风。不强制 sampleRate（部分安卓/iOS 的浏览器会因该约束报 OverconstrainedError），
+      // vosk-browser 会依据音频缓冲的 sampleRate 内部重采样到模型所需的 16kHz。
       this._voskStream = await navigator.mediaDevices.getUserMedia({
         video: false,
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          channelCount: 1,
-          sampleRate: 16000
+          channelCount: 1
         }
       });
 
@@ -992,6 +1013,7 @@ const Speech = {
   _recActive: false,         // 是否正在录音
   _recDone: false,           // 本次识别是否已完成（防止重复回调）
   _useVosk: false,           // 当前是否使用 Vosk 识别
+  onStatus: null,            // 可选：识别过程中的状态回调 (key, extra)，如 'vosk-loading'/'vosk-ready'/'vosk-load-failed'
 
   // 开始录音+识别（手动模式，无超时）
   // onResult(text, error) 回调在停止后触发

@@ -243,6 +243,19 @@ const DialogueModule = {
       if (pb && pb.textContent.includes('暂停')) pb.textContent = '▶ 回放录音';
     };
 
+    // 识别过程中的状态反馈（主要是 Vosk 离线模型首次下载）
+    Speech.onStatus = (key, extra) => {
+      const st = document.getElementById('recStatus');
+      if (!st || !Speech.isRecording()) return;
+      if (key === 'vosk-loading') {
+        st.innerHTML = `<span class="text-sky-600">⏳ 正在下载语音识别模型（约 40MB，首次约 1-3 分钟，已 ${extra || 0} 秒），下载完成后录音即可识别，请稍候…</span>`;
+      } else if (key === 'vosk-ready') {
+        st.innerHTML = '<span class="text-slate-400">🎤 识别模型已就绪，正在录音…说完后点击"停止录音"</span>';
+      } else if (key === 'vosk-load-failed') {
+        st.innerHTML = '<span class="text-red-500">⚠️ 离线识别模型下载失败（网络原因）。已回退到系统识别，若仍无结果请检查网络后刷新重试</span>';
+      }
+    };
+
     // 开始录音
     btn.classList.add('recording');
     btn.textContent = '⏹ 停止录音';
