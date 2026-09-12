@@ -42,6 +42,11 @@
         <div id="pointsBadge" class="flex items-center gap-1 text-sm bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300 px-3 py-1 rounded-full">
           <span>⭐</span><span id="pointsVal">0</span>积分
         </div>
+        <div id="userBox" class="flex items-center gap-1" title="学习码：同一台设备上每个使用者输入不同的学习码，各自进度独立保存">
+          <input id="userCodeInput" type="text" placeholder="学习码" maxlength="20"
+                 class="w-20 md:w-28 text-xs rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1.5" />
+          <button id="userSwitchBtn" class="text-xs bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 rounded-lg px-2 py-1.5 whitespace-nowrap">切换</button>
+        </div>
         <select id="voiceSelect" class="text-xs rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-600 cursor-pointer" title="选择朗读语音">
           <option value="jenny">Jenny（女声·自然）</option>
           <option value="aria">Aria（女声·温暖）</option>
@@ -189,7 +194,7 @@
   <script src="data/scenarios.js?v=10"></script>
   <script src="data/article.js?v=10"></script>
   <script src="data/audio.js?v=10"></script>
-  <script src="js/store.js?v=10"></script>
+  <script src="js/store.js?v=11"></script>
   <script>
     // 云端语音识别后端地址（阿里云函数计算 /stt，零依赖手写 WebSocket 直连百炼）。
     // 手机录音优先走云端识别，不再需要下载 40MB 离线模型。
@@ -200,6 +205,6 @@
   <script src="js/dialogue.js?v=13"></script>
   <script src="js/reading.js?v=10"></script>
   <script src="js/report.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/app.js?v=11"></script>
 </body>
 </html>

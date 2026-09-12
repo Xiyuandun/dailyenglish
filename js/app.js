@@ -25,52 +25,77 @@ window.switchTab = switchTab;
 
 document.addEventListener('DOMContentLoaded', () => {
   Speech.init();
-  // 日期显示
-  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
-  // 主题
+  // 全局 applyTheme：供首屏 & 切换用户 & 主题按钮共用
   const applyTheme = (dark) => {
     document.documentElement.classList.toggle('dark', dark);
     document.getElementById('themeToggle').textContent = dark ? '☀️' : '🌙';
   };
-  const s = Store.get();
-  applyTheme(s.dark);
-  document.getElementById('themeToggle').onclick = () => {
-    const ns = Store.get();
-    ns.dark = !ns.dark;
-    Store.save(ns);
-    applyTheme(ns.dark);
+
+  // 学习码：恢复当前用户，初始化学习码输入框
+  const input = document.getElementById('userCodeInput');
+  const switchBtn = document.getElementById('userSwitchBtn');
+  if (input) input.value = Store.getUser() || '';
+  const applyUser = () => {
+    const code = (input && input.value.trim()) ? input.value.trim() : null;
+    const prev = Store.getUser() || '';
+    Store.setUser(code);
+    if ((code || '') !== prev) {
+      initUI();
+      Toast.show(code ? '已切换到学习码：' + code : '已切换到默认（未登录）');
+    }
   };
+  if (switchBtn) switchBtn.onclick = applyUser;
+  if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter') applyUser(); });
 
-  // 语音选择
-  const voiceSel = document.getElementById('voiceSelect');
-  if (s.voice) { voiceSel.value = s.voice; Speech.setVoice(s.voice); }
-  voiceSel.onchange = () => {
-    Speech.setVoice(voiceSel.value);
-    const ns = Store.get();
-    ns.voice = voiceSel.value;
-    Store.save(ns);
-    Toast.show('语音已切换为 ' + voiceSel.options[voiceSel.selectedIndex].text);
-  };
+  // 初始化/刷新当前用户相关的 UI 与状态（切换用户时重新执行）
+  function initUI() {
+    const s = Store.get();
+    // 日期显示
+    const todayEl = document.getElementById('todayDate');
+    if (todayEl) todayEl.textContent = new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
-  // 打卡按钮
-  document.getElementById('checkinBtn').onclick = () => Store.checkin();
+    applyTheme(s.dark);
+    document.getElementById('themeToggle').onclick = () => {
+      const ns = Store.get();
+      ns.dark = !ns.dark;
+      Store.save(ns);
+      applyTheme(ns.dark);
+    };
 
-  // 周打卡点
-  const dots = document.getElementById('weekDots');
-  let dotsHtml = '';
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(Date.now() - i * 86400000);
-    const ds = d.toDateString();
-    const checked = s.lastCheckin === ds || (i === 0 && s.lastCheckin === ds);
-    dotsHtml += `<div class="w-7 h-7 rounded-full flex items-center justify-center text-xs ${checked ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-600 text-slate-400'}">${d.getDate()}</div>`;
+    // 语音选择
+    const voiceSel = document.getElementById('voiceSelect');
+    if (s.voice) { voiceSel.value = s.voice; Speech.setVoice(s.voice); }
+    voiceSel.onchange = () => {
+      Speech.setVoice(voiceSel.value);
+      const ns = Store.get();
+      ns.voice = voiceSel.value;
+      Store.save(ns);
+      Toast.show('语音已切换为 ' + voiceSel.options[voiceSel.selectedIndex].text);
+    };
+
+    // 打卡按钮
+    document.getElementById('checkinBtn').onclick = () => Store.checkin();
+
+    // 周打卡点
+    const dots = document.getElementById('weekDots');
+    let dotsHtml = '';
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      const ds = d.toDateString();
+      const checked = s.lastCheckin === ds || (i === 0 && s.lastCheckin === ds);
+      dotsHtml += `<div class="w-7 h-7 rounded-full flex items-center justify-center text-xs ${checked ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-600 text-slate-400'}">${d.getDate()}</div>`;
+    }
+    dots.innerHTML = dotsHtml;
+
+    // 通话徽章 & 当前模块重渲染
+    Store.refreshBadges();
+    document.querySelectorAll('.tab-panel:not(.hidden)').forEach(p => p.id && switchTab(p.id.replace('tab-','')));
   }
-  dots.innerHTML = dotsHtml;
 
-  // 初始化徽章
-  Store.refreshBadges();
+  initUI();
 
-  // Tab 切换
+  // Tab 切换（只绑定一次）
   document.querySelectorAll('.tab-btn').forEach(b => {
     b.onclick = () => switchTab(b.dataset.tab);
   });

@@ -1,11 +1,51 @@
 // DailyEnglish - 本地数据存储与状态管理
 const Store = {
-  KEY: 'dailyenglish_state_v1',
+  // 每个用户对应一份进度。登录（学习码）后 Key 变为 dailyenglish_state_v1_<code>，
+  // 默认（未登录）为公共 Key，从而在同一设备上隔离不同使用者的进度。
+  currentUser: null,
+  baseKey: 'dailyenglish_state_v1',
+
+  key() {
+    const u = (this.currentUser || '').trim().toLowerCase();
+    return u ? this.baseKey + '_' + u : this.baseKey;
+  },
+
+  // 设置/切换当前用户（学习码）。返回新 user。
+  setUser(code) {
+    this.currentUser = (code || '').trim();
+    if (this.currentUser) {
+      localStorage.setItem(this.baseKey + '_user', this.currentUser);
+    } else {
+      localStorage.removeItem(this.baseKey + '_user');
+    }
+    // 切换到新用户：丢弃内存缓存，强制重新读取
+    this._cache = null;
+    return this.currentUser;
+  },
+
+  // 获取当前用户（学习码），优先读内存，其次 localStorage
+  getUser() {
+    if (this.currentUser === null || this.currentUser === undefined) {
+      this.currentUser = localStorage.getItem(this.baseKey + '_user') || '';
+    }
+    return this.currentUser;
+  },
+
   load() {
-    try { return JSON.parse(localStorage.getItem(this.KEY)) || this.defaults(); }
+    const key = this.key();
+    try {
+      const raw = localStorage.getItem(key);
+      const state = raw ? JSON.parse(raw) : this.defaults();
+      return state;
+    }
     catch { return this.defaults(); }
   },
-  save(state) { localStorage.setItem(this.KEY, JSON.stringify(state)); },
+  save(state) { localStorage.setItem(this.key(), JSON.stringify(state)); },
+  // 删除当前用户的本地进度（用于重置 / 初始化新用户）
+  resetCurrent() {
+    localStorage.removeItem(this.key());
+    this._cache = null;
+  },
   defaults() {
     return {
       points: 0,
