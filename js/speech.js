@@ -167,6 +167,8 @@ const Speech = {
   async _preloadVoskModel() {
     if (this._voskModel || this._voskLoading) return;
     this._voskLoading = true;
+    // 重新开始下载：先清掉旧的失败标记，允许失败后再次点击录音自动重试
+    this._voskLoadError = null;
     try {
       console.log('[语音识别] 开始加载 Vosk 离线模型...');
       this._voskModel = await Vosk.createModel('models/model.tar.gz');
@@ -190,9 +192,10 @@ const Speech = {
   // 使用 Vosk 进行语音识别（离线，国内可用）
   // 返回 {ok, error}(或 Promise<boolean>)，ok 为 true 表示识别器已就绪
   async _startVoskRecognition(lang) {
+    if (this._voskLoadError) this._preloadVoskModel(); // 上次失败过：这次点击立即重新下载
     // 模型未加载：先确保开始加载，再等待就绪（带进度/超时反馈）
     if (!this._voskModel) {
-      if (!this._voskLoading && !this._voskLoadError) this._preloadVoskModel();
+      if (!this._voskLoading) this._preloadVoskModel();
       const ok = await this._waitVoskModel();
       if (!ok) return false;
     }
