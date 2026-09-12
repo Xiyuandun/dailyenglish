@@ -271,18 +271,40 @@ const Speech = {
     return text;
   },
 
+  // 判断当前是否使用有道 TTS（用于长文本分句判断）
+  _willUseYoudao() {
+    return !this.useCloudTTS && !this.useGoogleTTS && (this.isAndroid || !this.synth);
+  },
+
   // 队列模式：依次朗读多句文本（事件驱动，非定时器）
   // texts: 字符串数组；rate: 速率
   speakQueue(texts, rate = 1) {
     this.stop();  // 清空旧的队列和当前播放
     if (!Array.isArray(texts) || !texts.length) return;
-    this._queue = texts.map(t => ({ text: t, rate }));
+    // 有道 TTS 有长度限制，长文本自动分句
+    const useYoudao = this._willUseYoudao();
+    const items = [];
+    for (const t of texts) {
+      if (useYoudao && t && t.length > 180) {
+        this._splitText(t, 180).forEach(c => items.push({ text: c, rate }));
+      } else {
+        items.push({ text: t, rate });
+      }
+    }
+    this._queue = items;
     this._advanceQueue();
   },
 
   // 选择朗读方式（统一入口，供 speak / _advanceQueue 调用）
   // 优先级：云端 TTS > Google TTS > [安卓:有道 TTS | 非安卓:浏览器内置语音] > 有道 TTS
   _dispatchSpeak(text, rate) {
+    // 安全检查：有道 TTS 超长文本自动分句（防止 speakQueue 之外的调用传入长文本）
+    if (this._willUseYoudao() && text && text.length > 180) {
+      const chunks = this._splitText(text, 180);
+      // 第一个直接播放，剩余插入队首
+      this._queue = chunks.slice(1).map(c => ({ text: c, rate })).concat(this._queue || []);
+      text = chunks[0];
+    }
     if (this.useCloudTTS) {
       this._speakCloud(text, rate);
     } else if (this.useGoogleTTS) {
@@ -328,13 +350,6 @@ const Speech = {
   // 朗读英文（主入口）
   speak(text, rate = 1) {
     this.stop();
-    // 有道 TTS 有长度限制（约 200 字符），长文本自动分句后用队列播放
-    const useYoudao = !this.useCloudTTS && !this.useGoogleTTS && (this.isAndroid || !this.synth);
-    if (useYoudao && text && text.length > 180) {
-      const chunks = this._splitText(text, 180);
-      this.speakQueue(chunks, rate);
-      return;
-    }
     this._lastText = text;
     this._lastRate = rate;
     // 重置 Google TTS 回退标记，允许本次重新尝试
@@ -431,9 +446,10 @@ const Speech = {
         // NotAllowedError 是因为非用户手势调用（如控制台测试），真实点击不会出现
         if (name === 'NotAllowedError') {
           Toast.show('请点击朗读按钮触发播放');
+          this._advanceQueueIfAny();
           return;
         }
-        // 网络/加载失败：安卓上不回退 Google（国内被屏蔽），提示用户
+        // 网络/加载失败
         this._cloudFailedCount++;
         if (this.isAndroid) {
           Toast.show('语音加载失败，请检查网络后重试');
@@ -441,8 +457,18 @@ const Speech = {
           // 非安卓：尝试 Google TTS（如能访问）
           if (this._cloudFailedCount >= 3) this.useGoogleTTS = true;
           this._speakGoogleTTS(text, rate);
+          return;
         }
+        // 播放失败时继续队列下一句，避免卡住
+        this._advanceQueueIfAny();
       });
+    }
+  },
+
+  // 队列中有项目则推进到下一句（播放失败时调用，避免队列卡住）
+  _advanceQueueIfAny() {
+    if (this._queue && this._queue.length) {
+      setTimeout(() => this._advanceQueue(), 100);
     }
   },
 
