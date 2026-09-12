@@ -184,23 +184,34 @@ const Speech = {
       return 'models/model.tar.gz';
     }
   })(),
+  // 模型分片列表：jsDelivr CDN（cdn.jsdelivr.net 在大陆有加速节点，且返回 CORS 头）。
+  // 40MB 超过 jsDelivr 单文件 20MB 上限，故切成 3 片，前端分片下载后合并。
+  _modelChunks: [
+    'https://cdn.jsdelivr.net/gh/Xiyuandun/dailyenglish@main/models/model.0',
+    'https://cdn.jsdelivr.net/gh/Xiyuandun/dailyenglish@main/models/model.1',
+    'https://cdn.jsdelivr.net/gh/Xiyuandun/dailyenglish@main/models/model.2'
+  ],
   async _preloadVoskModel() {
     if (this._voskModel || this._voskLoading) return;
     this._voskLoading = true;
     // 重新开始下载：先清掉旧的失败标记，允许失败后再次点击录音自动重试
     this._voskLoadError = null;
     try {
-      console.log('[语音识别] 开始加载 Vosk 离线模型，地址:', this._modelUrl);
-      // 先由主线程流式下载（带实时进度），再以 data URL 交给 Vosk —— 彻底绕开 worker
-      // 内相对路径/网络解析问题，且能看到下载进度。
-      const ab = await this._downloadModelWithProgress(this._modelUrl);
+      let ab;
+      if (Array.isArray(this._modelChunks) && this._modelChunks.length) {
+        console.log('[语音识别] 从 jsDelivr CDN 分片下载模型...');
+        ab = await this._downloadChunks(this._modelChunks);
+      } else {
+        console.log('[语音识别] 从单地址下载模型，地址:', this._modelUrl);
+        ab = await this._downloadChunks([this._modelUrl]);
+      }
       console.log('[语音识别] 模型下载完成，交由识别引擎装载...');
       this._voskModel = await Vosk.createModel(this._toDataUrl(ab));
       console.log('[语音识别] Vosk 模型加载完成');
     } catch (err) {
-      // 兜底：带进度的下载或 data URL 装载失败时，再让 Vosk 直接按原 URL 拉取一次
+      // 兜底：分片/带进度下载或 data URL 装载失败时，再让 Vosk 直接按单地址拉取一次
       try {
-        console.warn('[语音识别] 带进度下载失败，回退到 Vosk 直接加载:', err && (err.message || err));
+        console.warn('[语音识别] 分片下载失败，回退到 Vosk 直接加载:', err && (err.message || err));
         this._voskModel = await Vosk.createModel(this._modelUrl);
       } catch (err2) {
         this._voskLoadError = err2;
@@ -211,38 +222,38 @@ const Speech = {
     }
   },
 
-  // 主线程流式下载模型，通过 onStatus('vosk-download', {loaded,total,pct}) 上报进度
-  async _downloadModelWithProgress(url) {
+  // 顺序下载多个分片并合并为完整模型字节，实时汇总上传总进度
+  async _downloadChunks(urls) {
     const fire = (key, extra) => { if (typeof this.onStatus === 'function') this.onStatus(key, extra); };
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const total = Number(res.headers.get('Content-Length')) || 0;
-    const body = res.body;
-    if (!body) {
-      // 不支持流式读取的环境：直接取整块数组
-      return await res.arrayBuffer();
+    // 预取各分片总大小（HEAD），用于计算总进度
+    const totals = [];
+    let grand = 0;
+    for (const u of urls) {
+      let t = 0;
+      try {
+        const r = await fetch(u, { method: 'HEAD' });
+        t = Number(r.headers.get('Content-Length')) || 0;
+      } catch (e) {}
+      totals.push(t);
+      grand += t;
     }
-    const reader = body.getReader();
-    const chunks = [];
+    const parts = [];
     let received = 0;
     let lastPct = -1;
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (value && value.byteLength) {
-        chunks.push(value);
-        received += value.byteLength;
-      }
-      // 进度回调：约每变化 2% 或满时才更新，避免频繁刷新 UI
-      if (total) {
-        const pct = Math.floor((received / total) * 100);
-        if (pct !== lastPct) {
-          lastPct = pct;
-          fire('vosk-download', { loaded: received, total, pct, mb: (received / 1048576).toFixed(1) });
+    for (let i = 0; i < urls.length; i++) {
+      const ab = await this._fetchStream(urls[i], (delta) => {
+        received += delta;
+        if (grand) {
+          const pct = Math.floor((received / grand) * 100);
+          if (pct !== lastPct) {
+            lastPct = pct;
+            fire('vosk-download', { loaded: received, total: grand, pct, mb: (received / 1048576).toFixed(1) });
+          }
         }
-      }
+      });
+      parts.push(ab);
     }
-    return new Blob(chunks, { type: 'application/octet-stream' }).arrayBuffer();
+    return new Blob(parts, { type: 'application/octet-stream' }).arrayBuffer();
   },
 
   // ArrayBuffer → data URL（Vosk 的 worker 可直接 fetch(data:)，无需再走网络）
