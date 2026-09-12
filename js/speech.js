@@ -164,14 +164,31 @@ const Speech = {
   _voskModel: null,
   _voskLoading: false,
   _voskLoadError: null,
+  // 模型绝对地址：Vosk 的识别 worker 运行在 blob: 地址下，传相对路径（models/...）
+  // 会在 worker 内无法解析基准 URL 而直接失败（表现为"网络原因"）。必须用基于当前页面根路径的绝对 URL。
+  _modelUrl: (function () {
+    try {
+      let dir = '/';
+      if (typeof location !== 'undefined' && location.pathname) {
+        dir = location.pathname;
+        if (dir.charAt(0) !== '/') dir = '/' + dir;
+        const i = dir.lastIndexOf('/');
+        if (i > 0) dir = dir.substring(0, i + 1); // 保留到最后一个 / 之前的目录（含尾部 /）
+        else dir = '/';
+      }
+      return (location.origin || '') + dir + 'models/model.tar.gz';
+    } catch (e) {
+      return 'models/model.tar.gz';
+    }
+  })(),
   async _preloadVoskModel() {
     if (this._voskModel || this._voskLoading) return;
     this._voskLoading = true;
     // 重新开始下载：先清掉旧的失败标记，允许失败后再次点击录音自动重试
     this._voskLoadError = null;
     try {
-      console.log('[语音识别] 开始加载 Vosk 离线模型...');
-      this._voskModel = await Vosk.createModel('models/model.tar.gz');
+      console.log('[语音识别] 开始加载 Vosk 离线模型，地址:', this._modelUrl);
+      this._voskModel = await Vosk.createModel(this._modelUrl);
       console.log('[语音识别] Vosk 模型加载完成');
     } catch (err) {
       this._voskLoadError = err;
