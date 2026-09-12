@@ -24,8 +24,9 @@ const WordModule = {
   render() {
     const w = window.DAILY_WORDS[this.idx];
     if (!w) { this.startQuiz(); return; }
-    document.getElementById('wordProgress').textContent = `${this.idx + 1} / 20`;
-    document.getElementById('wordBar').style.width = `${((this.idx + 1) / 20) * 100}%`;
+    const total = window.DAILY_WORDS.length;
+    document.getElementById('wordProgress').textContent = `${this.idx + 1} / ${total}`;
+    document.getElementById('wordBar').style.width = `${((this.idx + 1) / total) * 100}%`;
     const card = document.getElementById('wordCard');
     card.classList.remove('word-pop'); void card.offsetWidth; card.classList.add('word-pop');
     card.innerHTML = `

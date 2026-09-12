@@ -15,16 +15,6 @@ window.DAY_PLAN = [
     { word: "horizon", phonetic: "/həˈraɪzn/", meaning: "n. 地平线；眼界", example: "The sun rose above the horizon.", exampleZh: "太阳升起在地平线上。" },
     { word: "identify", phonetic: "/aɪˈdentɪfaɪ/", meaning: "v. 识别；认出", example: "Can you identify this plant?", exampleZh: "你能认出这种植物吗？" },
     { word: "journal", phonetic: "/ˈdʒɜːnl/", meaning: "n. 日记；期刊", example: "She writes in her journal daily.", exampleZh: "她每天写日记。" },
-    { word: "launch", phonetic: "/lɔːntʃ/", meaning: "v. 发射；发起 n. 发布", example: "They launched a new rocket.", exampleZh: "他们发射了一枚新火箭。" },
-    { word: "maintain", phonetic: "/meɪnˈteɪn/", meaning: "v. 维持；保养", example: "Maintain a healthy diet.", exampleZh: "保持健康的饮食。" },
-    { word: "negotiate", phonetic: "/nɪˈɡəʊʃieɪt/", meaning: "v. 谈判；协商", example: "We need to negotiate the price.", exampleZh: "我们需要协商价格。" },
-    { word: "obtain", phonetic: "/əbˈteɪn/", meaning: "v. 获得；得到", example: "He obtained a degree in law.", exampleZh: "他获得了法律学位。" },
-    { word: "perspective", phonetic: "/pəˈspektɪv/", meaning: "n. 视角；观点", example: "Try a new perspective.", exampleZh: "尝试一个新视角。" },
-    { word: "quantity", phonetic: "/ˈkwɒntəti/", meaning: "n. 数量；量", example: "Quality over quantity.", exampleZh: "质量胜于数量。" },
-    { word: "reflect", phonetic: "/rɪˈflekt/", meaning: "v. 反射；反思", example: "The mirror reflects light.", exampleZh: "镜子反射光线。" },
-    { word: "strategy", phonetic: "/ˈstrætədʒi/", meaning: "n. 策略；战略", example: "We need a new strategy.", exampleZh: "我们需要一个新策略。" },
-    { word: "transform", phonetic: "/trænsˈfɔːm/", meaning: "v. 改变；转换", example: "Education can transform lives.", exampleZh: "教育能改变人生。" },
-    { word: "urgent", phonetic: "/ˈɜːdʒənt/", meaning: "adj. 紧急的；急迫的", example: "This is an urgent matter.", exampleZh: "这是一件紧急的事。" }
   ],
   article: {
     title: "The Secret Life of Octopuses",
@@ -100,6 +90,60 @@ window.DAY_PLAN = [
         "I'd like 比 I want 更礼貌。",
         "medium rare = 三分熟；well done = 全熟。"
       ]
+    },
+    {
+      scene: "快餐店点餐",
+      situationZh: "你在快餐店点一份汉堡套餐和一杯可乐。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "May I take your order, please?", zh: "请问要点什么？" },
+        { role: "user", en: "I'd like a burger meal, please.", zh: "请给我一份汉堡套餐。", keywords: ["burger", "meal"] },
+        { role: "clerk", en: "What would you like to drink?", zh: "套餐里喝什么？" },
+        { role: "user", en: "A cola with no ice, please.", zh: "一杯可乐，不加冰。", keywords: ["cola", "no ice"] },
+        { role: "clerk", en: "For here or to go?", zh: "堂食还是带走？" },
+        { role: "user", en: "To go, please.", zh: "带走。", keywords: ["to go"] },
+        { role: "clerk", en: "That's 32 yuan. Please wait a moment.", zh: "一共 32 元，请稍等。" }
+      ],
+      tips: [
+        "burger meal = 汉堡套餐。",
+        "no ice = 不加冰；for here / to go = 堂食 / 外带。"
+      ]
+    },
+    {
+      scene: "电话订外卖",
+      situationZh: "你在家打电话订一份外卖午餐。",
+      roles: { clerk: "接线员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, delivery service. How can I help?", zh: "您好，订餐服务，有什么可以帮您？" },
+        { role: "user", en: "I'd like to order some fried rice.", zh: "我想点一份炒饭。", keywords: ["order", "fried rice"] },
+        { role: "clerk", en: "With meat or vegetables?", zh: "要荤的还是素的？" },
+        { role: "user", en: "With chicken, please.", zh: "加鸡肉的。", keywords: ["chicken"] },
+        { role: "clerk", en: "Leave it at the door or the front desk?", zh: "放在门口还是前台？" },
+        { role: "user", en: "At my door, please.", zh: "放在我门口。", keywords: ["door"] },
+        { role: "clerk", en: "It will arrive in about 30 minutes.", zh: "大约 30 分钟送到。" }
+      ],
+      tips: [
+        "fried rice = 炒饭。",
+        "delivery service = 送餐服务。"
+      ]
+    },
+    {
+      scene: "在甜品店买蛋糕",
+      situationZh: "你在甜品店买一块芝士蛋糕和两杯奶茶。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, what can I get for you?", zh: "你好，需要点什么？" },
+        { role: "user", en: "A slice of cheesecake and two milk teas, please.", zh: "一块芝士蛋糕和两杯奶茶。", keywords: ["cheesecake", "milk teas"] },
+        { role: "clerk", en: "What flavor of milk tea?", zh: "奶茶要什么口味？" },
+        { role: "user", en: "One taro and one original, please.", zh: "一杯香芋味，一杯原味。", keywords: ["taro", "original"] },
+        { role: "clerk", en: "Hot or iced?", zh: "要热的还是冰的？" },
+        { role: "user", en: "Iced, please.", zh: "冰的，谢谢。", keywords: ["iced"] },
+        { role: "clerk", en: "That comes to 66 yuan.", zh: "一共 66 元。" }
+      ],
+      tips: [
+        "a slice of = 一块（切开食物）。",
+        "taro flavor = 香芋口味。"
+      ]
     }
   ]
 },
@@ -116,16 +160,6 @@ window.DAY_PLAN = [
     { word: "handle", phonetic: "/ˈhændl/", meaning: "v. 处理 n. 把手", example: "She can handle this problem.", exampleZh: "她能处理这个问题。" },
     { word: "impact", phonetic: "/ˈɪmpækt/", meaning: "n. 影响；冲击 v. 影响", example: "The news had a big impact.", exampleZh: "这则新闻产生了很大影响。" },
     { word: "justify", phonetic: "/ˈdʒʌstɪfaɪ/", meaning: "v. 证明…正当", example: "Can you justify your decision?", exampleZh: "你能证明你的决定是正确的吗？" },
-    { word: "keen", phonetic: "/kiːn/", meaning: "adj. 热衷的；敏锐的", example: "He is keen on football.", exampleZh: "他对足球很着迷。" },
-    { word: "leisure", phonetic: "/ˈleʒə(r)/", meaning: "n. 闲暇；休闲", example: "I read books in my leisure time.", exampleZh: "空闲时我读书。" },
-    { word: "minor", phonetic: "/ˈmaɪnə(r)/", meaning: "adj. 较小的；轻微的", example: "It's only a minor problem.", exampleZh: "这只是个小问题。" },
-    { word: "notion", phonetic: "/ˈnəʊʃn/", meaning: "n. 概念；观念", example: "He has a new notion of teaching.", exampleZh: "他对教学有新观念。" },
-    { word: "obvious", phonetic: "/ˈɒbviəs/", meaning: "adj. 明显的", example: "The answer is obvious.", exampleZh: "答案很明显。" },
-    { word: "precise", phonetic: "/prɪˈsaɪs/", meaning: "adj. 精确的", example: "Give me a precise number.", exampleZh: "给我一个精确的数字。" },
-    { word: "rapid", phonetic: "/ˈræpɪd/", meaning: "adj. 快速的", example: "The city has rapid growth.", exampleZh: "这座城市发展迅速。" },
-    { word: "sufficient", phonetic: "/səˈfɪʃnt/", meaning: "adj. 足够的", example: "Do we have sufficient food?", exampleZh: "我们有足够的食物吗？" },
-    { word: "tendency", phonetic: "/ˈtendənsi/", meaning: "n. 趋势；倾向", example: "There is a tendency to overspend.", exampleZh: "有过度消费的倾向。" },
-    { word: "vivid", phonetic: "/ˈvɪvɪd/", meaning: "adj. 生动的；鲜明的", example: "She told a vivid story.", exampleZh: "她讲了一个生动的故事。" }
   ],
   article: {
     title: "The Power of Morning Routines",
@@ -197,6 +231,60 @@ window.DAY_PLAN = [
         "go straight = 直走；turn left/right = 左转/右转。",
         "on foot = 步行。"
       ]
+    },
+    {
+      scene: "在早餐店点餐",
+      situationZh: "你在早餐店点一碗豆浆和两根油条。",
+      roles: { clerk: "老板娘", user: "我" },
+      turns: [
+        { role: "clerk", en: "Good morning! What would you like?", zh: "早上好！想吃什么？" },
+        { role: "user", en: "A bowl of soy milk and two fried dough sticks, please.", zh: "我要一碗豆浆和两根油条。", keywords: ["soy milk", "fried dough sticks"] },
+        { role: "clerk", en: "Anything to go with them?", zh: "还要配点什么吗？" },
+        { role: "user", en: "An egg, please.", zh: "再来一个鸡蛋。", keywords: ["egg"] },
+        { role: "clerk", en: "For here or to go?", zh: "堂食还是带走？" },
+        { role: "user", en: "For here, please.", zh: "堂食。", keywords: ["here"] },
+        { role: "clerk", en: "That's 9 yuan.", zh: "一共 9 元。" }
+      ],
+      tips: [
+        "fried dough sticks = 油条。",
+        "a bowl of = 一碗。"
+      ]
+    },
+    {
+      scene: "晨跑遇见邻居",
+      situationZh: "你在公园晨跑，遇到邻居互相打招呼。",
+      roles: { clerk: "邻居", user: "我" },
+      turns: [
+        { role: "clerk", en: "Good morning! You're up early.", zh: "早上好！你起得真早。" },
+        { role: "user", en: "Morning! I run here every day.", zh: "早上好！我每天在这里跑步。", keywords: ["run", "every day"] },
+        { role: "clerk", en: "That's a great habit.", zh: "这是个好习惯。" },
+        { role: "user", en: "Thanks. Do you exercise too?", zh: "谢谢，你也锻炼吗？", keywords: ["exercise"] },
+        { role: "clerk", en: "I just take a walk after dinner.", zh: "我晚上饭后散散步。" },
+        { role: "user", en: "Walking is good for you. See you tomorrow!", zh: "散步对身体好，明天见！", keywords: ["walking", "tomorrow"] },
+        { role: "clerk", en: "See you tomorrow!", zh: "明天见！" }
+      ],
+      tips: [
+        "up early = 起得早。",
+        "take a walk = 散步。"
+      ]
+    },
+    {
+      scene: "在地铁自助售票机买票",
+      situationZh: "你在自动售票机买一张单程地铁票。",
+      roles: { clerk: "工作人员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Do you need help with the machine?", zh: "需要帮忙使用这台机器吗？" },
+        { role: "user", en: "Yes, I want a single ticket to Central Park.", zh: "是的，我要一张去中央公园的单程票。", keywords: ["single ticket", "Central Park"] },
+        { role: "clerk", en: "Select the station on the screen and pay.", zh: "在屏幕上选择站点并付款。" },
+        { role: "user", en: "Does it accept cash?", zh: "支持现金吗？", keywords: ["cash"] },
+        { role: "clerk", en: "Yes, put the coins here.", zh: "可以，把硬币放进这里。" },
+        { role: "user", en: "Here's my ticket. Thank you!", zh: "这是我的票，谢谢！", keywords: ["ticket"] },
+        { role: "clerk", en: "You're welcome. Enjoy your ride.", zh: "不客气，旅途愉快。" }
+      ],
+      tips: [
+        "single ticket = 单程票。",
+        "accept cash = 收取现金；coins = 硬币。"
+      ]
     }
   ]
 },
@@ -213,16 +301,6 @@ window.DAY_PLAN = [
     { word: "habit", phonetic: "/ˈhæbɪt/", meaning: "n. 习惯", example: "Reading is a good habit.", exampleZh: "阅读是个好习惯。" },
     { word: "identity", phonetic: "/aɪˈdentəti/", meaning: "n. 身份；特征", example: "Show me your identity card.", exampleZh: "出示你的身份证。" },
     { word: "judgment", phonetic: "/ˈdʒʌdʒmənt/", meaning: "n. 判断；评价", example: "Trust your own judgment.", exampleZh: "相信你自己的判断。" },
-    { word: "logical", phonetic: "/ˈlɒdʒɪkl/", meaning: "adj. 逻辑的；合理的", example: "It's a logical answer.", exampleZh: "这是一个合理的答案。" },
-    { word: "mature", phonetic: "/məˈtʃʊə(r)/", meaning: "adj. 成熟的", example: "He is mature for his age.", exampleZh: "就他的年龄而言他很成熟。" },
-    { word: "nutrition", phonetic: "/njuˈtrɪʃn/", meaning: "n. 营养", example: "Good nutrition is important.", exampleZh: "良好的营养很重要。" },
-    { word: "overcome", phonetic: "/ˌəʊvəˈkʌm/", meaning: "v. 克服", example: "She overcame many difficulties.", exampleZh: "她克服了许多困难。" },
-    { word: "potential", phonetic: "/pəˈtenʃl/", meaning: "n. 潜力 adj. 潜在的", example: "She has great potential.", exampleZh: "她有很大潜力。" },
-    { word: "reliable", phonetic: "/rɪˈlaɪəbl/", meaning: "adj. 可靠的", example: "He is a reliable friend.", exampleZh: "他是个可靠的朋友。" },
-    { word: "solid", phonetic: "/ˈsɒlɪd/", meaning: "adj. 坚固的；可靠的", example: "The bridge is solid.", exampleZh: "这座桥很坚固。" },
-    { word: "tolerate", phonetic: "/ˈtɒləreɪt/", meaning: "v. 忍受；容忍", example: "I can't tolerate the noise.", exampleZh: "我无法忍受这个噪音。" },
-    { word: "variable", phonetic: "/ˈveəriəbl/", meaning: "adj. 可变的 n. 变量", example: "The weather is variable.", exampleZh: "天气变化无常。" },
-    { word: "wisdom", phonetic: "/ˈwɪzdəm/", meaning: "n. 智慧", example: "Age brings wisdom.", exampleZh: "年岁带来智慧。" }
   ],
   article: {
     title: "Why Sleep Matters for Learning",
@@ -296,6 +374,60 @@ window.DAY_PLAN = [
         "express delivery = 快递。",
         "How long...? 询问时长。"
       ]
+    },
+    {
+      scene: "在车站改签车票",
+      situationZh: "你到售票窗口把下午的车票改签到上午。",
+      roles: { clerk: "售票员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Next, please. How can I help?", zh: "下一位，需要什么帮助？" },
+        { role: "user", en: "I'd like to change my ticket to an earlier train.", zh: "我想把车票改签到更早的列车。", keywords: ["change", "earlier"] },
+        { role: "clerk", en: "Which train do you have now?", zh: "你现在的车次是？" },
+        { role: "user", en: "The 3 pm train to Nanjing.", zh: "下午三点去南京的那班。", keywords: ["train", "Nanjing"] },
+        { role: "clerk", en: "There's an 11 am train with seats left.", zh: "上午11点那班还有座位。" },
+        { role: "user", en: "Great, I'll take that one.", zh: "太好了，我就要那班。", keywords: ["seats", "take"] },
+        { role: "clerk", en: "There's a service fee of 5 yuan.", zh: "需要5元手续费。" },
+        { role: "user", en: "That's fine. Thank you.", zh: "可以，谢谢。", keywords: ["fine", "thank"] }
+      ],
+      tips: [
+        "change ticket = 改签车票。",
+        "service fee = 手续费。"
+      ]
+    },
+    {
+      scene: "在邮局买邮票",
+      situationZh: "你在邮局买一些邮票准备寄信。",
+      roles: { clerk: "职员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, what do you need?", zh: "你好，需要什么？" },
+        { role: "user", en: "I'd like to buy some stamps, please.", zh: "我想买一些邮票。", keywords: ["buy", "stamps"] },
+        { role: "clerk", en: "What kind of mail are you sending?", zh: "你要寄什么信？" },
+        { role: "user", en: "A postcard and a regular letter.", zh: "一封明信片和一封普通信。", keywords: ["postcard", "regular letter"] },
+        { role: "clerk", en: "You'll need two 1.2 yuan stamps.", zh: "你需要两张1.2元的邮票。" },
+        { role: "user", en: "Here's the money.", zh: "给你钱。", keywords: ["money"] },
+        { role: "clerk", en: "Here are your stamps.", zh: "这是你的邮票。" }
+      ],
+      tips: [
+        "stamps = 邮票。",
+        "postcard = 明信片。"
+      ]
+    },
+    {
+      scene: "在高铁上找座位",
+      situationZh: "你上了高铁，向乘客确认自己的座位。",
+      roles: { clerk: "乘客", user: "我" },
+      turns: [
+        { role: "clerk", en: "Excuse me, are you looking for your seat?", zh: "打扰一下，你是在找座位吗？" },
+        { role: "user", en: "Yes, is this seat 8A?", zh: "是的，请问这里是8A座吗？", keywords: ["seat", "8A"] },
+        { role: "clerk", en: "Let me check. I think this is 8B.", zh: "让我看看，这好像是8B。" },
+        { role: "user", en: "Oh, I'm sorry. My seat must be in the next row.", zh: "哦，抱歉，我的座位应该在下一排。", keywords: ["sorry", "row"] },
+        { role: "clerk", en: "No problem. Enjoy your trip.", zh: "没关系，旅途愉快。" },
+        { role: "user", en: "Thank you so much.", zh: "非常感谢。", keywords: ["thank"] }
+      ],
+      tips: [
+        "row = 排；座位排。",
+        "seat number = 座位编号。"
+      ]
     }
   ]
 },
@@ -312,16 +444,6 @@ window.DAY_PLAN = [
     { word: "instruct", phonetic: "/ɪnˈstrʌkt/", meaning: "v. 指导；指示", example: "The teacher instructed us to read aloud.", exampleZh: "老师指示我们朗读。" },
     { word: "journey", phonetic: "/ˈdʒɜːni/", meaning: "n. 旅行；旅程", example: "It was a long journey home.", exampleZh: "回家的路程很长。" },
     { word: "locate", phonetic: "/ləʊˈkeɪt/", meaning: "v. 位于；定位", example: "The hotel is located near the sea.", exampleZh: "旅馆位于海边。" },
-    { word: "motive", phonetic: "/ˈməʊtɪv/", meaning: "n. 动机；目的", example: "What was his motive?", exampleZh: "他的动机是什么？" },
-    { word: "obstacle", phonetic: "/ˈɒbstəkl/", meaning: "n. 障碍", example: "Fear is a big obstacle.", exampleZh: "恐惧是一大障碍。" },
-    { word: "previous", phonetic: "/ˈpriːviəs/", meaning: "adj. 先前的", example: "We met last year, in the previous meeting.", exampleZh: "我们去年，在先前那次会议上见过。" },
-    { word: "region", phonetic: "/ˈriːdʒən/", meaning: "n. 地区；区域", example: "This region is famous for tea.", exampleZh: "这个地区以茶出名。" },
-    { word: "secure", phonetic: "/sɪˈkjʊə(r)/", meaning: "adj. 安全的 v. 使安全", example: "Keep your password secure.", exampleZh: "保护好自己的密码。" },
-    { word: "temporary", phonetic: "/ˈtemprəri/", meaning: "adj. 临时的", example: "This is a temporary job.", exampleZh: "这是一份临时工作。" },
-    { word: "vast", phonetic: "/vɑːst/", meaning: "adj. 巨大的；广阔的", example: "The desert is vast.", exampleZh: "这片沙漠广阔无垠。" },
-    { word: "witness", phonetic: "/ˈwɪtnəs/", meaning: "n. 目击者 v. 目睹", example: "He was a witness to the accident.", exampleZh: "他是这起事故的目击者。" },
-    { word: "yield", phonetic: "/jiːld/", meaning: "v. 产生；屈服", example: "The tree yields good fruit.", exampleZh: "这棵树结了好果子。" },
-    { word: "zone", phonetic: "/zəʊn/", meaning: "n. 地带；区域", example: "Don't park in this zone.", exampleZh: "不要在这个区域停车。" }
   ],
   article: {
     title: "How Cities Become Smarter",
@@ -393,6 +515,60 @@ window.DAY_PLAN = [
         "discount = 折扣；15% off = 打八五折。",
         "fill in = 填写（表格）。"
       ]
+    },
+    {
+      scene: "在游泳馆咨询办卡",
+      situationZh: "你在游泳馆咨询怎么报名游泳课。",
+      roles: { clerk: "前台", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome to the swimming pool. How can I help?", zh: "欢迎来游泳馆，需要帮助吗？" },
+        { role: "user", en: "I'd like to sign up for swimming lessons.", zh: "我想报名游泳课。", keywords: ["sign up", "swimming"] },
+        { role: "clerk", en: "We have classes for beginners and for advanced swimmers.", zh: "我们有初级班和高级班。" },
+        { role: "user", en: "Which one should I choose?", zh: "我应该选哪个？", keywords: ["choose"] },
+        { role: "clerk", en: "The beginner class suits you better.", zh: "初级班会更适合你。" },
+        { role: "user", en: "When do the classes start?", zh: "课程什么时候开始？", keywords: ["start"] },
+        { role: "clerk", en: "Every Monday and Thursday evening from 7 pm.", zh: "每周一和周四晚上7点开始。" }
+      ],
+      tips: [
+        "sign up for = 报名参加。",
+        "beginner = 初学者。"
+      ]
+    },
+    {
+      scene: "在图书馆办理借书证",
+      situationZh: "你在图书馆前台办一张新借书证。",
+      roles: { clerk: "图书管理员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, may I help you?", zh: "你好，需要帮忙吗？" },
+        { role: "user", en: "I'd like to apply for a library card.", zh: "我想办理一张借书证。", keywords: ["apply", "library card"] },
+        { role: "clerk", en: "Please fill in this form with your name and ID.", zh: "请填写这张表，写上姓名和身份证号。" },
+        { role: "user", en: "Do I need to bring a photo?", zh: "需要带照片吗？", keywords: ["photo"] },
+        { role: "clerk", en: "Yes, one recent photo is required.", zh: "需要一张近照。" },
+        { role: "user", en: "How long is the card valid?", zh: "借书证有效期多久？", keywords: ["valid"] },
+        { role: "clerk", en: "It's valid for two years.", zh: "有效期两年。" }
+      ],
+      tips: [
+        "library card = 借书证。",
+        "be valid for = 有效期为。"
+      ]
+    },
+    {
+      scene: "在体育馆预订羽毛球场地",
+      situationZh: "你打电话预订周六的羽毛球场地。",
+      roles: { clerk: "前台", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, City Sports Center. How can I help?", zh: "你好，市体育中心，有什么可以帮您？" },
+        { role: "user", en: "I'd like to book a badminton court for this Saturday.", zh: "我想预订周六的羽毛球场。", keywords: ["book", "badminton court"] },
+        { role: "clerk", en: "What time would you like?", zh: "您想预约几点？" },
+        { role: "user", en: "Ten in the morning, if possible.", zh: "如果可能的话，上午十点。", keywords: ["morning", "ten"] },
+        { role: "clerk", en: "Courts are available at 10 and at 11.", zh: "10点和11点都有场地。" },
+        { role: "user", en: "I'll take the 10 o'clock one.", zh: "我约10点的。", keywords: ["available", "o'clock"] },
+        { role: "clerk", en: "Great. Please arrive ten minutes early.", zh: "好的，请提前十分钟到。" }
+      ],
+      tips: [
+        "badminton court = 羽毛球场。",
+        "book / reserve = 预订。"
+      ]
     }
   ]
 },
@@ -409,16 +585,6 @@ window.DAY_PLAN = [
     { word: "harsh", phonetic: "/hɑːʃ/", meaning: "adj. 严厉的；恶劣的", example: "The weather here is harsh.", exampleZh: "这里的天气很恶劣。" },
     { word: "instance", phonetic: "/ˈɪnstəns/", meaning: "n. 例子；实例", example: "For instance, take this photo.", exampleZh: "例如，看这张照片。" },
     { word: "lecture", phonetic: "/ˈlektʃə(r)/", meaning: "n. 讲座；演讲", example: "We attended a lecture on history.", exampleZh: "我们参加了一场历史讲座。" },
-    { word: "modify", phonetic: "/ˈmɒdɪfaɪ/", meaning: "v. 修改；调整", example: "Please modify the plan.", exampleZh: "请修改这个计划。" },
-    { word: "obligation", phonetic: "/ˌɒblɪˈɡeɪʃn/", meaning: "n. 义务；责任", example: "It is your obligation to pay.", exampleZh: "付款是你的义务。" },
-    { word: "purchase", phonetic: "/ˈpɜːtʃəs/", meaning: "v. 购买 n. 购买", example: "She purchased a new laptop.", exampleZh: "她买了一台新笔记本电脑。" },
-    { word: "relevant", phonetic: "/ˈreləvənt/", meaning: "adj. 相关的", example: "This information is relevant to you.", exampleZh: "这些信息和你有关。" },
-    { word: "scenario", phonetic: "/səˈnɑːriəʊ/", meaning: "n. 情景；场景", example: "Think about the worst scenario.", exampleZh: "想想最坏的情况。" },
-    { word: "specific", phonetic: "/spəˈsɪfɪk/", meaning: "adj. 具体的；特定的", example: "Be specific about your problem.", exampleZh: "把你的问题说具体些。" },
-    { word: "typical", phonetic: "/ˈtɪpɪkl/", meaning: "adj. 典型的", example: "This is a typical example.", exampleZh: "这是一个典型的例子。" },
-    { word: "utility", phonetic: "/juːˈtɪləti/", meaning: "n. 实用；公用事业", example: "The tool has great utility.", exampleZh: "这个工具有很大用途。" },
-    { word: "vary", phonetic: "/ˈveəri/", meaning: "v. 变化；不同", example: "Prices vary by season.", exampleZh: "价格随季节变化。" },
-    { word: "worthwhile", phonetic: "/ˌwɜːθˈwaɪl/", meaning: "adj. 值得做的", example: "It is a worthwhile project.", exampleZh: "这是一个值得做的项目。" }
   ],
   article: {
     title: "Small Habits, Big Results",
@@ -490,6 +656,62 @@ window.DAY_PLAN = [
         "reservation = 预约；make a reservation = 预约。",
         "double room = 双人间。"
       ]
+    },
+    {
+      scene: "在社区诊所打疫苗",
+      situationZh: "你去社区诊所咨询并接种流感疫苗。",
+      roles: { clerk: "护士", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, how can I help you today?", zh: "你好，今天需要什么帮助？" },
+        { role: "user", en: "I'd like to get a flu shot, please.", zh: "我想打流感疫苗。", keywords: ["flu shot", "vaccine"] },
+        { role: "clerk", en: "Have you had a cold recently?", zh: "你最近感冒过吗？" },
+        { role: "user", en: "No, I've been feeling fine.", zh: "没有，我一直感觉很好。", keywords: ["fine"] },
+        { role: "clerk", en: "Then you can be vaccinated today.", zh: "那今天就可以接种。" },
+        { role: "user", en: "How much does it cost?", zh: "多少钱？", keywords: ["cost"] },
+        { role: "clerk", en: "It's free for adults this season.", zh: "本季度成人免费。" },
+        { role: "user", en: "That's good news. Thank you.", zh: "那太好了，谢谢。", keywords: ["good news", "thank"] }
+      ],
+      tips: [
+        "flu shot = 流感疫苗针。",
+        "get vaccinated = 接种疫苗。"
+      ]
+    },
+    {
+      scene: "在酒店办理退房",
+      situationZh: "你在酒店前台办理退房并结账。",
+      roles: { clerk: "前台", user: "我" },
+      turns: [
+        { role: "clerk", en: "Good morning. Are you checking out now?", zh: "早上好，您现在要退房吗？" },
+        { role: "user", en: "Yes, room 502. Here is the key card.", zh: "是的，502房，这是房卡。", keywords: ["checking out", "key card"] },
+        { role: "clerk", en: "Let me check the room. Please wait a moment.", zh: "让我检查一下房间，请稍等。" },
+        { role: "user", en: "Sure. Was breakfast included in the price?", zh: "好的。早餐包含在房价里吗？", keywords: ["included", "breakfast"] },
+        { role: "clerk", en: "Yes, it was already paid.", zh: "是的，已经包含在内了。" },
+        { role: "user", en: "Great. Can I get a bill?", zh: "好的，请给我账单。", keywords: ["bill"] },
+        { role: "clerk", en: "Here's your bill. Have a safe trip back!", zh: "这是您的账单，一路平安！" }
+      ],
+      tips: [
+        "check out = 退房。",
+        "key card = 房卡。"
+      ]
+    },
+    {
+      scene: "在药店咨询服药用量",
+      situationZh: "你买了感冒药后向药剂师确认吃法。",
+      roles: { clerk: "药剂师", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi, did you find everything you need?", zh: "你好，都找到了吗？" },
+        { role: "user", en: "Yes, but can you tell me how to take this medicine?", zh: "是的，但是能告诉我这个药怎么吃吗？", keywords: ["take", "medicine"] },
+        { role: "clerk", en: "Take two tablets after each meal.", zh: "每餐后吃两片。" },
+        { role: "user", en: "How many times a day?", zh: "一天几次？", keywords: ["times"] },
+        { role: "clerk", en: "Three times a day, with warm water.", zh: "一天三次，用温水送服。" },
+        { role: "user", en: "Should I avoid anything?", zh: "有什么需要忌口的吗？", keywords: ["avoid"] },
+        { role: "clerk", en: "Don't drink alcohol while taking it.", zh: "服药期间不要喝酒。" },
+        { role: "user", en: "Got it. Thanks a lot.", zh: "明白了，非常感谢。", keywords: ["got it"] }
+      ],
+      tips: [
+        "tablet = 药片。",
+        "with warm water = 用温水送服。"
+      ]
     }
   ]
 },
@@ -506,16 +728,6 @@ window.DAY_PLAN = [
     { word: "hesitate", phonetic: "/ˈhezɪteɪt/", meaning: "v. 犹豫", example: "Don't hesitate to ask.", exampleZh: "不要犹豫，尽管提问。" },
     { word: "intense", phonetic: "/ɪnˈtens/", meaning: "adj. 强烈的；紧张的", example: "There was intense competition.", exampleZh: "竞争非常激烈。" },
     { word: "latest", phonetic: "/ˈleɪtɪst/", meaning: "adj. 最新的", example: "Have you seen the latest film?", exampleZh: "你看过最新那部电影吗？" },
-    { word: "motion", phonetic: "/ˈməʊʃn/", meaning: "n. 运动；动作", example: "The machine is in motion.", exampleZh: "机器在运转。" },
-    { word: "notable", phonetic: "/ˈnəʊtəbl/", meaning: "adj. 显著的；著名的", example: "She is a notable scientist.", exampleZh: "她是一位著名科学家。" },
-    { word: "option", phonetic: "/ˈɒpʃn/", meaning: "n. 选择；选项", example: "We have two options.", exampleZh: "我们有两个选择。" },
-    { word: "prohibit", phonetic: "/prəˈhɪbɪt/", meaning: "v. 禁止", example: "Smoking is prohibited here.", exampleZh: "这里禁止吸烟。" },
-    { word: "reluctant", phonetic: "/rɪˈlʌktənt/", meaning: "adj. 不情愿的", example: "She was reluctant to leave.", exampleZh: "她不愿离开。" },
-    { word: "slight", phonetic: "/slaɪt/", meaning: "adj. 轻微的；纤细的", example: "There is a slight difference.", exampleZh: "有细微的差别。" },
-    { word: "threaten", phonetic: "/ˈθretn/", meaning: "v. 威胁；恐吓", example: "Storms threaten the crops.", exampleZh: "暴风雨威胁着庄稼。" },
-    { word: "ultimate", phonetic: "/ˈʌltɪmət/", meaning: "adj. 最终的；根本的", example: "Our ultimate goal is peace.", exampleZh: "我们的最终目标是和平。" },
-    { word: "vulnerable", phonetic: "/ˈvʌlnərəbl/", meaning: "adj. 易受伤害的", example: "Young children are vulnerable.", exampleZh: "小孩子很容易受伤。" },
-    { word: "widespread", phonetic: "/ˈwaɪdspred/", meaning: "adj. 广泛的", example: "The idea is widespread.", exampleZh: "这个观点广为流传。" }
   ],
   article: {
     title: "How to Make Friends as an Adult",
@@ -588,6 +800,58 @@ window.DAY_PLAN = [
         "membership card = 会员卡。",
         "pay by card = 刷卡支付。"
       ]
+    },
+    {
+      scene: "在服装店试衣服",
+      situationZh: "你在服装店试穿一件卫衣，想看看是否合身。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi! Are you looking for something in particular?", zh: "你好！想找点什么呢？" },
+        { role: "user", en: "I'd like to try this hoodie in a medium.", zh: "我想试一下这件卫衣的中码。", keywords: ["hoodie", "medium"] },
+        { role: "clerk", en: "Sure, the fitting room is over there.", zh: "好的，试衣间在那边。" },
+        { role: "user", en: "It's a bit small. Do you have a large?", zh: "有点小。你们有大码吗？", keywords: ["small", "large"] },
+        { role: "clerk", en: "Let me check. Yes, we have one in navy blue.", zh: "我看看。有，是藏蓝色的。" },
+        { role: "user", en: "Great, I'll take this one.", zh: "太好了，我就要这件。", keywords: ["take"] }
+      ],
+      tips: [
+        "fitting room = 试衣间。",
+        "in a medium / in a large = 中码 / 大码。"
+      ]
+    },
+    {
+      scene: "参加周末跑步俱乐部",
+      situationZh: "你想加入一个周末跑步俱乐部来结识新朋友。",
+      roles: { staff: "工作人员", user: "我" },
+      turns: [
+        { role: "staff", en: "Hello! Are you here for the running club?", zh: "你好！你是来报名跑步俱乐部的吗？" },
+        { role: "user", en: "Yes, I'd like to join and meet new people.", zh: "是的，我想参加并认识新朋友。", keywords: ["join", "meet"] },
+        { role: "staff", en: "We run every Sunday morning at the park.", zh: "我们每周日早上在公园跑步。" },
+        { role: "user", en: "How long does each run take?", zh: "每次跑多久？", keywords: ["how long"] },
+        { role: "staff", en: "About one hour, at a relaxed pace.", zh: "大约一小时，配速比较轻松。" },
+        { role: "user", en: "Sounds good. Is there any sign-up fee?", zh: "听起来不错。需要报名费吗？", keywords: ["fee"] },
+        { role: "staff", en: "It's free for the first month.", zh: "第一个月免费。" }
+      ],
+      tips: [
+        "join a club = 加入社团。",
+        "at a relaxed pace = 以轻松的配速。"
+      ]
+    },
+    {
+      scene: "在茶馆与朋友相聚",
+      situationZh: "你和一位新朋友约在茶馆聊天，寻找共同话题。",
+      roles: { waitress: "服务员", user: "我" },
+      turns: [
+        { role: "waitress", en: "Good afternoon, what would you like to drink?", zh: "下午好，想喝点什么？" },
+        { role: "user", en: "Two cups of jasmine tea, please.", zh: "请来两杯茉莉花茶。", keywords: ["jasmine", "tea"] },
+        { role: "waitress", en: "Anything to eat with it?", zh: "需要配点什么吃的吗？" },
+        { role: "user", en: "Some cookies, please.", zh: "来点小饼干吧。", keywords: ["cookies"] },
+        { role: "waitress", en: "Got it. I'll bring them right away.", zh: "好的，马上送过来。" },
+        { role: "user", en: "Thanks. It's my treat today.", zh: "谢谢。今天我来请客。", keywords: ["treat"] }
+      ],
+      tips: [
+        "jasmine tea = 茉莉花茶。",
+        "it's my treat = 我请客。"
+      ]
     }
   ]
 },
@@ -603,17 +867,7 @@ window.DAY_PLAN = [
     { word: "glow", phonetic: "/ɡləʊ/", meaning: "v. 发光;发热 n. 光辉", example: "The lantern glows in the dark.", exampleZh: "灯笼在黑暗中发光。" },
     { word: "hypothesis", phonetic: "/haɪˈpɒθəsɪs/", meaning: "n. 假设", example: "They tested the hypothesis.", exampleZh: "他们检验了这个假设。" },
     { word: "interaction", phonetic: "/ˌɪntərˈækʃn/", meaning: "n. 互动；相互作用", example: "Classroom interaction helps learning.", exampleZh: "课堂互动有助于学习。" },
-    { word: "jurisdiction", phonetic: "/ˌdʒʊərɪsˈdɪkʃn/", meaning: "n. 司法权；管辖权", example: "This case is outside our jurisdiction.", exampleZh: "这个案子不归我们管。" },
-    { word: "loyal", phonetic: "/ˈlɔɪəl/", meaning: "adj. 忠诚的", example: "The dog is loyal to its owner.", exampleZh: "这只狗忠于主人。" },
-    { word: "mild", phonetic: "/maɪld/", meaning: "adj. 温和的；轻微的", example: "The climate is mild here.", exampleZh: "这里气候温和。" },
-    { word: "nevertheless", phonetic: "/ˌnevəðəˈles/", meaning: "adv. 然而；不过", example: "It was raining; nevertheless, we went out.", exampleZh: "虽然下雨，我们仍然出去了。" },
-    { word: "originate", phonetic: "/əˈrɪdʒɪneɪt/", meaning: "v. 起源于", example: "Paper originated in China.", exampleZh: "纸起源于中国。" },
-    { word: "preserve", phonetic: "/prɪˈzɜːv/", meaning: "v. 保存；保护", example: "We must preserve nature.", exampleZh: "我们必须保护自然。" },
-    { word: "restore", phonetic: "/rɪˈstɔː(r)/", meaning: "v. 恢复；修复", example: "They restored the old building.", exampleZh: "他们修复了那座老建筑。" },
-    { word: "soar", phonetic: "/sɔː(r)/", meaning: "v. 猛增；翱翔", example: "Prices soared last year.", exampleZh: "去年物价飙升。" },
-    { word: "tension", phonetic: "/ˈtenʃn/", meaning: "n. 紧张；张力", example: "There was tension in the room.", exampleZh: "房间里气氛紧张。" },
-    { word: "upset", phonetic: "/ˌʌpˈset/", meaning: "adj. 苦恼的 v. 打乱", example: "She looked upset.", exampleZh: "她看起来很沮丧。" },
-    { word: "worth", phonetic: "/wɜːθ/", meaning: "prep. 值得 n. 价值", example: "This book is worth reading.", exampleZh: "这本书值得一读。" }
+    { word: "jurisdiction", phonetic: "/ˌdʒʊərɪsˈdɪkʃn/", meaning: "n. 司法权；管辖权", example: "This case is outside our jurisdiction.", exampleZh: "这个案子不归我们管。" }
   ],
   article: {
     title: "The Value of Reading Fiction",
@@ -687,6 +941,62 @@ window.DAY_PLAN = [
         "return = 归还；renew = 续借。",
         "fine = 罚款。"
       ]
+    },
+    {
+      scene: "在火车站寄存行李",
+      situationZh: "你到得早，想把行李箱寄存在火车站后再去逛逛。",
+      roles: { clerk: "工作人员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, how can I help?", zh: "你好，需要帮忙吗？" },
+        { role: "user", en: "I'd like to store my suitcase for a few hours.", zh: "我想寄存几个小时的行李箱。", keywords: ["store", "suitcase"] },
+        { role: "clerk", en: "Of course. The cost is ten yuan per hour.", zh: "可以，每小时十元。" },
+        { role: "user", en: "How late is this counter open?", zh: "这个柜台开到几点？", keywords: ["how late"] },
+        { role: "clerk", en: "Until 10 pm every night.", zh: "每天晚上开到十点。" },
+        { role: "user", en: "Great. I'll pick it up around 6 pm.", zh: "好的，我大概晚上六点来取。", keywords: ["pick up"] },
+        { role: "clerk", en: "Here's your claim ticket.", zh: "这是你的取物凭证。" },
+        { role: "user", en: "Thank you!", zh: "谢谢！", keywords: ["thank"] }
+      ],
+      tips: [
+        "store luggage = 寄存行李。",
+        "claim ticket = 取物凭证；pick up = 领取。"
+      ]
+    },
+    {
+      scene: "在书店预订新书",
+      situationZh: "你去书店问能否预订一本刚出版的小说。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome! Are you looking for a specific book?", zh: "欢迎光临！在找某本书吗？" },
+        { role: "user", en: "Do you have the new novel by that author?", zh: "你们有那位作者的新小说吗？", keywords: ["author", "novel"] },
+        { role: "clerk", en: "I'm afraid we just sold out.", zh: "抱歉，刚卖完了。" },
+        { role: "user", en: "Can I order a copy?", zh: "我可以预订一本吗？", keywords: ["order"] },
+        { role: "clerk", en: "Of course. It'll arrive in three days.", zh: "可以，三天后到货。" },
+        { role: "user", en: "Great, please keep one for me.", zh: "好的，请帮我留一本。", keywords: ["keep"] },
+        { role: "clerk", en: "Sure, may I have your name and phone number?", zh: "可以，能留一下姓名和电话吗？" }
+      ],
+      tips: [
+        "sold out = 售罄。",
+        "order a copy = 预订一本。"
+      ]
+    },
+    {
+      scene: "在社区图书馆办借书证",
+      situationZh: "你想在社区图书馆办一张借书证来看书。",
+      roles: { clerk: "图书管理员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, how can I help you today?", zh: "你好，今天需要办什么？" },
+        { role: "user", en: "I'd like to sign up for a library card.", zh: "我想办一张借书证。", keywords: ["card", "sign up"] },
+        { role: "clerk", en: "Sure, may I see your ID?", zh: "好的，可以看一下你的身份证吗？" },
+        { role: "user", en: "Here is my ID card.", zh: "这是我的身份证。", keywords: ["ID"] },
+        { role: "clerk", en: "Please fill in this form with your address.", zh: "请在表上填写你的地址。" },
+        { role: "user", en: "How many books can I borrow at once?", zh: "一次最多能借几本？", keywords: ["borrow"] },
+        { role: "clerk", en: "Up to five, for three weeks.", zh: "最多五本，借期三周。" },
+        { role: "user", en: "Perfect, thank you!", zh: "太好了，谢谢！", keywords: ["thank"] }
+      ],
+      tips: [
+        "sign up for a card = 办证。",
+        "borrow = 借（书）。"
+      ]
     }
   ]
 },
@@ -702,17 +1012,7 @@ window.DAY_PLAN = [
     { word: "global", phonetic: "/ˈɡləʊbl/", meaning: "adj. 全球的", example: "Climate change is a global issue.", exampleZh: "气候变化是一个全球性问题。" },
     { word: "independent", phonetic: "/ˌɪndɪˈpendənt/", meaning: "adj. 独立的", example: "She is an independent woman.", exampleZh: "她是个独立的女性。" },
     { word: "justify", phonetic: "/ˈdʒʌstɪfaɪ/", meaning: "v. 证明正确", example: "You must justify your decision.", exampleZh: "你必须为你的决定给出理由。" },
-    { word: "limit", phonetic: "/ˈlɪmɪt/", meaning: "v. 限制 n. 限度", example: "Limit your screen time.", exampleZh: "限制你的屏幕时间。" },
-    { word: "manner", phonetic: "/ˈmænə(r)/", meaning: "n. 方式；礼仪", example: "Mind your manners.", exampleZh: "注意你的礼貌。" },
-    { word: "obviously", phonetic: "/ˈɒbviəsli/", meaning: "adv. 明显地", example: "Obviously, he was tired.", exampleZh: "显然，他累了。" },
-    { word: "permanent", phonetic: "/ˈpɜːmənənt/", meaning: "adj. 永久的", example: "This is a permanent change.", exampleZh: "这是一个永久性的改变。" },
-    { word: "resist", phonetic: "/rɪˈzɪst/", meaning: "v. 抵抗；抵制", example: "I can't resist chocolate.", exampleZh: "我无法抗拒巧克力。" },
-    { word: "schedule", phonetic: "/ˈʃedjuːl/", meaning: "n. 时间表 v. 安排", example: "Check the train schedule.", exampleZh: "查看火车时刻表。" },
-    { word: "tackle", phonetic: "/ˈtækl/", meaning: "v. 处理；应付", example: "Let's tackle this problem.", exampleZh: "让我们处理这个问题。" },
-    { word: "unique", phonetic: "/juˈniːk/", meaning: "adj. 独一无二的", example: "Each person is unique.", exampleZh: "每个人都是独一无二的。" },
-    { word: "virtual", phonetic: "/ˈvɜːtʃuəl/", meaning: "adj. 虚拟的；实质上的", example: "We had a virtual meeting.", exampleZh: "我们开了一场线上会议。" },
-    { word: "warehouse", phonetic: "/ˈweəhaʊs/", meaning: "n. 仓库", example: "Goods are stored in the warehouse.", exampleZh: "货物存放在仓库里。" },
-    { word: "zealous", phonetic: "/ˈzeləs/", meaning: "adj. 热心的；狂热的", example: "She is zealous about her work.", exampleZh: "她对工作非常热心。" }
+    { word: "limit", phonetic: "/ˈlɪmɪt/", meaning: "v. 限制 n. 限度", example: "Limit your screen time.", exampleZh: "限制你的屏幕时间。" }
   ],
   article: {
     title: "Why We Should Eat More Vegetables",
@@ -783,6 +1083,61 @@ window.DAY_PLAN = [
         "good camera = 好摄像头。",
         "including = 包括。"
       ]
+    },
+    {
+      scene: "在菜市场买菜",
+      situationZh: "你去菜市场买一些新鲜蔬菜，询问价格。",
+      roles: { clerk: "摊主", user: "我" },
+      turns: [
+        { role: "clerk", en: "Fresh vegetables here! What do you need?", zh: "新鲜蔬菜！要点什么？" },
+        { role: "user", en: "How much are the tomatoes?", zh: "西红柿怎么卖？", keywords: ["how much", "tomatoes"] },
+        { role: "clerk", en: "Four yuan a kilo.", zh: "四块钱一公斤。" },
+        { role: "user", en: "And are these cucumbers fresh?", zh: "这些黄瓜新鲜吗？", keywords: ["fresh", "cucumbers"] },
+        { role: "clerk", en: "Of course, they were picked this morning.", zh: "当然，今早刚摘的。" },
+        { role: "user", en: "I'll take two kilos, please.", zh: "请给我来两公斤。", keywords: ["two", "kilos"] },
+        { role: "clerk", en: "Here you go. Anything else?", zh: "给你。还要别的吗？" },
+        { role: "user", en: "That's all, thanks.", zh: "就这些，谢谢。", keywords: ["thanks"] }
+      ],
+      tips: [
+        "how much = 多少钱。",
+        "a kilo = 一公斤。"
+      ]
+    },
+    {
+      scene: "在餐厅点蔬菜沙拉",
+      situationZh: "你在餐厅想点一份蔬菜沙拉作为健康午餐。",
+      roles: { waitress: "服务员", user: "我" },
+      turns: [
+        { role: "waitress", en: "Good afternoon, are you ready to order?", zh: "下午好，可以点餐了吗？" },
+        { role: "user", en: "Yes, I'd like a vegetable salad.", zh: "是的，我想要一份蔬菜沙拉。", keywords: ["vegetable", "salad"] },
+        { role: "waitress", en: "What dressing would you like?", zh: "要什么口味的酱汁？" },
+        { role: "user", en: "Olive oil and vinegar, please.", zh: "请用橄榄油和醋。", keywords: ["olive oil"] },
+        { role: "waitress", en: "Would you like any grilled chicken added?", zh: "需要加烤鸡肉吗？" },
+        { role: "user", en: "No, just vegetables is fine.", zh: "不用，纯蔬菜就好。", keywords: ["vegetables"] },
+        { role: "waitress", en: "Got it, any drinks?", zh: "好的，喝点什么吗？" },
+        { role: "user", en: "A glass of water, please.", zh: "一杯水，谢谢。", keywords: ["water"] }
+      ],
+      tips: [
+        "dressing = 沙拉酱。",
+        "olive oil and vinegar = 橄榄油和醋。"
+      ]
+    },
+    {
+      scene: "在超市生鲜区称重",
+      situationZh: "你在超市挑了些水果，需要自助称重贴价签。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Need some help with the scale?", zh: "需要帮忙称重吗？" },
+        { role: "user", en: "Yes, how do I use this scale?", zh: "是的，这个秤怎么用？", keywords: ["scale"] },
+        { role: "clerk", en: "Tap the fruit name on the screen first.", zh: "先点屏幕上的水果名称。" },
+        { role: "user", en: "Then I place the bag on it?", zh: "然后把袋子放在上面吗？", keywords: ["on"] },
+        { role: "clerk", en: "Exactly, and the price label prints itself.", zh: "对，价格标签会自动打印出来。" },
+        { role: "user", en: "Great, that's simple. Thanks for your help.", zh: "太简单了，谢谢你的帮助。", keywords: ["simple", "help"] }
+      ],
+      tips: [
+        "scale = 电子秤。",
+        "price label = 价签。"
+      ]
     }
   ]
 },
@@ -798,17 +1153,7 @@ window.DAY_PLAN = [
     { word: "glimpse", phonetic: "/ɡlɪmps/", meaning: "n. 一瞥 v. 瞥见", example: "I caught a glimpse of her.", exampleZh: "我瞥见了她一眼。" },
     { word: "instinct", phonetic: "/ˈɪnstɪŋkt/", meaning: "n. 本能；直觉", example: "Trust your instinct.", exampleZh: "相信你的直觉。" },
     { word: "justify", phonetic: "/ˈdʒʌstɪfaɪ/", meaning: "v. 证明有理", example: "Nothing can justify lying.", exampleZh: "没有什么能为说谎辩护。" },
-    { word: "link", phonetic: "/lɪŋk/", meaning: "n. 联系 v. 连接", example: "There is a link between diet and health.", exampleZh: "饮食与健康之间存在联系。" },
-    { word: "minimize", phonetic: "/ˈmɪnɪmaɪz/", meaning: "v. 最小化；减小", example: "Minimize the risk of error.", exampleZh: "尽量减少出错的风险。" },
-    { word: "oblige", phonetic: "/əˈblaɪdʒ/", meaning: "v. 迫使；施恩于", example: "I am obliged to help him.", exampleZh: "我有义务帮助他。" },
-    { word: "positive", phonetic: "/ˈpɒzətɪv/", meaning: "adj. 积极的；肯定的", example: "Keep a positive attitude.", exampleZh: "保持积极的心态。" },
-    { word: "react", phonetic: "/riˈækt/", meaning: "v. 反应；起反应", example: "She reacted quickly.", exampleZh: "她反应很快。" },
-    { word: "significant", phonetic: "/sɪɡˈnɪfɪkənt/", meaning: "adj. 重要的；显著的", example: "There was a significant change.", exampleZh: "有显著的变化。" },
-    { word: "tend", phonetic: "/tend/", meaning: "v. 倾向于；照料", example: "He tends to sleep late.", exampleZh: "他倾向于晚睡。" },
-    { word: "ultimate", phonetic: "/ˈʌltɪmət/", meaning: "adj. 最终的", example: "The ultimate goal is success.", exampleZh: "最终目标是成功。" },
-    { word: "verify", phonetic: "/ˈverɪfaɪ/", meaning: "v. 核实；证明", example: "Please verify the facts.", exampleZh: "请核实这些事实。" },
-    { word: "warn", phonetic: "/wɔːn/", meaning: "v. 警告", example: "They warned us about the storm.", exampleZh: "他们警告我们有暴风雨。" },
-    { word: "yield", phonetic: "/jiːld/", meaning: "v. 出产；让出", example: "The land yields good crops.", exampleZh: "这片土地出产好庄稼。" }
+    { word: "link", phonetic: "/lɪŋk/", meaning: "n. 联系 v. 连接", example: "There is a link between diet and health.", exampleZh: "饮食与健康之间存在联系。" }
   ],
   article: {
     title: "Learning to Say No",
@@ -880,6 +1225,57 @@ window.DAY_PLAN = [
         "meeting notes = 会议笔记。",
         "borrow = 借入。"
       ]
+    },
+    {
+      scene: "委婉拒绝同事的加班邀请",
+      situationZh: "同事邀请你周末加班，你礼貌地拒绝并说明原因。",
+      roles: { clerk: "同事", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hey, can you work overtime this weekend?", zh: "嘿，这个周末能加个班吗？" },
+        { role: "user", en: "I'm afraid I can't. I already have plans.", zh: "恐怕不行，我已有安排了。", keywords: ["afraid", "plans"] },
+        { role: "clerk", en: "It's just a small task, really.", zh: "其实只是一件小事。" },
+        { role: "user", en: "Sorry, I really need some rest this weekend.", zh: "抱歉，我这个周末真的需要休息。", keywords: ["sorry", "rest"] },
+        { role: "clerk", en: "I understand. Maybe next time then.", zh: "我理解。那下次吧。" },
+        { role: "user", en: "Thanks for understanding.", zh: "谢谢你的理解。", keywords: ["understanding"] }
+      ],
+      tips: [
+        "work overtime = 加班。",
+        "I'm afraid I can't. = 恐怕不行。"
+      ]
+    },
+    {
+      scene: "在商场拒绝办理会员卡",
+      situationZh: "店员热情推销会员卡，你礼貌地婉拒。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello! Would you like to apply for our membership card?", zh: "您好！要办一张我们的会员卡吗？" },
+        { role: "user", en: "No, thanks. I only come here occasionally.", zh: "不了，谢谢。我只是偶尔来。", keywords: ["no", "occasionally"] },
+        { role: "clerk", en: "It's free and you get discounts.", zh: "免费的，还能享受折扣。" },
+        { role: "user", en: "I appreciate it, but I don't need another card.", zh: "很感谢，不过我不需要再多一张卡了。", keywords: ["appreciate", "don't need"] },
+        { role: "clerk", en: "No worries. Let me know if you change your mind.", zh: "没关系。如果您改变主意了告诉我。" },
+        { role: "user", en: "I will. Thanks anyway.", zh: "好的，还是谢谢你。", keywords: ["thanks"] }
+      ],
+      tips: [
+        "apply for a card = 办卡。",
+        "No worries. = 没关系。"
+      ]
+    },
+    {
+      scene: "婉拒朋友帮忙搬家",
+      situationZh: "朋友请你去帮忙搬家，但你当天有事无法前往。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "clerk", en: "Could you come and help me move on Saturday?", zh: "周六能来帮我搬家吗？" },
+        { role: "user", en: "I'd love to, but I have a class that day.", zh: "我很想去，但那天我有课。", keywords: ["love to", "class"] },
+        { role: "clerk", en: "Oh, is there any other day that works?", zh: "哦，其他哪天方便吗？" },
+        { role: "user", en: "I'm free on Sunday afternoon if that helps.", zh: "如果你方便，周日下午我有空。", keywords: ["Sunday"] },
+        { role: "clerk", en: "That works perfectly. Thanks for offering!", zh: "那太好了，谢谢你主动帮忙！" },
+        { role: "user", en: "No problem, I'll see you then.", zh: "不客气，到时候见。", keywords: ["see you"] }
+      ],
+      tips: [
+        "I'd love to, but... = 我很愿意，但……（婉拒）。",
+        "offer to help = 主动提出帮忙。"
+      ]
     }
   ]
 },
@@ -895,17 +1291,7 @@ window.DAY_PLAN = [
     { word: "grateful", phonetic: "/ˈɡreɪtfl/", meaning: "adj. 感激的", example: "I'm grateful for your help.", exampleZh: "我很感激你的帮助。" },
     { word: "impose", phonetic: "/ɪmˈpəʊz/", meaning: "v. 强加；征收", example: "Don't impose your views on me.", exampleZh: "不要把你的观点强加给我。" },
     { word: "juncture", phonetic: "/ˈdʒʌŋktʃə(r)/", meaning: "n. 关键时刻；节点", example: "At this juncture, we must wait.", exampleZh: "在这个关键时刻，我们必须等待。" },
-    { word: "literal", phonetic: "/ˈlɪtərəl/", meaning: "adj. 字面的；逐字的", example: "It is a literal translation.", exampleZh: "这是逐字翻译。" },
-    { word: "mannerism", phonetic: "/ˈmænərɪzəm/", meaning: "n. 癖好；习惯动作", example: "He has a nervous mannerism.", exampleZh: "他有个紧张的小习惯。" },
-    { word: "necessity", phonetic: "/nəˈsesəti/", meaning: "n. 必要性；必需品", example: "Food is a necessity.", exampleZh: "食物是必需品。" },
-    { word: "officially", phonetic: "/əˈfɪʃəli/", meaning: "adv. 正式地", example: "The store opened officially today.", exampleZh: "这家店今天正式开张。" },
-    { word: "peculiar", phonetic: "/pɪˈkjuːliə(r)/", meaning: "adj. 奇怪的；特有的", example: "It has a peculiar smell.", exampleZh: "它有一种奇怪的气味。" },
-    { word: "quantum", phonetic: "/ˈkwɒntəm/", meaning: "n. 量子 adj. 大的", example: "Quantum physics is complex.", exampleZh: "量子物理很复杂。" },
-    { word: "resent", phonetic: "/rɪˈzent/", meaning: "v. 怨恨；不满", example: "He resents being criticized.", exampleZh: "他对被批评感到不满。" },
-    { word: "substantial", phonetic: "/səbˈstænʃl/", meaning: "adj. 大量的；实质的", example: "There was a substantial increase.", exampleZh: "有相当大的增长。" },
-    { word: "thrive", phonetic: "/θraɪv/", meaning: "v. 兴旺；茁壮成长", example: "Plants thrive in sunlight.", exampleZh: "植物在阳光下茁壮成长。" },
-    { word: "utter", phonetic: "/ˈʌtə(r)/", meaning: "v. 说出 adj. 完全的", example: "She didn't utter a word.", exampleZh: "她一句话也没说。" },
-    { word: "various", phonetic: "/ˈveəriəs/", meaning: "adj. 各种各样的", example: "The shop sells various goods.", exampleZh: "这家店卖各种商品。" }
+    { word: "literal", phonetic: "/ˈlɪtərəl/", meaning: "adj. 字面的；逐字的", example: "It is a literal translation.", exampleZh: "这是逐字翻译。" }
   ],
   article: {
     title: "The Joy of Giving",
@@ -979,10 +1365,65 @@ window.DAY_PLAN = [
         "spoken English = 英语口语。",
         "beginner = 初学者。"
       ]
+    },
+    {
+      scene: "把水果分给邻居",
+      situationZh: "你买了太多水果，想分一些给楼上的邻居。",
+      roles: { clerk: "邻居", user: "我" },
+      turns: [
+        { role: "user", en: "Hello! I bought too many apples today.", zh: "你好！我今天苹果买多了。", keywords: ["apples", "too many"] },
+        { role: "clerk", en: "Oh, the market has a good harvest this year.", zh: "是啊，今年市场收成好。" },
+        { role: "user", en: "Would you like to take some?", zh: "你想拿一些吗？", keywords: ["take", "some"] },
+        { role: "clerk", en: "Really? That's so kind of you!", zh: "真的吗？你真好！", keywords: ["kind"] },
+        { role: "user", en: "Of course, sharing makes everyone happy.", zh: "别客气，分享让人人都开心。", keywords: ["sharing"] },
+        { role: "clerk", en: "Thank you. I'll bring you some bread I baked.", zh: "谢谢。我把我烤的面包分给你。", keywords: ["bread"] },
+        { role: "user", en: "That sounds lovely, thanks!", zh: "太好了，谢谢！", keywords: ["thanks"] }
+      ],
+      tips: [
+        "that's so kind of you = 你真好。",
+        "sharing = 分享（动名词作主语）。"
+      ]
+    },
+    {
+      scene: "在社区捐赠旧衣服",
+      situationZh: "你整理出一批旧衣物，送到社区捐赠站。",
+      roles: { clerk: "志愿者", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, welcome! Are you here to donate?", zh: "你好，欢迎！你是来捐赠的吗？" },
+        { role: "user", en: "Yes, I have some clothes I no longer wear.", zh: "是的，我有些不再穿的衣服。", keywords: ["no longer", "clothes"] },
+        { role: "clerk", en: "Great, please put them in this box.", zh: "好的，请把它们放进这个箱子里。" },
+        { role: "user", en: "Anything I should check first?", zh: "有什么需要先检查的吗？", keywords: ["check"] },
+        { role: "clerk", en: "Just make sure they are clean and usable.", zh: "只要确保干净、可穿就行。" },
+        { role: "user", en: "Got it. I'm glad they can be reused.", zh: "明白了。很高兴它们能被再利用。", keywords: ["reused"] },
+        { role: "clerk", en: "Thank you for your generosity!", zh: "谢谢你的慷慨！" },
+        { role: "user", en: "My pleasure!", zh: "不客气！", keywords: ["pleasure"] }
+      ],
+      tips: [
+        "donate = 捐赠。",
+        "My pleasure. = 不客气。"
+      ]
+    },
+    {
+      scene: "陪老人参加社区活动",
+      situationZh: "你在社区当志愿者，陪一位老人步行去活动室。",
+      roles: { clerk: "老人", user: "我" },
+      turns: [
+        { role: "user", en: "Good morning! Let me walk with you to the activity room.", zh: "早上好！让我陪您走到活动室吧。", keywords: ["walk", "activity"] },
+        { role: "clerk", en: "That's very kind. It's just down this hall.", zh: "你真好。就在这个走廊前面。" },
+        { role: "user", en: "Would you like me to carry anything for you?", zh: "需要我帮您拿点什么吗？", keywords: ["carry"] },
+        { role: "clerk", en: "No, I'm fine, but thank you all the same.", zh: "不用，我没事，还是谢谢你。" },
+        { role: "user", en: "Here we are. Enjoy your chess game!", zh: "到了。祝您下棋愉快！", keywords: ["here", "chess"] },
+        { role: "clerk", en: "Thank you so much, dear.", zh: "太感谢你了，孩子。" },
+        { role: "user", en: "I'll come say hi again tomorrow.", zh: "明天我再来看您。", keywords: ["tomorrow"] }
+      ],
+      tips: [
+        "walk with someone = 陪某人走。",
+        "Here we are. = 我们到了。"
+      ]
     }
   ]
 },
-  // ===================== 第 11 天 =====================
+// ===================== 第 11 天 =====================
 {
   words: [
     { word: "ambiguity", phonetic: "/ˌæmbɪˈɡjuːəti/", meaning: "n. 含糊；歧义", example: "Avoid ambiguity in your writing.", exampleZh: "写作时要避免歧义。" },
@@ -994,17 +1435,7 @@ window.DAY_PLAN = [
     { word: "glimpse", phonetic: "/ɡlɪmps/", meaning: "n. 一瞥", example: "I got a glimpse of the view.", exampleZh: "我瞥见了美景。" },
     { word: "hierarchy", phonetic: "/ˈhaɪərɑːki/", meaning: "n. 等级制度", example: "He climbed the company hierarchy.", exampleZh: "他在公司等级中步步高升。" },
     { word: "ironic", phonetic: "/aɪˈrɒnɪk/", meaning: "adj. 讽刺的", example: "It was ironic that he lost his keys.", exampleZh: "他丢了钥匙，真是讽刺。" },
-    { word: "latitude", phonetic: "/ˈlætɪtjuːd/", meaning: "n. 纬度；自由度", example: "The city lies at 30 degrees latitude.", exampleZh: "这座城市位于北纬 30 度。" },
-    { word: "migrate", phonetic: "/maɪˈɡreɪt/", meaning: "v. 迁徙；移民", example: "Birds migrate south in winter.", exampleZh: "鸟儿冬天南迁。" },
-    { word: "objective", phonetic: "/əbˈdʒektɪv/", meaning: "n. 目标 adj. 客观的", example: "Our objective is clear.", exampleZh: "我们的目标很明确。" },
-    { word: "prelude", phonetic: "/ˈpreljuːd/", meaning: "n. 前奏；序幕", example: "Rain was a prelude to the storm.", exampleZh: "下雨是暴风雨的前奏。" },
-    { word: "realm", phonetic: "/relm/", meaning: "n. 领域；王国", example: "This belongs to the realm of science.", exampleZh: "这属于科学领域。" },
-    { word: "strive", phonetic: "/straɪv/", meaning: "v. 努力；奋斗", example: "We strive for excellence.", exampleZh: "我们追求卓越。" },
-    { word: "tendency", phonetic: "/ˈtendənsi/", meaning: "n. 趋势；倾向", example: "He has a tendency to be late.", exampleZh: "他有迟到的倾向。" },
-    { word: "undermine", phonetic: "/ˌʌndəˈmaɪn/", meaning: "v. 削弱；破坏", example: "Doubt can undermine confidence.", exampleZh: "怀疑会削弱信心。" },
-    { word: "vigor", phonetic: "/ˈvɪɡə(r)/", meaning: "n. 活力；精力", example: "She works with great vigor.", exampleZh: "她工作干劲十足。" },
-    { word: "weaken", phonetic: "/ˈwiːkən/", meaning: "v. 削弱；变弱", example: "Illness weakened his body.", exampleZh: "疾病削弱了他的身体。" },
-    { word: "zeal", phonetic: "/ziːl/", meaning: "n. 热情；热忱", example: "He shows great zeal for study.", exampleZh: "他对学习充满热情。" }
+    { word: "latitude", phonetic: "/ˈlætɪtjuːd/", meaning: "n. 纬度；自由度", example: "The city lies at 30 degrees latitude.", exampleZh: "这座城市位于北纬 30 度。" }
   ],
   article: {
     title: "The Importance of Protecting Water",
@@ -1075,6 +1506,63 @@ window.DAY_PLAN = [
         "book = 预约（英式）。",
         "available = 可用的；有空的。"
       ]
+    },
+    {
+      scene: "向物业反映水龙头漏水",
+      situationZh: "你家厨房水龙头在滴水，向物业报修。",
+      roles: { clerk: "物业", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, property management, how can I help?", zh: "你好，物业管理处，有什么可以帮您？" },
+        { role: "user", en: "My kitchen tap is leaking and wasting water.", zh: "我家厨房水龙头漏水，很浪费水。", keywords: ["leaking", "wasting"] },
+        { role: "clerk", en: "May I have your apartment number?", zh: "请问您的房号是多少？" },
+        { role: "user", en: "It's building 3, room 1205.", zh: "3 栋 1205 房。", keywords: ["building", "room"] },
+        { role: "clerk", en: "Got it. A worker will come this afternoon.", zh: "好的，工程师傅今天下午过来。" },
+        { role: "user", en: "Please also check the pipe in the bathroom.", zh: "请顺便检查一下卫生间的管道。", keywords: ["pipe", "bathroom"] },
+        { role: "clerk", en: "Sure, noted. Anything else?", zh: "好的，记下了。还有别的吗？" },
+        { role: "user", en: "No, that's all. Thanks!", zh: "没有了，谢谢！", keywords: ["thanks"] }
+      ],
+      tips: [
+        "leak = 漏水；渗漏。",
+        "property management = 物业管理。"
+      ]
+    },
+    {
+      scene: "参加小区节水宣传",
+      situationZh: "小区举办节水宣传活动，你在现场咨询节约用水的方法。",
+      roles: { clerk: "志愿者", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi! Would you like to know how to save water?", zh: "你好！想了解怎么节约用水吗？" },
+        { role: "user", en: "Yes, what can I do at home?", zh: "想，我在家能做些什么？", keywords: ["what", "home"] },
+        { role: "clerk", en: "Turning off the tap while brushing teeth helps a lot.", zh: "刷牙时关上水龙头会很有帮助。" },
+        { role: "user", en: "I see. And what about showers?", zh: "明白。那淋浴呢？", keywords: ["showers"] },
+        { role: "clerk", en: "Try to keep showers under ten minutes.", zh: "尽量把淋浴控制在十分钟内。" },
+        { role: "user", en: "Good tips. I'll try to do better.", zh: "好的建议，我会尽量做得更好。", keywords: ["tips", "better"] },
+        { role: "clerk", en: "Thanks for caring about the environment!", zh: "谢谢你对环境的关心！" },
+        { role: "user", en: "See you around!", zh: "回头见！", keywords: ["see you"] }
+      ],
+      tips: [
+        "save water = 节约用水。",
+        "turn off the tap = 关上水龙头。"
+      ]
+    },
+    {
+      scene: "在健身房咨询办卡",
+      situationZh: "你想办理健身月卡，询问费用和开放时间。",
+      roles: { clerk: "前台", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome to the gym! How can I help?", zh: "欢迎来到健身房！需要什么帮助？" },
+        { role: "user", en: "How much is a monthly membership?", zh: "月卡多少钱？", keywords: ["monthly", "membership"] },
+        { role: "clerk", en: "It's 199 yuan for one month.", zh: "199 元一个月。" },
+        { role: "user", en: "What are your opening hours?", zh: "你们的营业时间是？", keywords: ["opening", "hours"] },
+        { role: "clerk", en: "From 7 am to 10 pm every day.", zh: "每天早上七点到晚上十点。" },
+        { role: "user", en: "Do you have a shower room?", zh: "有淋浴间吗？", keywords: ["shower"] },
+        { role: "clerk", en: "Yes, free lockers and showers are included.", zh: "有，包含免费储物柜和淋浴。" },
+        { role: "user", en: "Great, I'll take it.", zh: "好的，我办一张。", keywords: ["take"] }
+      ],
+      tips: [
+        "membership = 会员卡。",
+        "opening hours = 营业时间。"
+      ]
     }
   ]
 },
@@ -1090,17 +1578,7 @@ window.DAY_PLAN = [
     { word: "gathering", phonetic: "/ˈɡæðərɪŋ/", meaning: "n. 集会；聚会", example: "It was a family gathering.", exampleZh: "这是一次家庭聚会。" },
     { word: "hedge", phonetic: "/hedʒ/", meaning: "n. 树篱；障碍", example: "A hedge surrounds the garden.", exampleZh: "花园四周有树篱。" },
     { word: "immense", phonetic: "/ɪˈmens/", meaning: "adj. 巨大的", example: "The universe is immense.", exampleZh: "宇宙浩瀚无垠。" },
-    { word: "ladder", phonetic: "/ˈlædə(r)/", meaning: "n. 梯子；阶梯", example: "Success is a ladder.", exampleZh: "成功是一把梯子。" },
-    { word: "merchant", phonetic: "/ˈmɜːtʃənt/", meaning: "n. 商人", example: "The merchant sells silk.", exampleZh: "这位商人卖丝绸。" },
-    { word: "notion", phonetic: "/ˈnəʊʃn/", meaning: "n. 观念；想法", example: "He prefers the notion of freedom.", exampleZh: "他倾向自由观念。" },
-    { word: "occur", phonetic: "/əˈkɜː(r)/", meaning: "v. 发生；想到", example: "The accident occurred at noon.", exampleZh: "事故发生在中午。" },
-    { word: "parallel", phonetic: "/ˈpærəlel/", meaning: "adj. 平行的 n. 相似处", example: "These two lines are parallel.", exampleZh: "这两条线是平行的。" },
-    { word: "random", phonetic: "/ˈrændəm/", meaning: "adj. 随机的；任意的", example: "Choose a random number.", exampleZh: "随机选一个数字。" },
-    { word: "stability", phonetic: "/stəˈbɪləti/", meaning: "n. 稳定；稳固", example: "The country enjoys stability.", exampleZh: "这个国家政局稳定。" },
-    { word: "triumph", phonetic: "/ˈtraɪʌmf/", meaning: "n. 胜利 v. 获胜", example: "Their team celebrated triumph.", exampleZh: "他们的队伍庆祝胜利。" },
-    { word: "urgent", phonetic: "/ˈɜːdʒənt/", meaning: "adj. 紧急的", example: "There is an urgent call for you.", exampleZh: "有你的紧急电话。" },
-    { word: "verify", phonetic: "/ˈverɪfaɪ/", meaning: "v. 核实", example: "Verify the address before you go.", exampleZh: "走之前核实下地址。" },
-    { word: "wonder", phonetic: "/ˈwʌndə(r)/", meaning: "v. 好奇；想知道 n. 奇迹", example: "I wonder why he left.", exampleZh: "我好奇他为什么离开。" }
+    { word: "ladder", phonetic: "/ˈlædə(r)/", meaning: "n. 梯子；阶梯", example: "Success is a ladder.", exampleZh: "成功是一把梯子。" }
   ],
   article: {
     title: "Why Exercise Is Not Just About Weight",
@@ -1172,6 +1650,63 @@ window.DAY_PLAN = [
         "deposit = 押金。",
         "add money to = 充值。"
       ]
+    },
+    {
+      scene: "在游泳馆买入场券",
+      situationZh: "你想去游泳馆游泳，询问票价和开放时间。",
+      roles: { clerk: "售票处", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, welcome to the swimming pool!", zh: "你好，欢迎来到游泳馆！" },
+        { role: "user", en: "How much is one entry?", zh: "单次进入多少钱？", keywords: ["entry"] },
+        { role: "clerk", en: "It's 35 yuan for two hours.", zh: "两小时 35 元。" },
+        { role: "user", en: "What time does it close tonight?", zh: "今晚几点关门？", keywords: ["close"] },
+        { role: "clerk", en: "We close at 9 pm.", zh: "晚上九点关门。" },
+        { role: "user", en: "Do I need to bring my own cap?", zh: "需要自备泳帽吗？", keywords: ["cap"] },
+        { role: "clerk", en: "Yes, a swim cap is required.", zh: "是的，必须戴泳帽。" },
+        { role: "user", en: "Got it. Here's the money.", zh: "明白了，给你钱。", keywords: ["money"] }
+      ],
+      tips: [
+        "entry = 进场；入场费。",
+        "swim cap = 泳帽。"
+      ]
+    },
+    {
+      scene: "在体育用品店买瑜伽垫",
+      situationZh: "你开始练瑜伽，想买一张合适垫子。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi, are you looking for any equipment?", zh: "你好，需要什么运动装备吗？" },
+        { role: "user", en: "I want a yoga mat for beginners.", zh: "我想要一张适合初学者的瑜伽垫。", keywords: ["yoga", "mat"] },
+        { role: "clerk", en: "This one is thick and non-slip.", zh: "这款加厚、防滑。" },
+        { role: "user", en: "Is it easy to carry around?", zh: "方便携带吗？", keywords: ["carry"] },
+        { role: "clerk", en: "Yes, it comes with a strap.", zh: "方便，配有绑带。" },
+        { role: "user", en: "How much is it?", zh: "多少钱？", keywords: ["how much"] },
+        { role: "clerk", en: "It's 89 yuan.", zh: "89 元。" },
+        { role: "user", en: "I'll take it.", zh: "我要了。", keywords: ["take"] }
+      ],
+      tips: [
+        "yoga mat = 瑜伽垫。",
+        "non-slip = 防滑的。"
+      ]
+    },
+    {
+      scene: "在公园向跑友问路线",
+      situationZh: "你在公园跑步，向一位跑友询问更长的跑步路线。",
+      roles: { runner: "跑友", user: "我" },
+      turns: [
+        { role: "user", en: "Excuse me, is there a longer running path here?", zh: "打扰一下，这里有更长的跑步路线吗？", keywords: ["longer", "path"] },
+        { role: "runner", en: "Yes, if you follow the lake, it's about five kilometers.", zh: "有，沿着湖跑大约五公里。" },
+        { role: "user", en: "Great. How long have you been running?", zh: "太好了。你跑步多久了？", keywords: ["how long"] },
+        { role: "runner", en: "About three years. I run every morning.", zh: "大约三年了，我每天早上去跑。" },
+        { role: "user", en: "Do you have any tips for a beginner?", zh: "对初学者有什么建议吗？", keywords: ["tips", "beginner"] },
+        { role: "runner", en: "Start slowly and stretch afterwards.", zh: "慢慢开始，跑完记得拉伸。" },
+        { role: "user", en: "Thanks a lot. Maybe we can run together.", zh: "多谢。也许我们可以一起跑。", keywords: ["together"] },
+        { role: "runner", en: "Sure, see you tomorrow!", zh: "好啊，明天见！", keywords: ["tomorrow"] }
+      ],
+      tips: [
+        "path = 小路；路线。",
+        "stretch = 拉伸。"
+      ]
     }
   ]
 },
@@ -1187,17 +1722,7 @@ window.DAY_PLAN = [
     { word: "kinetic", phonetic: "/kɪˈnetɪk/", meaning: "adj. 运动的；动能的", example: "Kinetic energy is energy of motion.", exampleZh: "动能是运动的能量。" },
     { word: "legacy", phonetic: "/ˈleɡəsi/", meaning: "n. 遗产；遗留", example: "Her kindness left a legacy.", exampleZh: "她的善良留下了遗产。" },
     { word: "multiply", phonetic: "/ˈmʌltɪplaɪ/", meaning: "v. 乘；增加", example: "Multiply five by three.", exampleZh: "5 乘以 3。" },
-    { word: "nominee", phonetic: "/ˌnɒmɪˈniː/", meaning: "n. 被提名者", example: "He is a nominee for the award.", exampleZh: "他是这项奖的提名者。" },
-    { word: "obstacle", phonetic: "/ˈɒbstəkl/", meaning: "n. 障碍", example: "Lack of money is an obstacle.", exampleZh: "缺钱是一个障碍。" },
-    { word: "pursue", phonetic: "/pəˈsjuː/", meaning: "v. 追求；从事", example: "She pursued her dream.", exampleZh: "她追求自己的梦想。" },
-    { word: "rigid", phonetic: "/ˈrɪdʒɪd/", meaning: "adj. 僵硬的；固执的", example: "He held a rigid view.", exampleZh: "他持一种固执的观点。" },
-    { word: "sensation", phonetic: "/senˈseɪʃn/", meaning: "n. 感觉；轰动", example: "The news caused a sensation.", exampleZh: "这件事引起了轰动。" },
-    { word: "timid", phonetic: "/ˈtɪmɪd/", meaning: "adj. 胆小的", example: "She is timid about speaking out.", exampleZh: "她不敢大声说话。" },
-    { word: "unify", phonetic: "/ˈjuːnɪfaɪ/", meaning: "v. 使统一", example: "The two parties unified.", exampleZh: "两党联合起来。" },
-    { word: "valid", phonetic: "/ˈvælɪd/", meaning: "adj. 有效的；有根据的", example: "Your ticket is still valid.", exampleZh: "你的票仍然有效。" },
-    { word: "whereas", phonetic: "/ˌweərˈæz/", meaning: "conj. 然而；鉴于", example: "He is tall, whereas I am short.", exampleZh: "他很高，而我很矮。" },
-    { word: "yield", phonetic: "/jiːld/", meaning: "v. 屈服；产出", example: "He finally yielded to logic.", exampleZh: "他最终向逻辑让步。" },
-    { word: "zone", phonetic: "/zəʊn/", meaning: "n. 区域", example: "This is a no-smoking zone.", exampleZh: "这是禁烟区。" }
+    { word: "nominee", phonetic: "/ˌnɒmɪˈniː/", meaning: "n. 被提名者", example: "He is a nominee for the award.", exampleZh: "他是这项奖的提名者。" }
   ],
   article: {
     title: "Courage Is Not the Absence of Fear",
@@ -1269,6 +1794,59 @@ window.DAY_PLAN = [
         "yoga = 瑜伽。",
         "provide = 提供。"
       ]
+    },
+    {
+      scene: "在新班级做自我介绍",
+      situationZh: "开学第一天老师让你当众自我介绍，你鼓起勇气开口。",
+      roles: { clerk: "老师", user: "我" },
+      turns: [
+        { role: "clerk", en: "Would you like to introduce yourself to the class?", zh: "你愿意向全班做个自我介绍吗？" },
+        { role: "user", en: "Okay, I'll try, even though I feel nervous.", zh: "好的，我试试，虽然我有点紧张。", keywords: ["nervous", "try"] },
+        { role: "clerk", en: "Don't worry, everyone is nervous on the first day.", zh: "别担心，第一天大家都会紧张。" },
+        { role: "user", en: "Hi everyone, my name is Lin, and I like reading.", zh: "大家好，我叫林，我喜欢阅读。", keywords: ["name", "reading"] },
+        { role: "clerk", en: "Nice to meet you! Does anyone have a question?", zh: "很高兴认识你！有人想提问吗？" },
+        { role: "user", en: "Thank you for the encouragement.", zh: "谢谢你的鼓励。", keywords: ["encouragement"] }
+      ],
+      tips: [
+        "introduce yourself = 做自我介绍。",
+        "nervous = 紧张的。"
+      ]
+    },
+    {
+      scene: "在英语角开口说英语",
+      situationZh: "你第一次参加英语角，鼓起勇气用英语和陌生人聊天。",
+      roles: { host: "主持人", user: "我" },
+      turns: [
+        { role: "host", en: "Welcome to the English corner! What's your name?", zh: "欢迎来到英语角！你叫什么名字？" },
+        { role: "user", en: "Hi, I'm Zhang. This is my first time here.", zh: "嗨，我叫小张。这是我第一次来。", keywords: ["first time"] },
+        { role: "host", en: "Great to see new faces. What topic do you like?", zh: "很高兴看到新面孔。你喜欢什么话题？" },
+        { role: "user", en: "I'd like to talk about music, if you don't mind.", zh: "如果方便的话，我想聊聊音乐。", keywords: ["music"] },
+        { role: "host", en: "Perfect! Join that group over there.", zh: "太棒了！请加入那边的那个小组。" },
+        { role: "user", en: "I hope I can speak more bravely.", zh: "我希望自己能说得更大胆。", keywords: ["bravely"] },
+        { role: "host", en: "You're already brave just for coming!", zh: "你能来就已经很勇敢了！" }
+      ],
+      tips: [
+        "English corner = 英语角。",
+        "first time = 第一次。"
+      ]
+    },
+    {
+      scene: "第一次尝试攀岩",
+      situationZh: "你第一次去攀岩馆，虽有畏高但仍然尝试挑战。",
+      roles: { clerk: "教练", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, have you ever climbed before?", zh: "你好，你以前攀过岩吗？" },
+        { role: "user", en: "No, this is my first time. I'm a bit afraid.", zh: "没有，这是我第一次，我有点害怕。", keywords: ["afraid", "first"] },
+        { role: "clerk", en: "That's normal. Don't look down, just focus.", zh: "这很正常。别看下面，专注就行。" },
+        { role: "user", en: "How do I use this harness?", zh: "这个安全带怎么用？", keywords: ["harness"] },
+        { role: "clerk", en: "Let me fasten it, and I'll belay you from below.", zh: "我来帮你系好，从下面给你做保护。" },
+        { role: "user", en: "Okay, I'll give it a try now.", zh: "好，我现在试一试。", keywords: ["try"] },
+        { role: "clerk", en: "Well done, you're doing great!", zh: "干得好，你做得很好！", keywords: ["well done"] }
+      ],
+      tips: [
+        "climbing = 攀岩。",
+        "harness = 安全带；belay = 保护（攀岩）。"
+      ]
     }
   ]
 },
@@ -1284,17 +1862,7 @@ window.DAY_PLAN = [
     { word: "genre", phonetic: "/ˈʒɒnrə/", meaning: "n. 体裁；类型", example: "What genre of music do you like?", exampleZh: "你喜欢哪种类型的音乐？" },
     { word: "hazard", phonetic: "/ˈhæzəd/", meaning: "n. 危险；隐患", example: "Smoking is a health hazard.", exampleZh: "吸烟危害健康。" },
     { word: "incident", phonetic: "/ˈɪnsɪdənt/", meaning: "n. 事件；事故", example: "It was an unfortunate incident.", exampleZh: "那是一起不幸的事件。" },
-    { word: "liable", phonetic: "/ˈlaɪəbl/", meaning: "adj. 有责任的；易…的", example: "He is liable for the damage.", exampleZh: "他对损失负有责任。" },
-    { word: "motive", phonetic: "/ˈməʊtɪv/", meaning: "n. 动机", example: "The police found a motive.", exampleZh: "警方找到了动机。" },
-    { word: "neglect", phonetic: "/nɪˈɡlekt/", meaning: "v. 忽视", example: "Don't neglect your health.", exampleZh: "不要忽视你的健康。" },
-    { word: "oblige", phonetic: "/əˈblaɪdʒ/", meaning: "v. 迫使；帮忙", example: "I am obliged to report it.", exampleZh: "我有义务报告。" },
-    { word: "peer", phonetic: "/pɪə(r)/", meaning: "n. 同龄人；同事", example: "He is popular among his peers.", exampleZh: "他在同龄人中很受欢迎。" },
-    { word: "relieve", phonetic: "/rɪˈliːv/", meaning: "v. 缓解；减轻", example: "The medicine relieved the pain.", exampleZh: "药物缓解了疼痛。" },
-    { word: "scarce", phonetic: "/skeəs/", meaning: "adj. 稀少的；缺乏的", example: "Water is scarce in the desert.", exampleZh: "沙漠里缺水。" },
-    { word: "tolerate", phonetic: "/ˈtɒləreɪt/", meaning: "v. 容忍", example: "I can't tolerate rudeness.", exampleZh: "我无法容忍粗鲁。" },
-    { word: "venture", phonetic: "/ˈventʃə(r)/", meaning: "n. 冒险；项目 v. 冒险", example: "They started a new business venture.", exampleZh: "他们开始了一项新的事业。" },
-    { word: "welfare", phonetic: "/ˈwelfeə(r)/", meaning: "n. 福利；幸福", example: "The law protects workers' welfare.", exampleZh: "法律保障工人福利。" },
-    { word: "zeal", phonetic: "/ziːl/", meaning: "n. 热情", example: "She pursues science with zeal.", exampleZh: "她满怀热情地钻研科学。" }
+    { word: "liable", phonetic: "/ˈlaɪəbl/", meaning: "adj. 有责任的；易…的", example: "He is liable for the damage.", exampleZh: "他对损失负有责任。" }
   ],
   article: {
     title: "Why Practice Makes Progress",
@@ -1366,6 +1934,62 @@ window.DAY_PLAN = [
         "puppy = 小狗。",
         "take = 买下。"
       ]
+    },
+    {
+      scene: "在琴行咨询吉他课",
+      situationZh: "你想学吉他，到琴行咨询课程安排。",
+      roles: { clerk: "老师", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, are you interested in music lessons?", zh: "你好，你对音乐课感兴趣吗？" },
+        { role: "user", en: "Yes, I'd like to learn the guitar from zero.", zh: "是的，我想从零开始学吉他。", keywords: ["guitar", "zero"] },
+        { role: "clerk", en: "We offer weekly lessons for beginners.", zh: "我们为初学者提供每周一节课。" },
+        { role: "user", en: "How long before I can play a song?", zh: "多久能弹出一首曲子？", keywords: ["how long", "song"] },
+        { role: "clerk", en: "With daily practice, about two months.", zh: "每天练习的话，大约两个月。" },
+        { role: "user", en: "That sounds encouraging. How much is it per month?", zh: "听起来很受鼓励。每月多少钱？", keywords: ["per month"] },
+        { role: "clerk", en: "It's 500 yuan a month.", zh: "每月 500 元。" },
+        { role: "user", en: "Okay, I'll sign up.", zh: "好的，我报名。", keywords: ["sign up"] }
+      ],
+      tips: [
+        "from zero = 从零开始。",
+        "sign up = 报名。"
+      ]
+    },
+    {
+      scene: "在文具店买练习本",
+      situationZh: "你决定开始练字，去文具店买练习本。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome! What are you looking for?", zh: "欢迎光临！想买点什么？" },
+        { role: "user", en: "Do you have handwriting practice books?", zh: "你们有练字本吗？", keywords: ["handwriting", "books"] },
+        { role: "clerk", en: "Yes, we have several levels.", zh: "有，我们有好几个级别。" },
+        { role: "user", en: "I'll take the beginner one.", zh: "我买入门那本。", keywords: ["beginner"] },
+        { role: "clerk", en: "It comes with a free pen.", zh: "还附赠一支笔。" },
+        { role: "user", en: "Great, how much in total?", zh: "太好了，一共多少钱？", keywords: ["total"] },
+        { role: "clerk", en: "That's 18 yuan.", zh: "18 元。" },
+        { role: "user", en: "Here you are, thank you.", zh: "给你，谢谢。", keywords: ["here"] }
+      ],
+      tips: [
+        "handwriting = 书写；练字。",
+        "in total = 总计。"
+      ]
+    },
+    {
+      scene: "在公园向长者请教书法",
+      situationZh: "你在公园看到一位长者练毛笔字，虚心请教。",
+      roles: { clerk: "长者", user: "我" },
+      turns: [
+        { role: "user", en: "Excuse me, your calligraphy is beautiful. May I ask a question?", zh: "打扰了，您的书法真漂亮，我能请教一下吗？", keywords: ["calligraphy", "question"] },
+        { role: "clerk", en: "Of course, young friend. What would you like to know?", zh: "当然可以，小朋友。你想了解什么？" },
+        { role: "user", en: "How do you hold the brush correctly?", zh: "毛笔要怎么正确握？", keywords: ["brush"] },
+        { role: "clerk", en: "Keep a relaxed grip and use your wrist.", zh: "握笔放松，手腕用力。" },
+        { role: "user", en: "Anything else I should practice first?", zh: "还有什么我应该先练吗？", keywords: ["practice", "first"] },
+        { role: "clerk", en: "Start with simple strokes, every day.", zh: "从简单的笔画开始，每天练。" },
+        { role: "user", en: "Thank you for the advice. I'll practice daily.", zh: "谢谢您的建议，我会每天练习。", keywords: ["advice", "daily"] }
+      ],
+      tips: [
+        "calligraphy = 书法。",
+        "practice daily = 每天练习。"
+      ]
     }
   ]
 },
@@ -1381,17 +2005,7 @@ window.DAY_PLAN = [
     { word: "glimpse", phonetic: "/ɡlɪmps/", meaning: "v. 瞥见 n. 一瞥", example: "We glimpsed the mountains.", exampleZh: "我们瞥见了群山。" },
     { word: "hinder", phonetic: "/ˈhɪndə(r)/", meaning: "v. 阻碍", example: "Rain hindered our trip.", exampleZh: "下雨阻碍了我们的行程。" },
     { word: "indispensable", phonetic: "/ˌɪndɪˈspensəbl/", meaning: "adj. 不可或缺的", example: "Air is indispensable for life.", exampleZh: "空气对生命不可或缺。" },
-    { word: "legislation", phonetic: "/ˌledʒɪsˈleɪʃn/", meaning: "n. 立法；法规", example: "New legislation was passed.", exampleZh: "通过了新法规。" },
-    { word: "metaphor", phonetic: "/ˈmetəfə(r)/", meaning: "n. 隐喻；比喻", example: "Life is a journey is a metaphor.", exampleZh: "“人生是一场旅程”是个隐喻。" },
-    { word: "nuance", phonetic: "/ˈnjuːɑːns/", meaning: "n. 细微差别", example: "The nuance was lost in translation.", exampleZh: "细微差别在翻译中丢失了。" },
-    { word: "obsolete", phonetic: "/ˈɒbsəliːt/", meaning: "adj. 过时的", example: "That method is now obsolete.", exampleZh: "那种方法如今已经过时。" },
-    { word: "paradox", phonetic: "/ˈpærədɒks/", meaning: "n. 悖论；矛盾", example: "It's a paradox that we train more but rest less.", exampleZh: "我们训练越多休息越少，真是个悖论。" },
-    { word: "redundant", phonetic: "/rɪˈdʌndənt/", meaning: "adj. 多余的；冗余的", example: "This step is redundant.", exampleZh: "这一步是多余的。" },
-    { word: "sustain", phonetic: "/səˈsteɪn/", meaning: "v. 维持；支撑", example: "We must sustain economic growth.", exampleZh: "我们必须维持经济增长。" },
-    { word: "tangible", phonetic: "/ˈtændʒəbl/", meaning: "adj. 有形的；实际的", example: "We need tangible results.", exampleZh: "我们需要实际的成果。" },
-    { word: "universal", phonetic: "/ˌjuːnɪˈvɜːsl/", meaning: "adj. 普遍的；通用的", example: "Smiling is universal.", exampleZh: "微笑是普遍通用的。" },
-    { word: "versatile", phonetic: "/ˈvɜːsətaɪl/", meaning: "adj. 多才多艺的；多用途的", example: "She is a versatile writer.", exampleZh: "她是个多才多艺的作家。" },
-    { word: "yearn", phonetic: "/jɜːn/", meaning: "v. 渴望", example: "He yearns for peace.", exampleZh: "他渴望和平。" }
+    { word: "legislation", phonetic: "/ˌledʒɪsˈleɪʃn/", meaning: "n. 立法；法规", example: "New legislation was passed.", exampleZh: "通过了新法规。" }
   ],
   article: {
     title: "The Art of Listening",
@@ -1463,10 +2077,62 @@ window.DAY_PLAN = [
         "get off = 下车。",
         "museum = 博物馆。"
       ]
+    },
+    {
+      scene: "在售后服务中心听处理方案",
+      situationZh: "你买的电扇不转了，去售后认真听维修方案。",
+      roles: { clerk: "售后专员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, what seems to be the problem?", zh: "你好，请问哪里出了问题？" },
+        { role: "user", en: "My fan stopped working yesterday.", zh: "我的电扇昨天不转了。", keywords: ["fan", "working"] },
+        { role: "clerk", en: "Please carefully listen: we'll either repair it or exchange it.", zh: "请仔细听：我们要么维修，要么给您换一台。" },
+        { role: "user", en: "Got it. Which do you recommend?", zh: "明白了。你建议哪种？", keywords: ["recommend"] },
+        { role: "clerk", en: "If you still have the receipt, an exchange is fastest.", zh: "如果还有收据，换货最快。" },
+        { role: "user", en: "I understand. I'll bring my receipt tomorrow.", zh: "我明白了，我明天带收据来。", keywords: ["understand", "receipt"] },
+        { role: "clerk", en: "Perfect. I'll note that down for you.", zh: "好的，我帮您记下来。" }
+      ],
+      tips: [
+        "receipt = 收据。",
+        "after-sales service = 售后服务。"
+      ]
+    },
+    {
+      scene: "在咖啡店耐心听朋友倾诉",
+      situationZh: "朋友最近压力很大，约你在咖啡店倾诉，你认真地听。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "clerk", en: "I've been feeling really stressed at work lately.", zh: "我最近工作压力特别大。" },
+        { role: "user", en: "I'm here for you. Take your time and tell me everything.", zh: "我在呢，慢慢说，都告诉我。", keywords: ["time", "listen"] },
+        { role: "clerk", en: "I feel like no one really listens to me.", zh: "我感觉没人真正听我说。" },
+        { role: "user", en: "I hear you, and your feelings are important.", zh: "我听到了，你的感受很重要。", keywords: ["important"] },
+        { role: "clerk", en: "Thanks. Just talking helps a lot.", zh: "谢谢你，说出来的确好多了。" },
+        { role: "user", en: "I'm glad you shared it with me.", zh: "很高兴你愿意和我说。", keywords: ["shared"] }
+      ],
+      tips: [
+        "I'm here for you. = 我在这陪着你。",
+        "express feelings = 表达感受。"
+      ]
+    },
+    {
+      scene: "在药房仔细听服药说明",
+      situationZh: "你买感冒药，仔细听药剂师讲解用法。",
+      roles: { clerk: "药剂师", user: "我" },
+      turns: [
+        { role: "clerk", en: "Here is your cold medicine.", zh: "这是你的感冒药。" },
+        { role: "user", en: "How often should I take it?", zh: "多久吃一次？", keywords: ["how often"] },
+        { role: "clerk", en: "Three times a day, after meals.", zh: "每日三次，饭后服用。" },
+        { role: "user", en: "Anything else I should watch out for?", zh: "还有什么需要注意的吗？", keywords: ["watch out"] },
+        { role: "clerk", en: "Don't drive after taking it, as it may make you sleepy.", zh: "服药后不要开车，可能会犯困。" },
+        { role: "user", en: "Understood. Thanks for explaining.", zh: "明白了，谢谢你的讲解。", keywords: ["understood"] }
+      ],
+      tips: [
+        "three times a day = 每日三次。",
+        "watch out for = 注意提防。"
+      ]
     }
   ]
 },
-  // ===================== 第 16 天 =====================
+// ===================== 第 16 天 =====================
 {
   words: [
     { word: "anticipate", phonetic: "/ænˈtɪsɪpeɪt/", meaning: "v. 预期；预料", example: "We anticipate a busy day.", exampleZh: "我们预计今天会很忙。" },
@@ -1478,17 +2144,7 @@ window.DAY_PLAN = [
     { word: "gracious", phonetic: "/ˈɡreɪʃəs/", meaning: "adj. 亲切的；优雅的", example: "She gave a gracious smile.", exampleZh: "她亲切地微笑了。" },
     { word: "humble", phonetic: "/ˈhʌmbl/", meaning: "adj. 谦虚的；卑微的", example: "He remained humble after success.", exampleZh: "成功后他依然谦虚。" },
     { word: "infinite", phonetic: "/ˈɪnfɪnət/", meaning: "adj. 无限的", example: "Space is infinite.", exampleZh: "太空是无限的。" },
-    { word: "legitimate", phonetic: "/lɪˈdʒɪtɪmət/", meaning: "adj. 合法的；正当的", example: "It's a legitimate question.", exampleZh: "这是一个合理的问题。" },
-    { word: "merit", phonetic: "/ˈmerɪt/", meaning: "n. 优点；价值", example: "Hard work has its merits.", exampleZh: "勤奋有其价值。" },
-    { word: "nuisance", phonetic: "/ˈnjuːsns/", meaning: "n. 麻烦；讨厌的事", example: "The noise is a nuisance.", exampleZh: "这噪音很讨厌。" },
-    { word: "onset", phonetic: "/ˈɒnset/", meaning: "n. 开始；发作", example: "The onset of winter was early.", exampleZh: "冬天的到来很早。" },
-    { word: "profound", phonetic: "/prəˈfaʊnd/", meaning: "adj. 深刻的；深远的", example: "It had a profound effect.", exampleZh: "它产生了深远影响。" },
-    { word: "reconcile", phonetic: "/ˈrekənsaɪl/", meaning: "v. 调和；使和解", example: "They reconciled after a long talk.", exampleZh: "长谈之后他们和解了。" },
-    { word: "stagnant", phonetic: "/ˈstæɡnənt/", meaning: "adj. 停滞的；不流动的", example: "The economy became stagnant.", exampleZh: "经济陷入停滞。" },
-    { word: "tranquil", phonetic: "/ˈtræŋkwɪl/", meaning: "adj. 宁静的", example: "The lake was tranquil.", exampleZh: "湖面很宁静。" },
-    { word: "utter", phonetic: "/ˈʌtə(r)/", meaning: "adj. 完全的 v. 说出", example: "It was an utter surprise.", exampleZh: "这完全是个惊喜。" },
-    { word: "verge", phonetic: "/vɜːdʒ/", meaning: "n. 边缘 v. 接近", example: "The plant is on the verge of death.", exampleZh: "这株植物濒临死亡。" },
-    { word: "wealth", phonetic: "/welθ/", meaning: "n. 财富", example: "Health is true wealth.", exampleZh: "健康才是真正的财富。" }
+    { word: "legitimate", phonetic: "/lɪˈdʒɪtɪmət/", meaning: "adj. 合法的；正当的", example: "It's a legitimate question.", exampleZh: "这是一个合理的问题。" }
   ],
   article: {
     title: "The Benefits of Keeping a Journal",
@@ -1560,6 +2216,62 @@ window.DAY_PLAN = [
         "water heater = 热水器。",
         "repairman = 维修工。"
       ]
+    },
+    {
+      scene: "在文具店买日记本",
+      situationZh: "你想开始写日记，去文具店挑选一本合适的本子。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome! What can I help you find?", zh: "欢迎光临！想找什么？" },
+        { role: "user", en: "I'm looking for a nice notebook for keeping a journal.", zh: "我想找一本好点的本子写日记。", keywords: ["notebook", "journal"] },
+        { role: "clerk", en: "We have some with soft covers over here.", zh: "这边有几本软封面的。" },
+        { role: "user", en: "This one feels nice. Is the paper thick enough?", zh: "这本手感不错，纸够厚吗？", keywords: ["paper"] },
+        { role: "clerk", en: "Yes, it's durable and doesn't fade.", zh: "够厚，很耐用，不易褪色。" },
+        { role: "user", en: "Great, how much is it?", zh: "太好了，多少钱？", keywords: ["how much"] },
+        { role: "clerk", en: "It's 25 yuan.", zh: "25 元。" },
+        { role: "user", en: "I'll take it. Thanks!", zh: "我买了，谢谢！", keywords: ["take"] }
+      ],
+      tips: [
+        "keep a journal = 记日记。",
+        "durable = 耐用的。"
+      ]
+    },
+    {
+      scene: "在咖啡店独自安静读书",
+      situationZh: "你在咖啡店选了一本散文集，安静地阅读并思考。",
+      roles: { waitress: "服务员", user: "我" },
+      turns: [
+        { role: "waitress", en: "Good afternoon! Ready to order?", zh: "下午好！可以点单了吗？" },
+        { role: "user", en: "A large latte, please, with a quiet seat by the window.", zh: "请给我一杯大杯拿铁，我想坐窗边的安静座位。", keywords: ["latte", "window"] },
+        { role: "waitress", en: "Sure, right this way.", zh: "好的，这边请。" },
+        { role: "user", en: "Do you have any cookies to go with it?", zh: "有没有配咖啡的饼干？", keywords: ["cookies"] },
+        { role: "waitress", en: "Yes, we have almond cookies.", zh: "有，我们有杏仁饼干。" },
+        { role: "user", en: "I'll have two, please. I'm reading a book today.", zh: "请来两块。我今天准备看书。", keywords: ["reading", "book"] },
+        { role: "waitress", en: "Enjoy your reading time!", zh: "祝您阅读愉快！" },
+        { role: "user", en: "Thank you!", zh: "谢谢！", keywords: ["thank"] }
+      ],
+      tips: [
+        "latte = 拿铁咖啡。",
+        "enjoy your reading = 尽享阅读。"
+      ]
+    },
+    {
+      scene: "在旧书店与店主交流",
+      situationZh: "你在旧书店淘到一本旧诗集，和店主聊起收藏的故事。",
+      roles: { clerk: "店主", user: "我" },
+      turns: [
+        { role: "user", en: "Excuse me, how much is this collection of poems?", zh: "打扰一下，这本诗集多少钱？", keywords: ["poems"] },
+        { role: "clerk", en: "That one is a rare edition from the 1980s.", zh: "那是本 80 年代的稀有版本。" },
+        { role: "user", en: "Wow, I've been collecting old books for years.", zh: "哇，我收藏旧书很多年了。", keywords: ["collecting", "old books"] },
+        { role: "clerk", en: "It's 45 yuan. It only has a few marks inside.", zh: "45 元，里面只有几处划线。" },
+        { role: "user", en: "That's fine, a little history is charming.", zh: "没关系，有点历史感才有味道。", keywords: ["history"] },
+        { role: "clerk", en: "You can read it at the corner table if you like.", zh: "你喜欢的话可以在角落的桌子那儿看。" },
+        { role: "user", en: "Thanks, I'll take it home to read slowly.", zh: "谢谢，我带回家慢慢读。", keywords: ["take", "read"] }
+      ],
+      tips: [
+        "rare edition = 稀有版本。",
+        "a bit of history = 一点历史味道。"
+      ]
     }
   ]
 },
@@ -1575,17 +2287,7 @@ window.DAY_PLAN = [
     { word: "glance", phonetic: "/ɡlɑːns/", meaning: "v. 瞥一眼 n. 一瞥", example: "She glanced at her watch.", exampleZh: "她瞥了一眼手表。" },
     { word: "generous", phonetic: "/ˈdʒenərəs/", meaning: "adj. 慷慨的；大方的", example: "He is generous with his time.", exampleZh: "他乐于为他人付出时间。" },
     { word: "hypothesis", phonetic: "/haɪˈpɒθəsɪs/", meaning: "n. 假设", example: "We must test the hypothesis.", exampleZh: "我们必须检验这个假设。" },
-    { word: "inevitable", phonetic: "/ɪnˈevɪtəbl/", meaning: "adj. 不可避免的", example: "Change is inevitable.", exampleZh: "变化是不可避免的。" },
-    { word: "loyalty", phonetic: "/ˈlɔɪəlti/", meaning: "n. 忠诚", example: "Loyalty matters in a team.", exampleZh: "忠诚在团队中很重要。" },
-    { word: "mingle", phonetic: "/ˈmɪŋɡl/", meaning: "v. 混合；交往", example: "Mingle with new people at the party.", exampleZh: "在聚会上和新朋友交往。" },
-    { word: "nominal", phonetic: "/ˈnɒmɪnl/", meaning: "adj. 名义上的；很小的", example: "There is a nominal fee.", exampleZh: "只收象征性费用。" },
-    { word: "overall", phonetic: "/ˌəʊvərˈɔːl/", meaning: "adj. 总体的 adv. 总体上", example: "Overall, the project succeeded.", exampleZh: "总体而言，项目成功了。" },
-    { word: "presume", phonetic: "/prɪˈzjuːm/", meaning: "v. 假设；推测", example: "I presume you are tired.", exampleZh: "我猜想你累了。" },
-    { word: "scarce", phonetic: "/skeəs/", meaning: "adj. 稀少的", example: "Jobs are scarce this year.", exampleZh: "今年工作机会稀少。" },
-    { word: "tremendous", phonetic: "/trəˈmendəs/", meaning: "adj. 巨大的；极好的", example: "It was a tremendous success.", exampleZh: "这是一次巨大成功。" },
-    { word: "undertake", phonetic: "/ˌʌndəˈteɪk/", meaning: "v. 承担；从事", example: "She undertook the difficult task.", exampleZh: "她承担了这项艰巨任务。" },
-    { word: "vividly", phonetic: "/ˈvɪvɪdli/", meaning: "adv. 生动地；鲜明地", example: "I remember the day vividly.", exampleZh: "我清晰地记得那一天。" },
-    { word: "worthwhile", phonetic: "/ˌwɜːθˈwaɪl/", meaning: "adj. 值得的", example: "The effort was worthwhile.", exampleZh: "这份努力是值得的。" }
+    { word: "inevitable", phonetic: "/ɪnˈevɪtəbl/", meaning: "adj. 不可避免的", example: "Change is inevitable.", exampleZh: "变化是不可避免的。" }
   ],
   article: {
     title: "Why Failure Can Be a Teacher",
@@ -1657,6 +2359,61 @@ window.DAY_PLAN = [
         "send = 寄（送）。",
         "fill in the form = 填表。"
       ]
+    },
+    {
+      scene: "在驾校咨询补考",
+      situationZh: "你科目二没考过，到驾校咨询补考安排。",
+      roles: { clerk: "教练", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, how did your test go?", zh: "你好，考试考得怎么样？" },
+        { role: "user", en: "I failed the parallel parking again.", zh: "我又没通过侧方停车。", keywords: ["failed", "parking"] },
+        { role: "clerk", en: "Don't worry, many people pass the second time.", zh: "别担心，很多人第二次就过了。" },
+        { role: "user", en: "When can I retake it?", zh: "我什么时候可以重考？", keywords: ["retake"] },
+        { role: "clerk", en: "You can retake it in two weeks.", zh: "两周后可以重考。" },
+        { role: "user", en: "Could I have extra practice before that?", zh: "考试前能再练几次吗？", keywords: ["practice"] },
+        { role: "clerk", en: "Sure, we have slots every morning.", zh: "可以，每天早上都有时间安排。" },
+        { role: "user", en: "Thanks, I'll practice harder this time.", zh: "谢谢，这次我会更努力练。", keywords: ["harder"] }
+      ],
+      tips: [
+        "retake = 重考。",
+        "practice harder = 更努力练习。"
+      ]
+    },
+    {
+      scene: "在蛋糕店参加烘焙体验课",
+      situationZh: "你第一次学做戚风蛋糕，失败了但决定再试一次。",
+      roles: { clerk: "烘焙老师", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome to the baking class!", zh: "欢迎来到烘焙课！" },
+        { role: "user", en: "My cake deflated again. What went wrong?", zh: "我的蛋糕又塌了，哪里不对？", keywords: ["deflated", "wrong"] },
+        { role: "clerk", en: "Maybe the oven wasn't hot enough. Let's retry it.", zh: "可能是烤箱温度不够。我们再来一次。" },
+        { role: "user", en: "I still want to try. Failure teaches a lot.", zh: "我还是想试试。失败能教会我很多。", keywords: ["try", "failure"] },
+        { role: "clerk", en: "Exactly. This time, whisk for one more minute.", zh: "没错。这次再打发一分钟。" },
+        { role: "user", en: "Okay, let me do it step by step.", zh: "好，我一步一步来。", keywords: ["step"] },
+        { role: "clerk", en: "See? It turned out great this time!", zh: "看，这次就很成功！", keywords: ["great"] }
+      ],
+      tips: [
+        "baking class = 烘焙课。",
+        "retry = 再试一次。"
+      ]
+    },
+    {
+      scene: "在健身比赛中再次挑战",
+      situationZh: "你在健身房尝试完成更高难度动作失败后，鼓起勇气再试。",
+      roles: { clerk: "教练", user: "我" },
+      turns: [
+        { role: "clerk", en: "Did you manage the pull-ups today?", zh: "今天引体向上做得怎么样？" },
+        { role: "user", en: "Not yet, I only reached eight.", zh: "还没完成，我只做到了八个。", keywords: ["pull-ups", "eight"] },
+        { role: "clerk", en: "That's improvement—last week was six.", zh: "这是进步——上周才六个。" },
+        { role: "user", en: "Can you watch my form and give me feedback?", zh: "你能看看我的姿势并给点建议吗？", keywords: ["form", "feedback"] },
+        { role: "clerk", en: "Of course. Keep your back straight this time.", zh: "当然可以。这次保持背部挺直。" },
+        { role: "user", en: "Here I go... I did nine this time!", zh: "我来了……这次做了九个！", keywords: ["nine"] },
+        { role: "clerk", en: "Great progress! Every try counts.", zh: "进步很大！每一次尝试都很重要。", keywords: ["progress"] }
+      ],
+      tips: [
+        "pull-up = 引体向上。",
+        "progress = 进步。"
+      ]
     }
   ]
 },
@@ -1672,17 +2429,7 @@ window.DAY_PLAN = [
     { word: "hazard", phonetic: "/ˈhæzəd/", meaning: "n. 危险", example: "Ice is a hazard on the road.", exampleZh: "路上结冰很危险。" },
     { word: "immerse", phonetic: "/ɪˈmɜːs/", meaning: "v. 沉浸；使专心", example: "He immersed himself in his book.", exampleZh: "他沉浸在书中。" },
     { word: "jeopardize", phonetic: "/ˈdʒepədaɪz/", meaning: "v. 危害；损害", example: "Don't jeopardize your health.", exampleZh: "不要危害你的健康。" },
-    { word: "luminous", phonetic: "/ˈluːmɪnəs/", meaning: "adj. 发光的；明亮的", example: "The stars are luminous tonight.", exampleZh: "今晚星光灿烂。" },
-    { word: "meager", phonetic: "/ˈmiːɡə(r)/", meaning: "adj. 贫乏的；微薄的", example: "He earned a meager salary.", exampleZh: "他收入微薄。" },
-    { word: "notorious", phonetic: "/nəʊˈtɔːriəs/", meaning: "adj. 臭名昭著的", example: "The area is notorious for traffic.", exampleZh: "这个地区的交通出了名的差。" },
-    { word: "obscure", phonetic: "/əbˈskjʊə(r)/", meaning: "adj. 模糊的；晦涩的", example: "The meaning is obscure.", exampleZh: "意义晦涩难懂。" },
-    { word: "portray", phonetic: "/pɔːˈtreɪ/", meaning: "v. 描绘；扮演", example: "The film portrays village life.", exampleZh: "这部电影描绘乡村生活。" },
-    { word: "refute", phonetic: "/rɪˈfjuːt/", meaning: "v. 反驳", example: "He refuted the argument.", exampleZh: "他反驳了这个论点。" },
-    { word: "savor", phonetic: "/ˈseɪvə(r)/", meaning: "v. 细细品味", example: "Savor every moment.", exampleZh: "品味每一刻。" },
-    { word: "tranquil", phonetic: "/ˈtræŋkwɪl/", meaning: "adj. 宁静的", example: "We found a tranquil spot.", exampleZh: "我们找到了一个宁静的地方。" },
-    { word: "undermine", phonetic: "/ˌʌndəˈmaɪn/", meaning: "v. 暗中破坏", example: "Gossip undermined her trust.", exampleZh: "流言削弱了她的信任。" },
-    { word: "vigilant", phonetic: "/ˈvɪdʒɪlənt/", meaning: "adj. 警惕的", example: "Stay vigilant at night.", exampleZh: "晚上要保持警惕。" },
-    { word: "wholesome", phonetic: "/ˈhəʊlsəm/", meaning: "adj. 有益健康的", example: "This is a wholesome meal.", exampleZh: "这是一顿健康的饭菜。" }
+    { word: "luminous", phonetic: "/ˈluːmɪnəs/", meaning: "adj. 发光的；明亮的", example: "The stars are luminous tonight.", exampleZh: "今晚星光灿烂。" }
   ],
   article: {
     title: "How to Manage Your Spare Time",
@@ -1755,6 +2502,62 @@ window.DAY_PLAN = [
         "countryside = 乡村；郊区。",
         "express = 快车。"
       ]
+    },
+    {
+      scene: "在美术馆买票参观",
+      situationZh: "你在美术馆排队买票，打算用空闲时间看展。",
+      roles: { clerk: "售票员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, would you like a ticket?", zh: "你好，需要买一张票吗？" },
+        { role: "user", en: "Yes, one adult ticket, please.", zh: "是的，一张成人票。", keywords: ["adult", "ticket"] },
+        { role: "clerk", en: "That's 40 yuan. The tour starts at the next hour.", zh: "40 元，讲解团下个小时开始。" },
+        { role: "user", en: "How long does the exhibition last?", zh: "展览持续多长时间？", keywords: ["how long"] },
+        { role: "clerk", en: "About two hours at a relaxed pace.", zh: "慢慢逛大约两小时。" },
+        { role: "user", en: "Great, I have the afternoon to spend here.", zh: "太好了，我一下午都有空待在这。", keywords: ["afternoon"] },
+        { role: "clerk", en: "Enjoy the art!", zh: "祝您欣赏艺术！", keywords: ["enjoy"] }
+      ],
+      tips: [
+        "art gallery = 美术馆。",
+        "spend time = 度过时间。"
+      ]
+    },
+    {
+      scene: "在花市买一盆盆栽",
+      situationZh: "周末你到花市挑选一盆绿植来布置房间。",
+      roles: { clerk: "摊主", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome! These plants are easy to care for.", zh: "欢迎！这些植物很好养。" },
+        { role: "user", en: "I'd like a plant that doesn't need much light.", zh: "我想要一盆不太需要光照的植物。", keywords: ["plant", "light"] },
+        { role: "clerk", en: "This snake plant is perfect for your living room.", zh: "这盆虎尾兰放在客厅最合适。" },
+        { role: "user", en: "How often should I water it?", zh: "多久浇一次水？", keywords: ["water"] },
+        { role: "clerk", en: "Only when the soil is dry, about once a week.", zh: "土干了再浇，大约一周一次。" },
+        { role: "user", en: "Great, I'll take this pot.", zh: "好的，我就要这盆。", keywords: ["pot"] },
+        { role: "clerk", en: "Here's a care card for you.", zh: "送您一张养护说明卡。" },
+        { role: "user", en: "Thanks, have a good day!", zh: "谢谢，祝您愉快！", keywords: ["thanks"] }
+      ],
+      tips: [
+        "snake plant = 虎尾兰。",
+        "care for = 照料。"
+      ]
+    },
+    {
+      scene: "在书店参加周末读书会",
+      situationZh: "你报名参加书店的周末读书会，和大家交流读书心得。",
+      roles: { host: "主持人", user: "我" },
+      turns: [
+        { role: "host", en: "Welcome to the book club! What are you reading now?", zh: "欢迎来到读书会！你最近在读什么？" },
+        { role: "user", en: "I just finished a novel about a journey.", zh: "我刚读完一本关于旅程的小说。", keywords: ["novel", "journey"] },
+        { role: "host", en: "What impressed you most about it?", zh: "它最让你印象深刻的是什么？" },
+        { role: "user", en: "The way the main character grows through challenges.", zh: "主角在挑战中成长的方式。", keywords: ["character", "grows"] },
+        { role: "host", en: "That's a lovely theme. Has anyone read it too?", zh: "这个主题很棒。还有人读过吗？" },
+        { role: "user", en: "I'd love to hear other readers' views.", zh: "我很想听听其他读者的看法。", keywords: ["views"] },
+        { role: "host", en: "Let's open the floor to everyone.", zh: "那我们请大家一起交流。" },
+        { role: "user", en: "Thank you for hosting this group.", zh: "谢谢主持这个小组。", keywords: ["thank"] }
+      ],
+      tips: [
+        "book club = 读书会。",
+        "share views = 分享看法。"
+      ]
     }
   ]
 },
@@ -1770,17 +2573,7 @@ window.DAY_PLAN = [
     { word: "grapple", phonetic: "/ˈɡræpl/", meaning: "v. 努力对付；扭打", example: "We grappled with the problem.", exampleZh: "我们努力解决这个难题。" },
     { word: "hefty", phonetic: "/ˈhefti/", meaning: "adj. 大量的；重的", example: "They paid a hefty fine.", exampleZh: "他们交了巨额罚款。" },
     { word: "instigate", phonetic: "/ˈɪnstɪɡeɪt/", meaning: "v. 煽动；发起", example: "He instigated a new project.", exampleZh: "他发起了一个新项目。" },
-    { word: "linger", phonetic: "/ˈlɪŋɡə(r)/", meaning: "v. 逗留；徘徊", example: "She lingered at the door.", exampleZh: "她在门口逗留。" },
-    { word: "meticulous", phonetic: "/məˈtɪkjələs/", meaning: "adj. 一丝不苟的", example: "He is meticulous about details.", exampleZh: "他对细节一丝不苟。" },
-    { word: "nuisance", phonetic: "/ˈnjuːsns/", meaning: "n. 讨厌的人/事", example: "This bug is a nuisance.", exampleZh: "这个虫子很讨厌。" },
-    { word: "onset", phonetic: "/ˈɒnset/", meaning: "n. 开始；发作", example: "At the onset of spring, it warms up.", exampleZh: "春天来临时天气变暖。" },
-    { word: "prolific", phonetic: "/prəˈlɪfɪk/", meaning: "adj. 多产的；丰富的", example: "She is a prolific writer.", exampleZh: "她是一位多产作家。" },
-    { word: "resilience", phonetic: "/rɪˈzɪliəns/", meaning: "n. 韧性；恢复力", example: "Adversity builds resilience.", exampleZh: "逆境磨炼韧性。" },
-    { word: "sceptical", phonetic: "/ˈskeptɪkl/", meaning: "adj. 怀疑的", example: "I'm sceptical about the idea.", exampleZh: "我对这个想法持怀疑态度。" },
-    { word: "tangible", phonetic: "/ˈtændʒəbl/", meaning: "adj. 有形的", example: "We need tangible proof.", exampleZh: "我们需要确凿的证据。" },
-    { word: "verify", phonetic: "/ˈverɪfaɪ/", meaning: "v. 核实；验证", example: "We must verify the number.", exampleZh: "我们必须核实这个数字。" },
-    { word: "warrant", phonetic: "/ˈwɒrənt/", meaning: "v. 保证；使正当 n. 令状", example: "The situation warrants caution.", exampleZh: "这种状况需要谨慎。" },
-    { word: "zenith", phonetic: "/ˈzenɪθ/", meaning: "n. 顶点；顶峰", example: "The sun reached its zenith.", exampleZh: "太阳升到了顶点。" }
+    { word: "linger", phonetic: "/ˈlɪŋɡə(r)/", meaning: "v. 逗留；徘徊", example: "She lingered at the door.", exampleZh: "她在门口逗留。" }
   ],
   article: {
     title: "Why Routine Helps Your Brain",
@@ -1852,6 +2645,61 @@ window.DAY_PLAN = [
         "deposit = 押金。",
         "return = 退回。"
       ]
+    },
+    {
+      scene: "在早餐店固定点同样的早餐",
+      situationZh: "你每天在同一家早餐店点相同的燕麦粥和一盒牛奶。",
+      roles: { clerk: "老板", user: "我" },
+      turns: [
+        { role: "clerk", en: "Good morning! Your usual porridge and milk?", zh: "早上好！还是老样子，燕麦粥和牛奶？" },
+        { role: "user", en: "Yes, thanks for remembering my order.", zh: "对，谢谢你还记得我的订单。", keywords: ["order", "remembering"] },
+        { role: "clerk", en: "Of course, regular as clockwork!", zh: "当然，你每天都来，很准时！" },
+        { role: "user", en: "The same routine saves me time every morning.", zh: "一样的流程每天早上都帮我省时间。", keywords: ["routine", "time"] },
+        { role: "clerk", en: "That's smart. Here's your food.", zh: "真聪明。你的早餐好了。" },
+        { role: "user", en: "Great, see you tomorrow at the same time.", zh: "好，明天同一时间见。", keywords: ["tomorrow"] },
+        { role: "clerk", en: "See you then! Have a great day.", zh: "明天见！祝你今天顺利。" }
+      ],
+      tips: [
+        "usual = 惯常的。",
+        "as regular as clockwork = 像时钟一样准时。"
+      ]
+    },
+    {
+      scene: "在杂货店采购每周生活用品",
+      situationZh: "你按惯例每周日去杂货店采购日用品。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome back! Same list this week?", zh: "欢迎回来！这周还是同样的清单吗？" },
+        { role: "user", en: "Almost, plus a bottle of detergent today.", zh: "差不多，今天再加一瓶洗衣液。", keywords: ["detergent"] },
+        { role: "clerk", en: "Sure, it's on the cleaner shelf.", zh: "好的，在清洁用品那排架子上。" },
+        { role: "user", en: "Do you have any discounts now?", zh: "现在有什么优惠吗？", keywords: ["discounts"] },
+        { role: "clerk", en: "Yes, soap is buy two get one free.", zh: "有，肥皂买二送一。" },
+        { role: "user", en: "I'll grab two bars then.", zh: "那我就拿两块。", keywords: ["two", "bars"] },
+        { role: "clerk", en: "Great, your total is 55 yuan.", zh: "好的，一共 55 元。" },
+        { role: "user", en: "Here you go, thanks.", zh: "给你，谢谢。", keywords: ["here"] }
+      ],
+      tips: [
+        "detergent = 洗衣液/清洁剂。",
+        "buy two get one free = 买二送一。"
+      ]
+    },
+    {
+      scene: "在健身房预约固定的私教课",
+      situationZh: "你每周固定预约周三晚上的私教课锻炼。",
+      roles: { clerk: "前台", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi, ready to book your weekly session?", zh: "你好，要预订这周的课程吗？" },
+        { role: "user", en: "Yes, the usual Wednesday 7 pm slot, please.", zh: "是的，还是周三晚上七点的时段。", keywords: ["Wednesday", "slot"] },
+        { role: "clerk", en: "Booked. Your trainer will be ready.", zh: "已订好，你的教练会等你。" },
+        { role: "user", en: "Thanks. Having a set time keeps me on track.", zh: "谢谢。固定的时间能让我坚持锻炼。", keywords: ["set time"] },
+        { role: "clerk", en: "Exactly, consistency is key.", zh: "没错，坚持是关键。" },
+        { role: "user", en: "I'll see you next week then.", zh: "那下周见。", keywords: ["next week"] },
+        { role: "clerk", en: "See you! Have a good training day.", zh: "再见！祝你锻炼愉快。" }
+      ],
+      tips: [
+        "book a slot = 预订时段。",
+        "consistency = 坚持；始终如一。"
+      ]
     }
   ]
 },
@@ -1867,17 +2715,7 @@ window.DAY_PLAN = [
     { word: "guile", phonetic: "/ɡaɪl/", meaning: "n. 狡猾；计谋", example: "He won by guile, not force.", exampleZh: "他用计谋而非武力取胜。" },
     { word: "hearken", phonetic: "/ˈhɑːkən/", meaning: "v. 倾听（古语）", example: "Hearken to the advice.", exampleZh: "倾听这个建议。" },
     { word: "lucid", phonetic: "/ˈluːsɪd/", meaning: "adj. 清晰的；清醒的", example: "She wrote a lucid explanation.", exampleZh: "她写了一个清晰的解释。" },
-    { word: "myriad", phonetic: "/ˈmɪriəd/", meaning: "adj. 无数的 n. 无数", example: "There are myriad choices.", exampleZh: "有无数的选择。" },
-    { word: "nimble", phonetic: "/ˈnɪmbl/", meaning: "adj. 灵活的；敏捷的", example: "The cat is nimble.", exampleZh: "这只猫很敏捷。" },
-    { word: "opulent", phonetic: "/ˈɒpjələnt/", meaning: "adj. 豪华的；富裕的", example: "They lived in an opulent palace.", exampleZh: "他们住在豪华的宫殿里。" },
-    { word: "palpable", phonetic: "/ˈpælpəbl/", meaning: "adj. 明显的；可感知的", example: "The tension was palpable.", exampleZh: "紧张感可以明显感觉到。" },
-    { word: "quell", phonetic: "/kwel/", meaning: "v. 平息；镇压", example: "The rain quelled the fire risks.", exampleZh: "雨水降低了火灾风险。" },
-    { word: "robust", phonetic: "/rəʊˈbʌst/", meaning: "adj. 强健的；稳健的", example: "He is in robust health.", exampleZh: "他身体强壮。" },
-    { word: "serene", phonetic: "/səˈriːn/", meaning: "adj. 平静的；安详的", example: "The sea was serene.", exampleZh: "海面平静。" },
-    { word: "tenacious", phonetic: "/təˈneɪʃəs/", meaning: "adj. 顽强的；坚持的", example: "She is tenacious in her goals.", exampleZh: "她对目标非常执着。" },
-    { word: "ubiquitous", phonetic: "/juːˈbɪkwɪtəs/", meaning: "adj. 无处不在的", example: "Smartphones are ubiquitous.", exampleZh: "智能手机无处不在。" },
-    { word: "voracious", phonetic: "/vəˈreɪʃəs/", meaning: "adj. 贪婪的；求知若渴的", example: "He is a voracious reader.", exampleZh: "他是个求知若渴的读者。" },
-    { word: "zealous", phonetic: "/ˈzeləs/", meaning: "adj. 热忱的", example: "The zealous fans cheered loudly.", exampleZh: "热忱的粉丝大声欢呼。" }
+    { word: "myriad", phonetic: "/ˈmɪriəd/", meaning: "adj. 无数的 n. 无数", example: "There are myriad choices.", exampleZh: "有无数的选择。" }
   ],
   article: {
     title: "The Magic of Getting Outside",
@@ -1950,10 +2788,66 @@ window.DAY_PLAN = [
         "scarf = 丝巾。",
         "gift wrapping = 礼物包装。"
       ]
+    },
+    {
+      scene: "在公园租自行车",
+      situationZh: "你想沿着公园骑行，租了一辆自行车。",
+      roles: { clerk: "租车员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, would you like to rent a bike?", zh: "你好，要租一辆自行车吗？" },
+        { role: "user", en: "Yes, how much is it per hour?", zh: "是的，每小时多少钱？", keywords: ["rent", "hour"] },
+        { role: "clerk", en: "It's 15 yuan per hour, with a 50 yuan deposit.", zh: "每小时 15 元，押金 50 元。" },
+        { role: "user", en: "Do you have a bike for cycling on hills?", zh: "有适合爬坡的山地车吗？", keywords: ["hills"] },
+        { role: "clerk", en: "Yes, that one has multiple gears.", zh: "有，那辆有多档变速。" },
+        { role: "user", en: "Great, I'll take it for two hours.", zh: "好，我租两小时。", keywords: ["two", "hours"] },
+        { role: "clerk", en: "Here's your bike. Enjoy the fresh air!", zh: "这是你的车，享受新鲜空气吧！", keywords: ["fresh air"] }
+      ],
+      tips: [
+        "rent = 租用。",
+        "gear = 变速档位。"
+      ]
+    },
+    {
+      scene: "在登山用品店买徒步装备",
+      situationZh: "你周末要去爬山，在店里选购背包和登山杖。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome! Are you planning a hike?", zh: "欢迎光临！是计划去远足吗？" },
+        { role: "user", en: "Yes, I need a small backpack for a day trip.", zh: "是的，我需要一个小背包用于一日游。", keywords: ["backpack", "trip"] },
+        { role: "clerk", en: "This one is light and has a water-bottle holder.", zh: "这款很轻，还有水壶袋。" },
+        { role: "user", en: "Do you also have walking sticks?", zh: "你们也有登山杖吗？", keywords: ["sticks"] },
+        { role: "clerk", en: "Yes, these fold up easily.", zh: "有，这些很容易折叠。" },
+        { role: "user", en: "How much for both?", zh: "两样一起多少钱？", keywords: ["both"] },
+        { role: "clerk", en: "Together it's 180 yuan.", zh: "一起 180 元。" },
+        { role: "user", en: "Okay, I'll take them.", zh: "好的，我买了。", keywords: ["take"] }
+      ],
+      tips: [
+        "hike = 远足；徒步。",
+        "walking stick = 登山杖。"
+      ]
+    },
+    {
+      scene: "在湖边租帐篷露营",
+      situationZh: "你想周末露营，在湖边租一套帐篷装备。",
+      roles: { clerk: "工作人员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, are you looking for camping gear?", zh: "你好，需要露营装备吗？" },
+        { role: "user", en: "Yes, do you rent tents for the weekend?", zh: "是的，周末可以租帐篷吗？", keywords: ["tent", "weekend"] },
+        { role: "clerk", en: "We do. The camping area is beside the lake.", zh: "可以租。露营区就在湖边。" },
+        { role: "user", en: "What does the rental include?", zh: "租用包含哪些东西？", keywords: ["include"] },
+        { role: "clerk", en: "A tent, a mat, and two sleeping bags.", zh: "帐篷、垫子和两个睡袋。" },
+        { role: "user", en: "It's 80 yuan for one night, right?", zh: "一晚 80 元，对吗？", keywords: ["one night"] },
+        { role: "clerk", en: "Yes, please return it by Sunday noon.", zh: "是的，周日前请归还。" },
+        { role: "user", en: "Perfect, I'll book it now.", zh: "太好了，我现在预订。", keywords: ["book"] }
+      ],
+      tips: [
+        "camping = 露营。",
+        "sleeping bag = 睡袋。"
+      ]
     }
   ]
 },
-  // ===================== 第 21 天 =====================
+// ===================== 第 21 天 =====================
 {
   words: [
     { word: "allocate", phonetic: "/ˈæləkeɪt/", meaning: "v. 分配；分派", example: "We allocated resources wisely.", exampleZh: "我们合理分配了资源。" },
@@ -1965,17 +2859,7 @@ window.DAY_PLAN = [
     { word: "ginle", phonetic: "/ˈdʒɪtərɪ/", meaning: "adj. 兴奋不安的", example: "She was jittery before the exam.", exampleZh: "考试前她紧张不安。" },
     { word: "hospitable", phonetic: "/hɒˈspɪtəbl/", meaning: "adj. 好客的", example: "The villagers are hospitable.", exampleZh: "村民很好客。" },
     { word: "illuminate", phonetic: "/ɪˈluːmɪneɪt/", meaning: "v. 照亮；阐明", example: "The lamp illuminated the room.", exampleZh: "灯照亮了房间。" },
-    { word: "languid", phonetic: "/ˈlæŋɡwɪd/", meaning: "adj. 倦怠的；慵懒的", example: "They moved at a languid pace.", exampleZh: "他们懒洋洋地走着。" },
-    { word: "malleable", phonetic: "/ˈmæliəbl/", meaning: "adj. 可塑的；易改变的", example: "Gold is a malleable metal.", exampleZh: "金是可锻金属。" },
-    { word: "nostalgia", phonetic: "/nɒˈstældʒə/", meaning: "n. 怀旧；乡愁", example: "The song brought back nostalgia.", exampleZh: "这首歌唤起了怀旧之情。" },
-    { word: "overwhelm", phonetic: "/ˌəʊvəˈwelm/", meaning: "v. 使不知所措；压倒", example: "She was overwhelmed by work.", exampleZh: "她被工作压得喘不过气。" },
-    { word: "permeate", phonetic: "/ˈpɜːmieɪt/", meaning: "v. 渗透；弥漫", example: "The smell permeated the house.", exampleZh: "气味弥漫整座房子。" },
-    { word: "quench", phonetic: "/kwentʃ/", meaning: "v. 解渴；扑灭", example: "This water quenched my thirst.", exampleZh: "这水帮我解了渴。" },
-    { word: "sanguine", phonetic: "/ˈsæŋɡwɪn/", meaning: "adj. 乐观的", example: "She remained sanguine about the future.", exampleZh: "她对未来保持乐观。" },
-    { word: "tumultuous", phonetic: "/tjuːˈmʌltʃuəs/", meaning: "adj. 喧闹的；动荡的", example: "It was a tumultuous period.", exampleZh: "那是一段动荡的时期。" },
-    { word: "unravel", phonetic: "/ʌnˈrævl/", meaning: "v. 解开；阐明", example: "They unravelled the mystery.", exampleZh: "他们解开了这个谜团。" },
-    { word: "venerate", phonetic: "/ˈvenəreɪt/", meaning: "v. 尊敬；崇敬", example: "They venerate the elder.", exampleZh: "他们尊敬这位长者。" },
-    { word: "yearn", phonetic: "/jɜːn/", meaning: "v. 渴望", example: "The child yearns for attention.", exampleZh: "孩子渴望关注。" }
+    { word: "languid", phonetic: "/ˈlæŋɡwɪd/", meaning: "adj. 倦怠的；慵懒的", example: "They moved at a languid pace.", exampleZh: "他们懒洋洋地走着。" }
   ],
   article: {
     title: "The Value of Teamwork",
@@ -2046,6 +2930,61 @@ window.DAY_PLAN = [
         "print = 打印。",
         "resume = 简历。"
       ]
+    },
+    {
+      scene: "在会议室开团队分工会",
+      situationZh: "你们小组在会议室讨论项目的分工安排。",
+      roles: { clerk: "组长", user: "我" },
+      turns: [
+        { role: "clerk", en: "Let's divide the project tasks today.", zh: "我们今天来分工一下项目任务。" },
+        { role: "user", en: "I'd like to handle the research part.", zh: "我想负责资料调研这部分。", keywords: ["research"] },
+        { role: "clerk", en: "Great, and who can take the writing?", zh: "好的，那谁来负责写作？" },
+        { role: "user", en: "Maybe we can write the summary together.", zh: "也许我们可以一起写总结。", keywords: ["summary", "together"] },
+        { role: "clerk", en: "Good idea. I'll email everyone the schedule.", zh: "好主意。我把时间安排发给大家。" },
+        { role: "user", en: "I'll keep track of deadlines and remind the team.", zh: "我来跟进截止日期并提醒大家。", keywords: ["deadlines", "remind"] },
+        { role: "clerk", en: "Perfect, that way nothing gets missed.", zh: "太好了，这样就不会遗漏了。" },
+        { role: "user", en: "Let's meet again on Friday to review.", zh: "我们周五再开会检查进度。", keywords: ["Friday", "review"] }
+      ],
+      tips: [
+        "divide tasks = 分工。",
+        "keep track of = 跟进。"
+      ]
+    },
+    {
+      scene: "在活动中心一起布置摊位",
+      situationZh: "你和其他志愿者一起在社区活动中心布置义卖摊位。",
+      roles: { clerk: "负责人", user: "我" },
+      turns: [
+        { role: "clerk", en: "Thanks for coming to help set up the booths.", zh: "谢谢你们来帮忙布置摊位。" },
+        { role: "user", en: "Where should I hang these banners?", zh: "这些横幅要挂在哪里？", keywords: ["banners"] },
+        { role: "clerk", en: "On the front wall, using the ladder.", zh: "挂在前面的墙上，用那把梯子。" },
+        { role: "user", en: "Could you hold the ladder while I climb?", zh: "我爬上去的时候你能扶着梯子吗？", keywords: ["ladder", "hold"] },
+        { role: "clerk", en: "Of course, teamwork makes it easier.", zh: "当然，团队合作让事情更简单。" },
+        { role: "user", en: "Great, now I'll place the donation boxes.", zh: "好的，我现在去摆放捐款箱。", keywords: ["donation", "boxes"] },
+        { role: "clerk", en: "Excellent. I'll sort the goods meanwhile.", zh: "太好了，我同时来整理货物。" }
+      ],
+      tips: [
+        "set up booths = 布置摊位。",
+        "teamwork = 团队合作。"
+      ]
+    },
+    {
+      scene: "和同伴合作搭书架",
+      situationZh: "你和新朋友一起按说明书合作搭建一个书架。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "clerk", en: "Let's build this shelf together. I'll start on the sides.", zh: "我们一起搭这个书架吧，我先装两侧。" },
+        { role: "user", en: "Good, I'll tighten the screws on the back panels.", zh: "好，我来拧紧背板的螺丝。", keywords: ["screws", "panels"] },
+        { role: "clerk", en: "Please hold this board steady while I align it.", zh: "我对准的时候请你扶稳这块板。", keywords: ["hold", "steady"] },
+        { role: "user", en: "No problem. Is this hole matching?", zh: "没问题。这个孔对得上吗？", keywords: ["hole"] },
+        { role: "clerk", en: "Yes, perfect. Now let's fix the shelves together.", zh: "对，正好。现在我们一起来固定隔板。" },
+        { role: "user", en: "It's much faster working as a pair.", zh: "两个人合作快多了。", keywords: ["faster", "pair"] },
+        { role: "clerk", en: "Done! Great cooperation today.", zh: "完成了！今天合作愉快。", keywords: ["cooperation"] }
+      ],
+      tips: [
+        "align = 对齐。",
+        "work as a pair = 两人合作。"
+      ]
     }
   ]
 },
@@ -2061,17 +3000,7 @@ window.DAY_PLAN = [
     { word: "glacial", phonetic: "/ˈɡleɪʃl/", meaning: "adj. 冰川的；极其缓慢的", example: "Progress was glacial.", exampleZh: "进展极其缓慢。" },
     { word: "hinder", phonetic: "/ˈhɪndə(r)/", meaning: "v. 阻碍", example: "Bad weather hindered the rescue.", exampleZh: "恶劣天气阻碍了救援。" },
     { word: "lucid", phonetic: "/ˈluːsɪd/", meaning: "adj. 清晰明了的", example: "His instructions were lucid.", exampleZh: "他的指示很清楚。" },
-    { word: "meticulous", phonetic: "/məˈtɪkjələs/", meaning: "adj. 一丝不苟的", example: "She keeps meticulous records.", exampleZh: "她做详细记录。" },
-    { word: "nurture", phonetic: "/ˈnɜːtʃə(r)/", meaning: "v. 培育；滋养", example: "Parents nurture their children.", exampleZh: "父母养育子女。" },
-    { word: "opulent", phonetic: "/ˈɒpjələnt/", meaning: "adj. 豪华的", example: "They live an opulent life.", exampleZh: "他们过着奢华的生活。" },
-    { word: "prodigal", phonetic: "/ˈprɒdɪɡl/", meaning: "adj. 浪费的；挥霍的", example: "He regretted his prodigal spending.", exampleZh: "他后悔挥霍无度。" },
-    { word: "radical", phonetic: "/ˈrædɪkl/", meaning: "adj. 彻底的；激进的", example: "They made a radical change.", exampleZh: "他们做了彻底的改变。" },
-    { word: "serendipity", phonetic: "/ˌserənˈdɪpəti/", meaning: "n. 机缘巧合；意外发现", example: "Meeting her was pure serendipity.", exampleZh: "遇见她纯属机缘巧合。" },
-    { word: "tenacious", phonetic: "/təˈneɪʃəs/", meaning: "adj. 顽强不屈的", example: "She is tenacious in her efforts.", exampleZh: "她做事顽强执着。" },
-    { word: "ubiquitous", phonetic: "/juːˈbɪkwɪtəs/", meaning: "adj. 无处不在的", example: "Coffee shops are ubiquitous.", exampleZh: "咖啡馆到处都有。" },
-    { word: "vivid", phonetic: "/ˈvɪvɪd/", meaning: "adj. 生动的", example: "She gave a vivid description.", exampleZh: "她做了生动的描述。" },
-    { word: "wane", phonetic: "/weɪn/", meaning: "v. 衰落；减弱", example: "His interest began to wane.", exampleZh: "他的兴趣开始减退。" },
-    { word: "zealous", phonetic: "/ˈzeləs/", meaning: "adj. 热情的", example: "He is zealous about his cause.", exampleZh: "他对自己的事业充满热情。" }
+    { word: "meticulous", phonetic: "/məˈtɪkjələs/", meaning: "adj. 一丝不苟的", example: "She keeps meticulous records.", exampleZh: "她做详细记录。" }
   ],
   article: {
     title: "The Importance of Asking Questions",
@@ -2142,6 +3071,60 @@ window.DAY_PLAN = [
         "order = 订购。",
         "flavor = 口味。"
       ]
+    },
+    {
+      scene: "在课堂上举手提问",
+      situationZh: "上课时你对一个知识点有疑问，鼓起勇气举手提问。",
+      roles: { clerk: "老师", user: "我" },
+      turns: [
+        { role: "user", en: "Excuse me, may I ask a question?", zh: "打扰一下，我可以提个问题吗？", keywords: ["question"] },
+        { role: "clerk", en: "Of course, please go ahead.", zh: "当然，请讲。" },
+        { role: "user", en: "Could you explain this formula once more?", zh: "能再解释一下这个公式吗？", keywords: ["formula"] },
+        { role: "clerk", en: "Sure. Let me use an example to clarify.", zh: "好的，我用一个例子来说明。" },
+        { role: "user", en: "Oh, I see it now. Thank you for explaining.", zh: "哦，我现在明白了，谢谢您的讲解。", keywords: ["see", "explaining"] },
+        { role: "clerk", en: "Great question! Never hesitate to ask.", zh: "问得好！提问千万不要犹豫。", keywords: ["hesitate"] }
+      ],
+      tips: [
+        "raise your hand = 举手。",
+        "clarify = 澄清；说明。"
+      ]
+    },
+    {
+      scene: "在服务台咨询换货政策",
+      situationZh: "你在商场服务台仔细询问商品的换货规定。",
+      roles: { clerk: "工作人员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, how can I help you?", zh: "你好，有什么可以帮您？" },
+        { role: "user", en: "I'd like to know your exchange policy, please.", zh: "我想了解你们的换货政策。", keywords: ["exchange", "policy"] },
+        { role: "clerk", en: "You can exchange within seven days with the receipt.", zh: "凭收据七天内可以换货。" },
+        { role: "user", en: "What if I don't have the receipt?", zh: "如果没有收据怎么办？", keywords: ["receipt"] },
+        { role: "clerk", en: "Then we need your membership phone number.", zh: "那我们需要你办会员时的手机号。" },
+        { role: "user", en: "I see. And is the tag required?", zh: "明白了。需要保留吊牌吗？", keywords: ["tag"] },
+        { role: "clerk", en: "Yes, the tag must be intact.", zh: "需要，吊牌必须完好。" },
+        { role: "user", en: "Got it, thanks for the details.", zh: "明白了，谢谢您讲得这么详细。", keywords: ["details"] }
+      ],
+      tips: [
+        "exchange policy = 换货政策。",
+        "intact = 完好无损的。"
+      ]
+    },
+    {
+      scene: "在语言班请教发音",
+      situationZh: "上英语课时你对一个单词的发音有疑问，向老师请教。",
+      roles: { clerk: "老师", user: "我" },
+      turns: [
+        { role: "user", en: "Excuse me, how do you pronounce this word?", zh: "打扰一下，这个单词怎么发音？", keywords: ["pronounce"] },
+        { role: "clerk", en: "It's 'schedule', with the stress on 'sched'.", zh: "读“sched-ule”，重音在“sched”上。" },
+        { role: "user", en: "Am I stressing the right syllable?", zh: "我重音标对了吗？", keywords: ["syllable"] },
+        { role: "clerk", en: "Almost, try to make the first sound longer.", zh: "差不多，试着把第一个音拉长一点。" },
+        { role: "user", en: "Like this? 'SCHED-ule'.", zh: "像这样吗？" },
+        { role: "clerk", en: "Perfect! Your pronunciation is improving.", zh: "很好！你的发音在进步。", keywords: ["improving"] },
+        { role: "user", en: "Thanks, I'm glad I asked.", zh: "谢谢，幸好我问了。", keywords: ["asked"] }
+      ],
+      tips: [
+        "pronounce = 发音。",
+        "syllable = 音节。"
+      ]
     }
   ]
 },
@@ -2157,17 +3140,7 @@ window.DAY_PLAN = [
     { word: "gtius", phonetic: "/ˈɡletɪnəs/", meaning: "adj. 粘性的；胶状的", example: "The sap is glutinous.", exampleZh: "树液粘稠。" },
     { word: "hypocrisy", phonetic: "/hɪˈpɒkrəsi/", meaning: "n. 虚伪", example: "He exposed their hypocrisy.", exampleZh: "他揭露了他们的虚伪。" },
     { word: "impulse", phonetic: "/ˈɪmpʌls/", meaning: "n. 冲动；脉冲", example: "He acted on impulse.", exampleZh: "他一时冲动行事。" },
-    { word: "lucid", phonetic: "/ˈluːsɪd/", meaning: "adj. 清醒的", example: "He was lucid during the talk.", exampleZh: "谈话时他很清醒。" },
-    { word: "meticulous", phonetic: "/məˈtɪkjələs/", meaning: "adj. 细致的", example: "She is meticulous in her work.", exampleZh: "她工作细致入微。" },
-    { word: "notion", phonetic: "/ˈnəʊʃn/", meaning: "n. 观念", example: "He rejected the old notion.", exampleZh: "他否定了旧观念。" },
-    { word: "precedent", phonetic: "/ˈpresɪdənt/", meaning: "n. 先例", example: "There is no precedent for this.", exampleZh: "这件事没有先例。" },
-    { word: "relentless", phonetic: "/rɪˈlentləs/", meaning: "adj. 不间断的；无情的", example: "The rain was relentless.", exampleZh: "雨下个不停。" },
-    { word: "subtle", phonetic: "/ˈsʌtl/", meaning: "adj. 微妙的；细微的", example: "There is a subtle difference.", exampleZh: "有细微的差别。" },
-    { word: "tranquil", phonetic: "/ˈtræŋkwɪl/", meaning: "adj. 宁静的", example: "The garden is tranquil.", exampleZh: "花园很宁静。" },
-    { word: "utmost", phonetic: "/ˈʌtməʊst/", meaning: "adj. 最大的 n. 极限", example: "We value it of the utmost importance.", exampleZh: "我们视它极其重要。" },
-    { word: "valiant", phonetic: "/ˈvæliənt/", meaning: "adj. 勇敢的", example: "They made a valiant effort.", exampleZh: "他们做出了勇敢的努力。" },
-    { word: "whittle", phonetic: "/ˈwɪtl/", meaning: "v. 削减；削", example: "We whittled down the list.", exampleZh: "我们缩减了名单。" },
-    { word: "zeal", phonetic: "/ziːl/", meaning: "n. 热情", example: "She approached it with zeal.", exampleZh: "她满怀热情地去做。" }
+    { word: "lucid", phonetic: "/ˈluːsɪd/", meaning: "adj. 清醒的", example: "He was lucid during the talk.", exampleZh: "谈话时他很清醒。" }
   ],
   article: {
     title: "Why Comparison Can Hurt",
@@ -2239,6 +3212,61 @@ window.DAY_PLAN = [
         "manicure = 美甲。",
         "soft pink = 浅粉色。"
       ]
+    },
+    {
+      scene: "在超市比较两个品牌",
+      situationZh: "你在超市货架前比较两款洗发水的价格和成分，犹豫买哪个。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "May I help you find something?", zh: "需要我帮您找什么吗？" },
+        { role: "user", en: "I'm comparing these two brands of shampoo.", zh: "我正在比较这两款洗发水。", keywords: ["comparing", "brands", "shampoo"] },
+        { role: "clerk", en: "The one on the right is on promotion this week.", zh: "右边那款这周在促销。" },
+        { role: "user", en: "But the ingredients look similar. Which is worth it?", zh: "但成分看起来差不多，哪个划算？", keywords: ["ingredients", "worth"] },
+        { role: "clerk", en: "The promoted one is cheaper for the same size.", zh: "促销款同样容量却更便宜。" },
+        { role: "user", en: "Okay, I'll take the cheaper one.", zh: "好，那我买便宜那款。", keywords: ["cheaper"] },
+        { role: "clerk", en: "Good choice. It'll save you a few yuan.", zh: "不错的选择，能省几块钱。" },
+        { role: "user", en: "Thanks for helping me compare.", zh: "谢谢你帮我比较。", keywords: ["compare"] }
+      ],
+      tips: [
+        "ingredients = 成分。",
+        "worth it = 划算；值得。"
+      ]
+    },
+    {
+      scene: "在二手市场讨价还价",
+      situationZh: "你在二手市场看中一盏台灯，和摊主商量便宜一点。",
+      roles: { clerk: "摊主", user: "我" },
+      turns: [
+        { role: "user", en: "How much is this desk lamp?", zh: "这盏台灯多少钱？", keywords: ["desk lamp", "how much"] },
+        { role: "clerk", en: "It's 60 yuan. It's in good condition.", zh: "60 元，品相很好。" },
+        { role: "user", en: "That's a bit high. Can you do 40?", zh: "有点贵，能便宜到 40 吗？", keywords: ["bit high"] },
+        { role: "clerk", en: "I can do 50 as a fair deal.", zh: "50 元算公道价。" },
+        { role: "user", en: "I'll take it at 45, final offer.", zh: "45 拿走，一口价。", keywords: ["final", "offer"] },
+        { role: "clerk", en: "Alright, 45. You drive a hard bargain.", zh: "行吧，45。你可真会讲价。" },
+        { role: "user", en: "Thanks! I love this lamp.", zh: "谢谢！我很喜欢这盏灯。", keywords: ["lamp"] }
+      ],
+      tips: [
+        "conditions = 品相；状况。",
+        "a hard bargain = 讨价还价的行家。"
+      ]
+    },
+    {
+      scene: "和朋友聊消费习惯",
+      situationZh: "你发现朋友总是买名牌包，两人聊起攀比和理智消费。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "user", en: "You bought another designer bag?", zh: "你又买了个名牌包？", keywords: ["designer", "bag"] },
+        { role: "clerk", en: "Yes. Everyone around me has one these days.", zh: "是啊，最近周围人都有了。" },
+        { role: "user", en: "Honestly, comparing with others just makes us unhappy.", zh: "说实话，攀比只会让我们不快乐。", keywords: ["comparing", "unhappy"] },
+        { role: "clerk", en: "I know, but I can't help it sometimes.", zh: "我知道，但有时忍不住。" },
+        { role: "user", en: "Maybe focus on your own progress instead.", zh: "也许该专注自己的进步。", keywords: ["focus", "progress"] },
+        { role: "clerk", en: "You're right. I'll save instead of showing off.", zh: "你说得对，我还是存钱吧，别显摆。" },
+        { role: "user", en: "That's the spirit. Saving brings real peace.", zh: "这才对，存钱带来真正的安心。", keywords: ["saving", "peace"] }
+      ],
+      tips: [
+        "designer bag = 名牌包。",
+        "show off = 炫耀。"
+      ]
     }
   ]
 },
@@ -2254,17 +3282,7 @@ window.DAY_PLAN = [
     { word: "glide", phonetic: "/ɡlaɪd/", meaning: "v. 滑行；滑翔", example: "The boat glided across the lake.", exampleZh: "小船在湖面上滑行。" },
     { word: "hurdle", phonetic: "/ˈhɜːdl/", meaning: "n. 障碍 v. 克服", example: "There are many hurdles ahead.", exampleZh: "前方有很多障碍。" },
     { word: "inevitable", phonetic: "/ɪnˈevɪtəbl/", meaning: "adj. 不可避免的", example: "Failure is not inevitable.", exampleZh: "失败不是不可避免的。" },
-    { word: "luminous", phonetic: "/ˈluːmɪnəs/", meaning: "adj. 发光的", example: "The luminous watch glows.", exampleZh: "夜光表会发光。" },
-    { word: "mesmerize", phonetic: "/ˈmezməraɪz/", meaning: "v. 使入迷", example: "The music mesmerized the crowd.", exampleZh: "音乐让观众陶醉。" },
-    { word: "nuance", phonetic: "/ˈnjuːɑːns/", meaning: "n. 细微差别", example: "She noticed the nuance in tone.", exampleZh: "她注意到语气的细微差别。" },
-    { word: "obsolete", phonetic: "/ˈɒbsəliːt/", meaning: "adj. 过时的", example: "This software is obsolete.", exampleZh: "这个软件过时了。" },
-    { word: "peril", phonetic: "/ˈperəl/", meaning: "n. 危险", example: "They ignored the peril.", exampleZh: "他们忽视了危险。" },
-    { word: "resilient", phonetic: "/rɪˈzɪliənt/", meaning: "adj. 有韧性的", example: "Children are resilient.", exampleZh: "孩子富有韧性。" },
-    { word: "somber", phonetic: "/ˈsɒmbə(r)/", meaning: "adj. 阴沉的；严肃的", example: "The meeting was somber.", exampleZh: "会议气氛沉闷。" },
-    { word: "tenacity", phonetic: "/təˈnæsəti/", meaning: "n. 坚韧", example: "She showed great tenacity.", exampleZh: "她表现出极大的坚韧。" },
-    { word: "upheaval", phonetic: "/ʌpˈhiːvl/", meaning: "n. 剧变；动荡", example: "The country went through upheaval.", exampleZh: "这个国家经历了剧变。" },
-    { word: "valor", phonetic: "/ˈvælə(r)/", meaning: "n. 英勇", example: "He is known for his valor.", exampleZh: "他因英勇而闻名。" },
-    { word: "zenith", phonetic: "/ˈzenɪθ/", meaning: "n. 顶峰", example: "Her career reached its zenith.", exampleZh: "她的事业达到顶峰。" }
+    { word: "luminous", phonetic: "/ˈluːmɪnəs/", meaning: "adj. 发光的", example: "The luminous watch glows.", exampleZh: "夜光表会发光。" }
   ],
   article: {
     title: "A Good Attitude Can Change a Day",
@@ -2336,6 +3354,62 @@ window.DAY_PLAN = [
         "workbook = 练习册。",
         "damaged = 破损的。"
       ]
+    },
+    {
+      scene: "早晨通勤遇到下雨",
+      situationZh: "你上班路上突然下雨没带伞，但仍保持好心态去公司。",
+      roles: { clerk: "同事", user: "我" },
+      turns: [
+        { role: "user", en: "Oh no, it's raining and I forgot my umbrella.", zh: "糟糕，下雨了，我忘带伞了。", keywords: ["raining", "umbrella"] },
+        { role: "clerk", en: "Here, take my umbrella if you're going this way.", zh: "给，如果你顺路就把我的伞拿去。" },
+        { role: "user", en: "Thanks so much, that's kind of you.", zh: "太谢谢了，你真好。", keywords: ["kind"] },
+        { role: "clerk", en: "It's just a little rain, right? A good mood keeps you dry inside.", zh: "下点雨怕什么？好心情会让你心里一直干爽。" },
+        { role: "user", en: "You're right. I'll stay positive and enjoy the day.", zh: "你说得对，我保持好心态享受这一天。", keywords: ["stay", "positive"] },
+        { role: "clerk", en: "Exactly. Attitude makes all the difference.", zh: "正是，心态决定一切。" },
+        { role: "user", en: "Thanks, you've brightened my morning.", zh: "谢谢你，你照亮了我的早晨。", keywords: ["brightened"] }
+      ],
+      tips: [
+        "umbrella = 雨伞。",
+        "attitude = 心态；态度。"
+      ]
+    },
+    {
+      scene: "在机场等待延误航班",
+      situationZh: "你的航班延误了，你保持耐心处理，并询问最新起飞信息。",
+      roles: { clerk: "工作人员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Attention, your flight is delayed by one hour.", zh: "请注意，您的航班延误一小时。" },
+        { role: "user", en: "I see. What time is the updated departure?", zh: "明白了。新的起飞时间是什么时候？", keywords: ["departure"] },
+        { role: "clerk", en: "Nine o'clock instead of eight. We apologize.", zh: "由 8 点改为 9 点，很抱歉。" },
+        { role: "user", en: "That's okay. A delay isn't a disaster, right?", zh: "没关系，延误不是灾难，对吧？", keywords: ["delay", "disaster"] },
+        { role: "clerk", en: "Exactly! You're handling it well.", zh: "正是，您处理得很好。" },
+        { role: "user", en: "I'll grab a coffee and wait patiently.", zh: "我去买杯咖啡耐心等。", keywords: ["patiently"] },
+        { role: "clerk", en: "Great attitude. We'll keep you updated.", zh: "心态真好，我们会及时告知。" },
+        { role: "user", en: "Thanks for letting me know.", zh: "谢谢你通知我。", keywords: ["letting"] }
+      ],
+      tips: [
+        "delayed = 延误的。",
+        "patiently = 耐心地。"
+      ]
+    },
+    {
+      scene: "在咖啡店安慰低落的朋友",
+      situationZh: "朋友面试失败很沮丧，你用积极心态开导他。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "clerk", en: "I failed the interview again. I feel awful.", zh: "我又面试失败了，感觉糟透了。" },
+        { role: "user", en: "Don't be so hard on yourself. It's not the end.", zh: "别对自己太苛刻，这不是终点。", keywords: ["hard", "end"] },
+        { role: "clerk", en: "But everyone else gets offers so easily.", zh: "可别人都那么容易拿到 offer。" },
+        { role: "user", en: "Everyone faces setbacks. Focus on what you learned.", zh: "每个人都会遇到挫折，想想你学到了什么。", keywords: ["setbacks", "learned"] },
+        { role: "clerk", en: "I guess I can review my weak points.", zh: "也许我可以复盘一下自己的弱点。" },
+        { role: "user", en: "Exactly. A good attitude turns failure into growth.", zh: "正是，好心态能把失败变成成长。", keywords: ["attitude", "growth"] },
+        { role: "clerk", en: "Thanks. You always help me see the bright side.", zh: "谢谢你，你总能让我看到好的一面。" },
+        { role: "user", en: "Anytime. Keep your chin up.", zh: "随时找我，打起精神。", keywords: ["chin"] }
+      ],
+      tips: [
+        "setback = 挫折。",
+        "bright side = 好的一面。"
+      ]
     }
   ]
 },
@@ -2351,17 +3425,7 @@ window.DAY_PLAN = [
     { word: "garrulous", phonetic: "/ˈɡærələs/", meaning: "adj. 饶舌的", example: "He is a garrulous speaker.", exampleZh: "他是个喋喋不休的演讲者。" },
     { word: "harbor", phonetic: "/ˈhɑːbə(r)/", meaning: "n. 港口 v. 怀有", example: "The harbor was full of ships.", exampleZh: "港口里停满了船。" },
     { word: "incumbent", phonetic: "/ɪnˈkʌmbənt/", meaning: "adj. 有责任的", example: "It is incumbent on us to help.", exampleZh: "我们有责任提供帮助。" },
-    { word: "jubilant", phonetic: "/ˈdʒuːbɪlənt/", meaning: "adj. 欢呼的；喜气洋洋的", example: "The fans were jubilant.", exampleZh: "球迷们欢欣鼓舞。" },
-    { word: "labyrinth", phonetic: "/ˈlæbərɪnθ/", meaning: "n. 迷宫；复杂结构", example: "The city is a labyrinth of streets.", exampleZh: "这座城市街道如迷宫。" },
-    { word: "mundane", phonetic: "/mʌnˈdeɪn/", meaning: "adj. 平凡的；单调的", example: "He disliked mundane chores.", exampleZh: "他不喜欢单调的家务。" },
-    { word: "obviate", phonetic: "/ˈɒbvieɪt/", meaning: "v. 排除；避免", example: "Planning obviates many problems.", exampleZh: "计划能避免许多问题。" },
-    { word: "palpable", phonetic: "/ˈpælpəbl/", meaning: "adj. 触目可感的", example: "The relief was palpable.", exampleZh: "宽慰之情溢于言表。" },
-    { word: "quiescent", phonetic: "/kwiˈesnt/", meaning: "adj. 静止的；沉寂的", example: "The volcano is quiescent.", exampleZh: "这座火山处于休眠状态。" },
-    { word: "repudiate", phonetic: "/rɪˈpjuːdieɪt/", meaning: "v. 拒绝；否认", example: "He repudiated the claim.", exampleZh: "他否认了这种说法。" },
-    { word: "salient", phonetic: "/ˈseɪliənt/", meaning: "adj. 显著的；突出的", example: "The salient point is clear.", exampleZh: "要点很明确。" },
-    { word: "taciturn", phonetic: "/ˈtæsɪtɜːn/", meaning: "adj. 沉默寡言的", example: "He is a taciturn man.", exampleZh: "他是个沉默寡言的人。" },
-    { word: "undulate", phonetic: "/ˈʌndjuleɪt/", meaning: "v. 起伏；波动", example: "The wheat undulated in the wind.", exampleZh: "麦子在风中起伏。" },
-    { word: "venerate", phonetic: "/ˈvenəreɪt/", meaning: "v. 崇敬", example: "They venerate their ancestors.", exampleZh: "他们崇敬祖先。" }
+    { word: "jubilant", phonetic: "/ˈdʒuːbɪlənt/", meaning: "adj. 欢呼的；喜气洋洋的", example: "The fans were jubilant.", exampleZh: "球迷们欢欣鼓舞。" }
   ],
   article: {
     title: "Learning a Language Through Music",
@@ -2432,6 +3496,61 @@ window.DAY_PLAN = [
         "size = 尺码。",
         "on sale = 特价。"
       ]
+    },
+    {
+      scene: "在音像店挑选英文歌曲",
+      situationZh: "你想买一张英文歌曲 CD 用来练习听力。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi, are you looking for something specific?", zh: "你好，需要找什么特别的吗？" },
+        { role: "user", en: "I want a CD with clear English lyrics to practice listening.", zh: "我想买一张歌词清晰的英文歌 CD 来练听力。", keywords: ["lyrics", "listening"] },
+        { role: "clerk", en: "This singer is famous for simple, slow songs.", zh: "这位歌手以简单舒缓的歌曲闻名。" },
+        { role: "user", en: "Great. Do the lyrics come with the CD?", zh: "太好了。CD 附带歌词吗？", keywords: ["lyrics", "CD"] },
+        { role: "clerk", en: "Yes, there's a booklet with all the words.", zh: "有的，附赠一本歌词册。" },
+        { role: "user", en: "Perfect. I'll sing along to improve my pronunciation.", zh: "太好了，我要跟着唱来改善发音。", keywords: ["sing along", "pronunciation"] },
+        { role: "clerk", en: "That's the best way to learn!", zh: "这是最好的学习方式！" },
+        { role: "user", en: "Thanks for the recommendation.", zh: "谢谢你的推荐。", keywords: ["recommendation"] }
+      ],
+      tips: [
+        "lyrics booklet = 歌词册。",
+        "practice = 练习。"
+      ]
+    },
+    {
+      scene: "在咖啡店和朋友聊音乐口味",
+      situationZh: "你和朋友边喝咖啡边交流喜欢的音乐风格。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "user", en: "What kind of music do you usually listen to?", zh: "你平时都听什么音乐？", keywords: ["kind", "listen"] },
+        { role: "clerk", en: "Mostly pop and a little jazz.", zh: "大多是流行乐，也听一点爵士。" },
+        { role: "user", en: "I prefer acoustic songs with clear vocals.", zh: "我更喜欢木吉他配乐、人声清晰的歌。", keywords: ["acoustic", "vocals"] },
+        { role: "clerk", en: "Those are great for catching every word.", zh: "那种歌很适合听清每个词。" },
+        { role: "user", en: "Exactly, that's how I grow my vocabulary.", zh: "没错，我就是这样扩充词汇量。", keywords: ["vocabulary"] },
+        { role: "clerk", en: "I should try that method too.", zh: "我也该试试这个方法。" },
+        { role: "user", en: "Let's exchange playlists sometime.", zh: "改天我们交换一下歌单吧。", keywords: ["playlists"] }
+      ],
+      tips: [
+        "acoustic = 原声的；木吉他的。",
+        "playlist = 播放列表。"
+      ]
+    },
+    {
+      scene: "在网上预约音乐私教课",
+      situationZh: "你想报一节音乐私教课提升英文歌曲演唱。",
+      roles: { clerk: "前台", user: "我" },
+      turns: [
+        { role: "user", en: "I'd like to book a music coaching session.", zh: "我想约一节音乐私教课。", keywords: ["book", "session"] },
+        { role: "clerk", en: "Sure. Do you prefer weekdays or weekends?", zh: "好的。您偏好工作日还是周末？" },
+        { role: "user", en: "Weekends would be better for me.", zh: "周末对我更合适。", keywords: ["weekends"] },
+        { role: "clerk", en: "We have a slot this Saturday at ten.", zh: "这周六上午十点有一个空档。" },
+        { role: "user", en: "That works. Any warm-up needed beforehand?", zh: "可以。课前需要做什么准备吗？", keywords: ["warm-up"] },
+        { role: "clerk", en: "Just practice the song we sent you.", zh: "把我们发你的那首歌练一练就行。" },
+        { role: "user", en: "Got it. See you Saturday!", zh: "明白，周六见！", keywords: ["Saturday"] }
+      ],
+      tips: [
+        "book a session = 预约一节课。",
+        "slot = 时间段；空档。"
+      ]
     }
   ]
 },
@@ -2447,17 +3566,7 @@ window.DAY_PLAN = [
     { word: "protect", phonetic: "/prəˈtekt/", meaning: "v. 保护", example: "We should protect the trees.", exampleZh: "我们应该保护树木。" },
     { word: "green", phonetic: "/ɡriːn/", meaning: "adj. 绿色的；环保的", example: "The hills are green in spring.", exampleZh: "春天山丘是绿色的。" },
     { word: "save", phonetic: "/seɪv/", meaning: "v. 节约；节省", example: "Turn off lights to save energy.", exampleZh: "关灯以节约能源。" },
-    { word: "energy", phonetic: "/ˈenədʒi/", meaning: "n. 能源；能量", example: "Sunlight gives us clean energy.", exampleZh: "阳光给我们清洁的能源。" },
-    { word: "natural", phonetic: "/ˈnætʃrəl/", meaning: "adj. 自然的", example: "This is a natural forest.", exampleZh: "这是一片天然森林。" },
-    { word: "resource", phonetic: "/rɪˈsɔːs/", meaning: "n. 资源", example: "Water is a precious resource.", exampleZh: "水是珍贵资源。" },
-    { word: "garbage", phonetic: "/ˈɡɑːbɪdʒ/", meaning: "n. 垃圾", example: "Take the garbage out.", exampleZh: "把垃圾拿出去。" },
-    { word: "litter", phonetic: "/ˈlɪtə(r)/", meaning: "v. 乱扔 n. 垃圾", example: "Please don't litter.", exampleZh: "请不要乱扔垃圾。" },
-    { word: "throw", phonetic: "/θrəʊ/", meaning: "v. 扔", example: "Throw the bottle into the bin.", exampleZh: "把瓶子扔进垃圾桶。" },
-    { word: "sort", phonetic: "/sɔːt/", meaning: "v. 分类", example: "We sort the waste at home.", exampleZh: "我们在家对垃圾进行分类。" },
-    { word: "clean", phonetic: "/kliːn/", meaning: "adj. 干净的 v. 清理", example: "The river is clean again.", exampleZh: "河水又清澈了。" },
-    { word: "earth", phonetic: "/ɜːθ/", meaning: "n. 地球；泥土", example: "We live on the earth.", exampleZh: "我们生活在地球上。" },
-    { word: "climate", phonetic: "/ˈklaɪmət/", meaning: "n. 气候", example: "The climate is changing.", exampleZh: "气候正在变化。" },
-    { word: "planet", phonetic: "/ˈplænɪt/", meaning: "n. 行星；地球", example: "Earth is our home planet.", exampleZh: "地球是我们的家园行星。" }
+    { word: "energy", phonetic: "/ˈenədʒi/", meaning: "n. 能源；能量", example: "Sunlight gives us clean energy.", exampleZh: "阳光给我们清洁的能源。" }
   ],
   article: {
     title: "Small Actions for a Greener Earth",
@@ -2529,6 +3638,61 @@ window.DAY_PLAN = [
         "sort = 分类。",
         "food waste = 厨余垃圾。"
       ]
+    },
+    {
+      scene: "在修理店带杯子买咖啡",
+      situationZh: "你自带玻璃杯去买咖啡，减少一次性纸杯使用。",
+      roles: { clerk: "咖啡师", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi, what can I get you today?", zh: "你好，今天想喝点什么？" },
+        { role: "user", en: "A medium latte, but I have my own cup.", zh: "中杯拿铁，但我自带杯子。", keywords: ["latte", "own cup"] },
+        { role: "clerk", en: "Great, you'll save 2 yuan for bringing your cup.", zh: "太好了，自带杯子可以省 2 元。" },
+        { role: "user", en: "Nice! It also cuts down on paper waste.", zh: "真不错，还能减少纸杯浪费。", keywords: ["cuts down", "waste"] },
+        { role: "clerk", en: "Exactly. Small habits really add up.", zh: "没错，小习惯慢慢就起作用了。" },
+        { role: "user", en: "Here's my cup. Fill it up, please.", zh: "这是我的杯子，请帮我装满。", keywords: ["fill up"] },
+        { role: "clerk", en: "Here you go. On the house with your savings.", zh: "给您。省下的钱算您的。" }
+      ],
+      tips: [
+        "on the house = 免单；由店家请客。",
+        "cut down on = 减少。"
+      ]
+    },
+    {
+      scene: "说服邻居一起植树",
+      situationZh: "你邀请邻居周末参加社区的植树活动。",
+      roles: { clerk: "邻居", user: "我" },
+      turns: [
+        { role: "user", en: "There's a tree-planting event this Saturday. Want to join?", zh: "这周六有植树活动，要一起吗？", keywords: ["tree-planting", "join"] },
+        { role: "clerk", en: "Why plant trees exactly?", zh: "为什么非要植树呢？" },
+        { role: "user", en: "Trees clean the air and cool the city.", zh: "树木能净化空气、给城市降温。", keywords: ["clean", "cool"] },
+        { role: "clerk", en: "That does sound worthwhile.", zh: "听起来确实值得。" },
+        { role: "user", en: "It protects the environment and it's fun, too.", zh: "保护环境，而且也挺有趣。", keywords: ["protects"] },
+        { role: "clerk", en: "Count me in. What do we need to bring?", zh: "算我一个。需要带什么？" },
+        { role: "user", en: "Just gloves and a shovel. I'll bring both.", zh: "带手套和铁锹就行，我会带上。", keywords: ["gloves", "shovel"] },
+        { role: "clerk", en: "Perfect. See you Saturday morning!", zh: "太好了，周六早上见！" }
+      ],
+      tips: [
+        "tree-planting = 植树。",
+        "shovel = 铁锹。"
+      ]
+    },
+    {
+      scene: "在节能商店选购电器",
+      situationZh: "你在家电店挑选节能省电的空调。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome! Looking for a new conditioner?", zh: "欢迎光临！想看空调吗？" },
+        { role: "user", en: "Yes, I want an energy-saving one.", zh: "是的，我想要节能款。", keywords: ["energy-saving"] },
+        { role: "clerk", en: "This model has a five-star energy label.", zh: "这款是一级能效。" },
+        { role: "user", en: "Will it really lower my electricity bill?", zh: "它真的能降低我的电费吗？", keywords: ["lower", "bill"] },
+        { role: "clerk", en: "It uses about 30% less power.", zh: "它能省约 30% 的电。" },
+        { role: "user", en: "That's worth it for the planet and my wallet.", zh: "这对地球和钱包都划算。", keywords: ["planet", "wallet"] },
+        { role: "clerk", en: "Saving energy saves money. Sweet deal.", zh: "省电就是省钱，很划算。" }
+      ],
+      tips: [
+        "energy label = 能效标识。",
+        "lower the bill = 降低账单。"
+      ]
     }
   ]
 },
@@ -2544,17 +3708,7 @@ window.DAY_PLAN = [
     { word: "data", phonetic: "/ˈdeɪtə/", meaning: "n. 数据", example: "The app saves your data.", exampleZh: "这个应用保存你的数据。" },
     { word: "network", phonetic: "/ˈnetwɜːk/", meaning: "n. 网络", example: "The network is very slow today.", exampleZh: "今天网络很慢。" },
     { word: "signal", phonetic: "/ˈsɪɡnəl/", meaning: "n. 信号", example: "I have no signal here.", exampleZh: "这里没有信号。" },
-    { word: "battery", phonetic: "/ˈbætəri/", meaning: "n. 电池", example: "My battery is running low.", exampleZh: "我的电池快没电了。" },
-    { word: "charge", phonetic: "/tʃɑːdʒ/", meaning: "v. 充电", example: "I need to charge my phone.", exampleZh: "我需要给手机充电。" },
-    { word: "update", phonetic: "/ˌʌpˈdeɪt/", meaning: "n. 更新", example: "Install the latest update.", exampleZh: "安装最新更新。" },
-    { word: "robot", phonetic: "/ˈrəʊbɒt/", meaning: "n. 机器人", example: "The robot can clean the floor.", exampleZh: "这个机器人会扫地。" },
-    { word: "smart", phonetic: "/smɑːt/", meaning: "adj. 智能的；聪明的", example: "My smart watch tracks my steps.", exampleZh: "我的智能手表记录步数。" },
-    { word: "online", phonetic: "/ˌɒnˈlaɪn/", meaning: "adj. 在线的", example: "I bought the book online.", exampleZh: "我在网上买了这本书。" },
-    { word: "search", phonetic: "/sɜːtʃ/", meaning: "v. 搜索", example: "Search for the answer online.", exampleZh: "在网上搜索答案。" },
-    { word: "connect", phonetic: "/kəˈnekt/", meaning: "v. 连接", example: "This app connects us with friends.", exampleZh: "这个应用把我们和朋友联系起来。" },
-    { word: "keyboard", phonetic: "/ˈkiːbɔːd/", meaning: "n. 键盘", example: "The keyboard is new.", exampleZh: "这个键盘是新的。" },
-    { word: "camera", phonetic: "/ˈkæmərə/", meaning: "n. 相机", example: "The camera takes clear photos.", exampleZh: "这个相机拍照清晰。" },
-    { word: "message", phonetic: "/ˈmesɪdʒ/", meaning: "n. 信息", example: "Send me a message later.", exampleZh: "稍后给我发个消息。" }
+    { word: "battery", phonetic: "/ˈbætəri/", meaning: "n. 电池", example: "My battery is running low.", exampleZh: "我的电池快没电了。" }
   ],
   article: {
     title: "Technology Makes Life Easier",
@@ -2626,6 +3780,61 @@ window.DAY_PLAN = [
         "memory = 内存。",
         "battery = 电池。"
       ]
+    },
+    {
+      scene: "在家请师傅上门修网络",
+      situationZh: "你的WiFi老是断线，让师傅上门检修路由器。",
+      roles: { clerk: "师傅", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hi, I'm here to check your network.", zh: "你好，我来检查一下你的网络。" },
+        { role: "user", en: "Thanks. The WiFi keeps dropping all day.", zh: "谢谢，WiFi 一整天总是掉线。", keywords: ["dropping"] },
+        { role: "clerk", en: "Let me look at the router's signal strength.", zh: "让我看看路由器的信号强度。" },
+        { role: "user", en: "Is there anything wrong with it?", zh: "它有问题吗？", keywords: ["wrong"] },
+        { role: "clerk", en: "It's a bit old. A reboot usually helps.", zh: "有点旧了，重启一下通常会好。" },
+        { role: "user", en: "Could you also set up a stronger password?", zh: "能顺便设置个更复杂的密码吗？", keywords: ["password"] },
+        { role: "clerk", en: "Done. Strong password, better signal now.", zh: "好了，密码已加固，信号也改善了。" },
+        { role: "user", en: "Great, thanks for fixing it quickly.", zh: "太好了，谢谢您这么快修好。", keywords: ["fixing"] }
+      ],
+      tips: [
+        "drop = 掉线。",
+        "signal strength = 信号强度。"
+      ]
+    },
+    {
+      scene: "在校友群求助安装软件",
+      situationZh: "你在群里请教同学如何安装一个学习软件。",
+      roles: { clerk: "同学", user: "我" },
+      turns: [
+        { role: "user", en: "Has anyone installed this study app?", zh: "有人装过这个学习应用吗？", keywords: ["installed", "study app"] },
+        { role: "clerk", en: "Yes, I use it every day for vocabulary.", zh: "装了，我每天用它背单词。" },
+        { role: "user", en: "Can you tell me the download steps?", zh: "能告诉我下载步骤吗？", keywords: ["download", "steps"] },
+        { role: "clerk", en: "Search its name in the store and tap install.", zh: "在商店里搜它的名字，点安装就行。" },
+        { role: "user", en: "That's it? No extra settings needed?", zh: "就这么简单？不用额外设置吗？", keywords: ["settings"] },
+        { role: "clerk", en: "Just allow the network permission on first launch.", zh: "首次打开时允许联网权限就行。" },
+        { role: "user", en: "Got it. Thanks for the quick help.", zh: "明白，谢谢你这么快帮忙。", keywords: ["quick help"] }
+      ],
+      tips: [
+        "install = 安装。",
+        "permission = 权限。"
+      ]
+    },
+    {
+      scene: "在咖啡店共享热点",
+      situationZh: "你的手机流量用完了，向朋友借热点上网。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "user", en: "My data ran out. Can I use your hotspot?", zh: "我流量用完了，能用你的热点吗？", keywords: ["data", "hotspot"] },
+        { role: "clerk", en: "Sure, the network here is unstable though.", zh: "可以啊，不过这里的网络不太稳。" },
+        { role: "user", en: "Even so, it's better than no signal at all.", zh: "总比完全没信号好。", keywords: ["signal"] },
+        { role: "clerk", en: "What's the password?", zh: "热点密码是什么？" },
+        { role: "user", en: "It's my name followed by 123.", zh: "是我名字加 123。", keywords: ["password"] },
+        { role: "clerk", en: "Got it. I'm connected now.", zh: "好了，我连上了。" },
+        { role: "user", en: "Perfect. I'll just send one quick file.", zh: "太好了，我只发一个文件。", keywords: ["file"] }
+      ],
+      tips: [
+        "hotspot = 移动热点。",
+        "run out = 用完。"
+      ]
     }
   ]
 },
@@ -2641,17 +3850,7 @@ window.DAY_PLAN = [
     { word: "water", phonetic: "/ˈwɔːtə(r)/", meaning: "n. 水", example: "Drink more water every day.", exampleZh: "每天多喝水。" },
     { word: "fruit", phonetic: "/fruːt/", meaning: "n. 水果", example: "Fruit is full of vitamins.", exampleZh: "水果富含维生素。" },
     { word: "vegetable", phonetic: "/ˈvedʒtəbl/", meaning: "n. 蔬菜", example: "Eat at least one vegetable a day.", exampleZh: "每天至少吃一种蔬菜。" },
-    { word: "body", phonetic: "/ˈbɒdi/", meaning: "n. 身体", example: "The body needs exercise.", exampleZh: "身体需要锻炼。" },
-    { word: "mind", phonetic: "/maɪnd/", meaning: "n. 头脑", example: "Reading keeps your mind active.", exampleZh: "阅读让头脑保持活跃。" },
-    { word: "habit", phonetic: "/ˈhæbɪt/", meaning: "n. 习惯", example: "Good habits start small.", exampleZh: "好习惯从小事开始。" },
-    { word: "medicine", phonetic: "/ˈmedsn/", meaning: "n. 药", example: "Take your medicine on time.", exampleZh: "按时吃药。" },
-    { word: "doctor", phonetic: "/ˈdɒktə(r)/", meaning: "n. 医生", example: "The doctor checked my heart.", exampleZh: "医生检查了我的心脏。" },
-    { word: "check-up", phonetic: "/ˈtʃek ʌp/", meaning: "n. 体检", example: "I have a health check-up once a year.", exampleZh: "我每年做一次健康体检。" },
-    { word: "fresh", phonetic: "/freʃ/", meaning: "adj. 新鲜的", example: "Fresh air makes you feel good.", exampleZh: "新鲜空气让人感觉舒服。" },
-    { word: "illness", phonetic: "/ˈɪlnəs/", meaning: "n. 疾病", example: "Illness can be prevented.", exampleZh: "疾病是可以预防的。" },
-    { word: "pain", phonetic: "/peɪn/", meaning: "n. 疼痛", example: "I feel some pain in my leg.", exampleZh: "我腿有点疼。" },
-    { word: "smile", phonetic: "/smaɪl/", meaning: "v. 微笑", example: "A smile keeps you happy.", exampleZh: "微笑让你保持快乐。" },
-    { word: "active", phonetic: "/ˈæktɪv/", meaning: "adj. 活跃的", example: "Stay active and keep moving.", exampleZh: "保持活跃，多活动。" }
+    { word: "body", phonetic: "/ˈbɒdi/", meaning: "n. 身体", example: "The body needs exercise.", exampleZh: "身体需要锻炼。" }
   ],
   article: {
     title: "Healthy Habits Keep You Strong",
@@ -2723,6 +3922,60 @@ window.DAY_PLAN = [
         "gym = 健身房。",
         "schedule = 时间安排。"
       ]
+    },
+    {
+      scene: "在市场挑选新鲜蔬菜",
+      situationZh: "你在早市挑选新鲜蔬菜，计划做一份健康沙拉。",
+      roles: { clerk: "摊主", user: "我" },
+      turns: [
+        { role: "clerk", en: "Fresh greens today! Anything you like?", zh: "今天的青菜很新鲜！要挑点啥？" },
+        { role: "user", en: "Are these tomatoes fresh?", zh: "这些西红柿新鲜吗？", keywords: ["tomatoes", "fresh"] },
+        { role: "clerk", en: "Picked this morning. Sweet and juicy.", zh: "早上刚摘的，又甜又多汁。" },
+        { role: "user", en: "I'll take some plus a head of lettuce.", zh: "我称一点，再来一颗生菜。", keywords: ["head", "lettuce"] },
+        { role: "clerk", en: "That'll be 12 yuan together.", zh: "一共 12 元。" },
+        { role: "user", en: "Perfect for my healthy salad tonight.", zh: "正好做今晚的健康沙拉。", keywords: ["healthy", "salad"] },
+        { role: "clerk", en: "Good choice for your body!", zh: "对身体好的选择！" }
+      ],
+      tips: [
+        "lettuce = 生菜。",
+        "fresh = 新鲜的。"
+      ]
+    },
+    {
+      scene: "在公园慢跑后休息",
+      situationZh: "你和朋友相约晨跑，跑完在长椅上休息喝水。",
+      roles: { clerk: "朋友", user: "我" },
+      turns: [
+        { role: "user", en: "Great run! I feel full of energy now.", zh: "跑得真爽！我现在浑身是劲。", keywords: ["run", "energy"] },
+        { role: "clerk", en: "Me too. My legs are a little tired, though.", zh: "我也是，不过腿有点酸。" },
+        { role: "user", en: "Let's rest and drink some water.", zh: "休息一下，喝点水吧。", keywords: ["rest", "water"] },
+        { role: "clerk", en: "Good idea. Hydration is key.", zh: "好主意，补水很重要。" },
+        { role: "user", en: "We should do this every morning.", zh: "我们该每天早上都跑。", keywords: ["every morning"] },
+        { role: "clerk", en: "Agreed. It keeps us strong and calm.", zh: "同意，它能让我们强壮又平静。" },
+        { role: "user", en: "Same time tomorrow then!", zh: "那明天同一时间见！", keywords: ["tomorrow"] }
+      ],
+      tips: [
+        "hydration = 补水。",
+        "full of energy = 精力充沛。"
+      ]
+    },
+    {
+      scene: "在药店买维生素",
+      situationZh: "你到药店想买一瓶补充营养的维生素。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Hello, how can I assist you?", zh: "你好，需要什么帮助？" },
+        { role: "user", en: "I'm looking for a multivitamin.", zh: "我想买一瓶复合维生素。", keywords: ["multivitamin"] },
+        { role: "clerk", en: "This one supports daily health and energy.", zh: "这款支持日常健康和精力。" },
+        { role: "user", en: "Is it safe to take every day?", zh: "每天吃安全吗？", keywords: ["safe", "every day"] },
+        { role: "clerk", en: "Yes, just one tablet after a meal.", zh: "安全，饭后吃一片即可。" },
+        { role: "user", en: "Great, I'll take this bottle.", zh: "好的，我要这一瓶。", keywords: ["bottle"] },
+        { role: "clerk", en: "Sure. Remember, vitamins help but diet matters too.", zh: "好的，记住维生素只能辅助，饮食同样重要。" }
+      ],
+      tips: [
+        "multivitamin = 复合维生素。",
+        "diet = 日常饮食。"
+      ]
     }
   ]
 },
@@ -2738,17 +3991,7 @@ window.DAY_PLAN = [
     { word: "airport", phonetic: "/ˈeəpɔːt/", meaning: "n. 机场", example: "Meet me at the airport.", exampleZh: "在机场接我。" },
     { word: "station", phonetic: "/ˈsteɪʃn/", meaning: "n. 车站", example: "The station is near the park.", exampleZh: "车站离公园很近。" },
     { word: "luggage", phonetic: "/ˈlʌɡɪdʒ/", meaning: "n. 行李", example: "Put your luggage on the rack.", exampleZh: "把行李放到架子上。" },
-    { word: "suitcase", phonetic: "/ˈsuːtkeɪs/", meaning: "n. 行李箱", example: "I packed my suitcase last night.", exampleZh: "我昨晚收拾好行李箱。" },
-    { word: "map", phonetic: "/mæp/", meaning: "n. 地图", example: "The map shows the road.", exampleZh: "地图显示了道路。" },
-    { word: "hotel", phonetic: "/həʊˈtel/", meaning: "n. 旅馆", example: "We stayed in a small hotel.", exampleZh: "我们住在一家小旅馆。" },
-    { word: "passport", phonetic: "/ˈpɑːspɔːt/", meaning: "n. 护照", example: "Don't forget your passport.", exampleZh: "别忘了带护照。" },
-    { word: "guide", phonetic: "/ɡaɪd/", meaning: "n. 向导；指南", example: "The guide showed us around.", exampleZh: "向导带我们参观。" },
-    { word: "view", phonetic: "/vjuː/", meaning: "n. 景色", example: "The view from the hill is beautiful.", exampleZh: "从山上看到的景色很美。" },
-    { word: "enjoy", phonetic: "/ɪnˈdʒɔɪ/", meaning: "v. 享受", example: "Enjoy your time by the sea.", exampleZh: "享受在海边的时光。" },
-    { word: "arrive", phonetic: "/əˈraɪv/", meaning: "v. 到达", example: "We will arrive before noon.", exampleZh: "我们中午前到达。" },
-    { word: "leave", phonetic: "/liːv/", meaning: "v. 离开；动身", example: "We leave for the city tomorrow.", exampleZh: "我们明天动身去城里。" },
-    { word: "book", phonetic: "/bʊk/", meaning: "v. 预订", example: "Please book a room for us.", exampleZh: "请给我们订一间房。" },
-    { word: "island", phonetic: "/ˈaɪlənd/", meaning: "n. 岛屿", example: "The island is quiet and green.", exampleZh: "这座岛宁静而青翠。" }
+    { word: "suitcase", phonetic: "/ˈsuːtkeɪs/", meaning: "n. 行李箱", example: "I packed my suitcase last night.", exampleZh: "我昨晚收拾好行李箱。" }
   ],
   article: {
     title: "Plan a Trip, Enjoy the Journey",
@@ -2820,6 +4063,60 @@ window.DAY_PLAN = [
         "check in = 办理入住。",
         "breakfast = 早餐。"
       ]
+    },
+    {
+      scene: "在机场自助值机",
+      situationZh: "你在机场自助机上打印登机牌并询问登机口。",
+      roles: { clerk: "工作人员", user: "我" },
+      turns: [
+        { role: "user", en: "Excuse me, how do I print my boarding pass?", zh: "请问，我怎么打印登机牌？", keywords: ["boarding pass", "print"] },
+        { role: "clerk", en: "Scan your passport at this machine.", zh: "在这台机器上扫一下护照。" },
+        { role: "user", en: "Got it. It works now.", zh: "明白了，现在可以用。", keywords: ["works"] },
+        { role: "clerk", en: "Which gate is printed on your pass?", zh: "登机牌上写了哪个登机口？" },
+        { role: "user", en: "Gate C12. What time does boarding start?", zh: "C12 号。什么时候开始登机？", keywords: ["gate", "boarding"] },
+        { role: "clerk", en: "Boarding begins at 10, thirty minutes before departure.", zh: "10 点开始登机，比起飞早 30 分钟。" },
+        { role: "user", en: "Thanks, I have plenty of time to relax.", zh: "谢谢，我有充足时间休息一下。", keywords: ["relax"] }
+      ],
+      tips: [
+        "boarding pass = 登机牌。",
+        "departure = 起飞；出发。"
+      ]
+    },
+    {
+      scene: "在观光车站咨询路线",
+      situationZh: "你在城市观光车站询问到海滩的班车路线。",
+      roles: { clerk: "售票员", user: "我" },
+      turns: [
+        { role: "user", en: "Does this bus go to the beach?", zh: "这趟车去海滩吗？", keywords: ["bus", "beach"] },
+        { role: "clerk", en: "Yes, it stops at the seaside every hour.", zh: "去的，每小时在海边停靠一班。" },
+        { role: "user", en: "How long is the ride?", zh: "车程要多久？", keywords: ["how long", "ride"] },
+        { role: "clerk", en: "About forty minutes with the views along the way.", zh: "沿途有风景，大约四十分钟。" },
+        { role: "user", en: "Great, I'd like two round-trip tickets.", zh: "好的，我要两张往返票。", keywords: ["round-trip", "tickets"] },
+        { role: "clerk", en: "That's 30 yuan for two.", zh: "两张共 30 元。" },
+        { role: "user", en: "Thanks. I can't wait for the view.", zh: "谢谢，我都等不及看风景了。", keywords: ["view"] }
+      ],
+      tips: [
+        "round-trip ticket = 往返票。",
+        "can't wait = 迫不及待。"
+      ]
+    },
+    {
+      scene: "在纪念品店选购礼物",
+      situationZh: "你在一家纪念品店想给家人挑一份伴手礼。",
+      roles: { clerk: "店员", user: "我" },
+      turns: [
+        { role: "clerk", en: "Welcome! Looking for a souvenir?", zh: "欢迎！需要挑伴手礼吗？" },
+        { role: "user", en: "Yes, a small gift for my mother.", zh: "是的，给妈妈挑个小礼物。", keywords: ["gift", "mother"] },
+        { role: "clerk", en: "These fridge magnets are popular and light.", zh: "这些冰箱贴很受欢迎，又轻便。" },
+        { role: "user", en: "Do you have a local handicraft?", zh: "有当地的手工艺品吗？", keywords: ["local", "handicraft"] },
+        { role: "clerk", en: "Yes, hand-woven bookmarks from the island.", zh: "有，是岛上手工织的书签。" },
+        { role: "user", en: "I'll take one bookmark and two magnets.", zh: "我要一个书签和两个冰箱贴。", keywords: ["bookmark", "magnets"] },
+        { role: "clerk", en: "That's 45 yuan. Cash or card?", zh: "共 45 元，现金还是刷卡？" }
+      ],
+      tips: [
+        "souvenir = 纪念品。",
+        "handicraft = 手工艺品。"
+      ]
     }
   ]
 },
@@ -2835,17 +4132,7 @@ window.DAY_PLAN = [
     { word: "succeed", phonetic: "/səkˈsiːd/", meaning: "v. 成功", example: "Keep trying so that you can succeed.", exampleZh: "坚持尝试你就能成功。" },
     { word: "effort", phonetic: "/ˈefət/", meaning: "n. 努力", example: "Success needs effort.", exampleZh: "成功需要努力。" },
     { word: "hard", phonetic: "/hɑːd/", meaning: "adj. 努力的；坚硬的", example: "She studies hard every day.", exampleZh: "她每天努力学习。" },
-    { word: "believe", phonetic: "/bɪˈliːv/", meaning: "v. 相信", example: "Believe in yourself.", exampleZh: "相信自己。" },
-    { word: "chance", phonetic: "/tʃɑːns/", meaning: "n. 机会", example: "Everyone gets a chance.", exampleZh: "每个人都得到机会。" },
-    { word: "courage", phonetic: "/ˈkʌrɪdʒ/", meaning: "n. 勇气", example: "It takes courage to start.", exampleZh: "开始需要勇气。" },
-    { word: "always", phonetic: "/ˈɔːlweɪz/", meaning: "adv. 总是", example: "Always be kind to others.", exampleZh: "永远对人友善。" },
-    { word: "try", phonetic: "/traɪ/", meaning: "v. 尝试", example: "Give it a try.", exampleZh: "试一试吧。" },
-    { word: "keep", phonetic: "/kiːp/", meaning: "v. 保持", example: "Keep going and don't give up.", exampleZh: "继续前进，不要放弃。" },
-    { word: "start", phonetic: "/stɑːt/", meaning: "v. 开始", example: "Today is a good day to start.", exampleZh: "今天是开始的好日子。" },
-    { word: "grow", phonetic: "/ɡrəʊ/", meaning: "v. 成长", example: "You will grow with practice.", exampleZh: "你会随着练习而成长。" },
-    { word: "shine", phonetic: "/ʃaɪn/", meaning: "v. 闪耀", example: "Let your skills shine.", exampleZh: "让你的才能闪光。" },
-    { word: "proud", phonetic: "/praʊd/", meaning: "adj. 自豪的", example: "We are proud of you.", exampleZh: "我们为你自豪。" },
-    { word: "heart", phonetic: "/hɑːt/", meaning: "n. 心；内心", example: "Follow your heart.", exampleZh: "遵从你的内心。" }
+    { word: "believe", phonetic: "/bɪˈliːv/", meaning: "v. 相信", example: "Believe in yourself.", exampleZh: "相信自己。" }
   ],
   article: {
     title: "Follow Your Dream",
@@ -2916,6 +4203,60 @@ window.DAY_PLAN = [
       tips: [
         "painter = 画家。",
         "materials = 材料。"
+      ]
+    },
+    {
+      scene: "在图书馆请教学习规划",
+      situationZh: "你向学长请教如何一步步实现考研的目标。",
+      roles: { clerk: "学长", user: "我" },
+      turns: [
+        { role: "user", en: "I want to reach my goal of passing the exam. Any advice?", zh: "我想实现考研的目标，有什么建议吗？", keywords: ["goal", "advice"] },
+        { role: "clerk", en: "Break your big goal into small weekly steps.", zh: "把大目标拆成每周小步骤。" },
+        { role: "user", en: "I see. Where do I start first?", zh: "明白，那我该从哪里开始？", keywords: ["start"] },
+        { role: "clerk", en: "Build a study routine and stick to it.", zh: "先建立学习习惯并坚持。" },
+        { role: "user", en: "What if I lose motivation halfway?", zh: "要是我中途没了动力怎么办？", keywords: ["motivation"] },
+        { role: "clerk", en: "Remember your dream and track your progress.", zh: "记住梦想，并记录自己的进步。" },
+        { role: "user", en: "Thanks. I'll believe in myself and keep going.", zh: "谢谢，我会相信自己，继续前行。", keywords: ["believe", "keep going"] }
+      ],
+      tips: [
+        "break down = 拆分。",
+        "motivation = 动力。"
+      ]
+    },
+    {
+      scene: "在跑步社团认识新朋友",
+      situationZh: "你第一次参加晨跑社团，认识同样想挑战马拉松的伙伴。",
+      roles: { clerk: "队友", user: "我" },
+      turns: [
+        { role: "user", en: "Hi, is this your first time here too?", zh: "你好，你也是第一次来吗？", keywords: ["first time"] },
+        { role: "clerk", en: "Yes. I hope to finish my first 5K soon.", zh: "是啊，我希望能早点跑完第一个 5 公里。", keywords: ["hope", "5K"] },
+        { role: "user", en: "Me too. My dream is a full marathon someday.", zh: "我也是，我的梦想是有一天跑全程马拉松。", keywords: ["dream", "marathon"] },
+        { role: "clerk", en: "That's a bold goal. Let's train together.", zh: "这目标很有挑战，我们一起练吧。" },
+        { role: "user", en: "Sounds good. Effort will get us there.", zh: "好呀，努力会带我们到达。", keywords: ["effort"] },
+        { role: "clerk", en: "Keep at it and never give up.", zh: "坚持下去，永不言弃。" },
+        { role: "user", en: "Deal. See you at six tomorrow!", zh: "说定了，明早六点见！", keywords: ["tomorrow"] }
+      ],
+      tips: [
+        "marathon = 马拉松。",
+        "never give up = 永不放弃。"
+      ]
+    },
+    {
+      scene: "在家庭聚餐聊未来计划",
+      situationZh: "和家人一起吃晚饭，你分享学习英语和出国进修的梦想。",
+      roles: { clerk: "家人", user: "我" },
+      turns: [
+        { role: "clerk", en: "What's new with your studies these days?", zh: "你最近学习怎么样？" },
+        { role: "user", en: "I'm working hard to improve my English.", zh: "我在努力提高英语。", keywords: ["hard", "improve"] },
+        { role: "clerk", en: "Why English all of a sudden?", zh: "怎么突然重视英语了？" },
+        { role: "user", en: "It's part of my plan to study abroad.", zh: "这是我去国外进修计划的一部分。", keywords: ["plan", "abroad"] },
+        { role: "clerk", en: "That's a wonderful dream, we support you.", zh: "这是个美好的梦想，我们支持你。" },
+        { role: "user", en: "Thank you. I'll make you proud.", zh: "谢谢，我会让你们骄傲。", keywords: ["proud"] },
+        { role: "clerk", en: "We already are. Keep believing in yourself.", zh: "我们已经为你骄傲了，继续相信自己。" }
+      ],
+      tips: [
+        "study abroad = 出国留学。",
+        "proud = 自豪的。"
       ]
     }
   ]
