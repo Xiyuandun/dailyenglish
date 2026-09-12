@@ -164,10 +164,13 @@ const Speech = {
   _voskModel: null,
   _voskLoading: false,
   _voskLoadError: null,
-  // 模型绝对地址：Vosk 的识别 worker 运行在 blob: 地址下，传相对路径（models/...）
-  // 会在 worker 内无法解析基准 URL 而直接失败（表现为"网络原因"）。必须用基于当前页面根路径的绝对 URL。
+  // 模型地址：优先使用后端（如 Render）托管的地址，绕开 GitHub Pages 下载模型超时；
+  // 未配置后端时回退到当前页面根路径的绝对地址（Vosk worker 在 blob: 下需绝对 URL）。
   _modelUrl: (function () {
     try {
+      if (typeof window !== 'undefined' && window.DAILY_CFG && window.DAILY_CFG.renderModelUrl) {
+        return window.DAILY_CFG.renderModelUrl;
+      }
       let dir = '/';
       if (typeof location !== 'undefined' && location.pathname) {
         dir = location.pathname;

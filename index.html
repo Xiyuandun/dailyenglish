@@ -192,6 +192,12 @@
   <script src="data/article.js?v=10"></script>
   <script src="data/audio.js?v=10"></script>
   <script src="js/store.js?v=10"></script>
+  <script>
+    // 可选后端配置：部署 Render 后端后，把模型托管地址填到这里（如
+    // https://你的服务名.onrender.com/models/model.tar.gz），可绕开 GitHub Pages 下载 40MB 模型超时。
+    // 留空则回退为从 GitHub Pages 直接下载。
+    window.DAILY_CFG = { renderModelUrl: '' };
+  </script>
   <script src="js/speech.js?v=13"></script>
   <script src="js/words.js?v=10"></script>
   <script src="js/dialogue.js?v=11"></script>
