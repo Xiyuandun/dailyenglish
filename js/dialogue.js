@@ -247,8 +247,20 @@ const DialogueModule = {
     Speech.onStatus = (key, extra) => {
       const st = document.getElementById('recStatus');
       if (!st || !Speech.isRecording()) return;
-      if (key === 'vosk-loading') {
-        st.innerHTML = `<span class="text-sky-600">⏳ 正在下载语音识别模型（约 40MB，首次约 1-3 分钟，已 ${extra || 0} 秒），下载完成后录音即可识别，请稍候…</span>`;
+      if (key === 'vosk-download') {
+        const pct = (extra && extra.pct) ?? 0;
+        const mb = (extra && extra.mb) || '0.0';
+        const width = Math.max(2, Math.min(100, pct));
+        st.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="whitespace-nowrap text-sky-600">⏳ 正在下载语音识别模型 ${mb} MB</span>
+          </div>
+          <div class="mt-2 h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-sky-500 to-sky-400 transition-all duration-150" style="width:${width}%"></div>
+          </div>
+          <div class="mt-1 text-xs text-slate-500">已下载 ${pct}%（首次约 1-3 分钟），完成后录音即可识别</div>`;
+      } else if (key === 'vosk-loading') {
+        st.innerHTML = `<span class="text-sky-600">⏳ 正在下载语音识别模型（约 40MB，已 ${extra || 0} 秒），下载完成后录音即可识别，请稍候…</span>`;
       } else if (key === 'vosk-ready') {
         st.innerHTML = '<span class="text-slate-400">🎤 识别模型已就绪，正在录音…说完后点击"停止录音"</span>';
       } else if (key === 'vosk-load-failed') {

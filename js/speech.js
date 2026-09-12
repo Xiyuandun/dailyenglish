@@ -188,14 +188,69 @@ const Speech = {
     this._voskLoadError = null;
     try {
       console.log('[语音识别] 开始加载 Vosk 离线模型，地址:', this._modelUrl);
-      this._voskModel = await Vosk.createModel(this._modelUrl);
+      // 先由主线程流式下载（带实时进度），再以 data URL 交给 Vosk —— 彻底绕开 worker
+      // 内相对路径/网络解析问题，且能看到下载进度。
+      const ab = await this._downloadModelWithProgress(this._modelUrl);
+      console.log('[语音识别] 模型下载完成，交由识别引擎装载...');
+      this._voskModel = await Vosk.createModel(this._toDataUrl(ab));
       console.log('[语音识别] Vosk 模型加载完成');
     } catch (err) {
-      this._voskLoadError = err;
-      console.warn('[语音识别] Vosk 模型加载失败:', err && (err.message || err));
+      // 兜底：带进度的下载或 data URL 装载失败时，再让 Vosk 直接按原 URL 拉取一次
+      try {
+        console.warn('[语音识别] 带进度下载失败，回退到 Vosk 直接加载:', err && (err.message || err));
+        this._voskModel = await Vosk.createModel(this._modelUrl);
+      } catch (err2) {
+        this._voskLoadError = err2;
+        console.warn('[语音识别] Vosk 模型加载失败:', err2 && (err2.message || err2));
+      }
     } finally {
       this._voskLoading = false;
     }
+  },
+
+  // 主线程流式下载模型，通过 onStatus('vosk-download', {loaded,total,pct}) 上报进度
+  async _downloadModelWithProgress(url) {
+    const fire = (key, extra) => { if (typeof this.onStatus === 'function') this.onStatus(key, extra); };
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const total = Number(res.headers.get('Content-Length')) || 0;
+    const body = res.body;
+    if (!body) {
+      // 不支持流式读取的环境：直接取整块数组
+      return await res.arrayBuffer();
+    }
+    const reader = body.getReader();
+    const chunks = [];
+    let received = 0;
+    let lastPct = -1;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value && value.byteLength) {
+        chunks.push(value);
+        received += value.byteLength;
+      }
+      // 进度回调：约每变化 2% 或满时才更新，避免频繁刷新 UI
+      if (total) {
+        const pct = Math.floor((received / total) * 100);
+        if (pct !== lastPct) {
+          lastPct = pct;
+          fire('vosk-download', { loaded: received, total, pct, mb: (received / 1048576).toFixed(1) });
+        }
+      }
+    }
+    return new Blob(chunks, { type: 'application/octet-stream' }).arrayBuffer();
+  },
+
+  // ArrayBuffer → data URL（Vosk 的 worker 可直接 fetch(data:)，无需再走网络）
+  _toDataUrl(ab) {
+    const bytes = new Uint8Array(ab);
+    let bin = '';
+    const CHUNK = 0x8000;
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+    }
+    return 'data:application/octet-stream;base64,' + btoa(bin);
   },
 
   // Vosk 识别器相关状态
