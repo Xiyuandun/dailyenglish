@@ -324,9 +324,44 @@ const Speech = {
     this._advanceQueue();
   },
 
+  // 静态预生成音频清单 helper（data/audio.js）
+  // 命中则返回 audio/ 下的相对路径，未命中返回 null（走原有动态通道）
+  _staticAudioPath(text, rate) {
+    const M = window.STATIC_AUDIO;
+    if (!M || !M.normal) return null;
+    // 规范化文本：去首尾空白、压缩连续空格、统一小写，与清单 key 保持一致
+    const key = String(text || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!key) return null;
+    // 慢速优先用清单里的慢速音频（仅为文章预生成）
+    if (rate && Number(rate) < 1 && M.slow && M.slow[key]) return 'audio/' + M.slow[key];
+    return M.normal[key] ? ('audio/' + M.normal[key]) : null;
+  },
+
+  // 播放静态预生成音频。音频文件本身是固定 MP3，天然避开
+  // 浏览器无语音 / Google 被屏蔽 / 有道挂起 / 跨域 等各种不稳定因素。
+  _playStatic(path, text, rate) {
+    this.audio.src = path;
+    try { this.audio.playbackRate = 1; } catch {}
+    try { this.audio.currentTime = 0; } catch {}
+    const p = this.audio.play();
+    if (p && typeof p.then === 'function') {
+      p.catch((err) => {
+        console.warn('[语音] 静态音频播放失败，改用备用通道:', err && (err.name || err.message));
+        this._speakFallback(text, rate);
+      });
+    }
+  },
+
   // 选择朗读方式（统一入口，供 speak / _advanceQueue 调用）
-  // 优先级：云端 TTS > Google TTS > [安卓:有道 TTS | 非安卓:浏览器内置语音] > 有道 TTS
+  // 优先级：静态预生成音频 > 云端 TTS > Google TTS > [安卓:有道 TTS | 非安卓:浏览器内置语音] > 有道 TTS
   _dispatchSpeak(text, rate) {
+    // 静态预生成音频优先：edge-tts 已生成，任何网络环境都一样稳定播放
+    // （GitHub Pages 静态站无后端，且手机可能没有浏览器英语语音/有道不可靠）
+    const saPath = this._staticAudioPath(text, rate);
+    if (saPath) {
+      this._playStatic(saPath, text, rate);
+      return;
+    }
     // 安全检查：有道 TTS 超长文本自动分句（防止 speakQueue 之外的调用传入长文本）
     if (this._willUseYoudao() && text && text.length > 180) {
       const chunks = this._splitText(text, 180);
