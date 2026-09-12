@@ -200,7 +200,7 @@ const DialogueModule = {
       if (error && error !== 'unsupported') {
         const errMsg = {
           'no-permission': '麦克风权限被拒绝。请点击地址栏左侧的锁图标，将麦克风权限设为"允许"后刷新页面重试',
-          'network': '语音识别服务不可用（需连接 Google 服务，中国大陆网络可能受限）。建议使用录音回放功能对照练习',
+          'network': '语音识别服务不可用（网络原因，无法连接识别后端）。请检查网络后重试，或使用录音回放功能对照练习',
           'start-failed': '录音启动失败。请检查麦克风是否被其他程序占用',
           'no-speech': '未检测到语音，请对着麦克风大声说出英文台词',
           'audio-capture': '无法访问麦克风设备，请检查浏览器麦克风权限',
@@ -243,11 +243,15 @@ const DialogueModule = {
       if (pb && pb.textContent.includes('暂停')) pb.textContent = '▶ 回放录音';
     };
 
-    // 识别过程中的状态反馈（主要是 Vosk 离线模型首次下载）
+    // 识别过程中的状态反馈（Vosk 离线模型首次下载 / 云端上传）
     Speech.onStatus = (key, extra) => {
       const st = document.getElementById('recStatus');
-      if (!st || !Speech.isRecording()) return;
-      if (key === 'vosk-download') {
+      if (!st) return;
+      // vosk-* 仅录音中会有；cloud-uploading 发生在停止录音后上传阶段
+      if (!Speech.isRecording() && key !== 'cloud-uploading') return;
+      if (key === 'cloud-uploading') {
+        st.innerHTML = '<span class="text-sky-600">⏳ 正在上传录音，云端识别中…请稍候</span>';
+      } else if (key === 'vosk-download') {
         const pct = (extra && extra.pct) ?? 0;
         const mb = (extra && extra.mb) || '0.0';
         const width = Math.max(2, Math.min(100, pct));

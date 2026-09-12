@@ -1,1 +1,2 @@
 edge-tts>=6.1.0
+dashscope>=1.14.0

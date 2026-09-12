@@ -1,20 +1,75 @@
 #!/usr/bin/env python3
 """
-DailyEnglish 统一服务器：静态文件 + TTS API
+DailyEnglish 统一服务器：静态文件 + TTS API + 云端语音识别(STT)
 - 静态文件服务（替代 python http.server）
 - /tts 端点：用 edge-tts 生成自然语音 MP3
+- /stt 端点：转发音频给阿里云 DashScope Paraformer 识别（Key 经 DASHSCOPE_API_KEY 环境变量注入）
 """
 import os
 import sys
+import io
 import json
+import base64
 import hashlib
 import asyncio
 import functools
+import tempfile
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs, unquote
 
 # edge-tts
 import edge_tts
+
+# ===== 云端语音识别（阿里云百炼 DashScope Paraformer）=====
+# API Key 通过环境变量 DASHSCOPE_API_KEY 注入，绝不硬编码进仓库。
+DASHSCOPE_API_KEY = os.environ.get("DASHSCOPE_API_KEY", "").strip()
+DASHSCOPE_MODEL = os.environ.get("DASHSCOPE_MODEL", "paraformer-realtime-v2").strip()
+
+def _get_dashscope():
+    """惰性加载 dashscope，避免未安装/未配置 key 时整站无法启动。"""
+    if not DASHSCOPE_API_KEY:
+        raise RuntimeError("DASHSCOPE_API_KEY 未配置，请先在部署平台设置环境变量")
+    import dashscope
+    if getattr(dashscope, "api_key", None) != DASHSCOPE_API_KEY:
+        dashscope.api_key = DASHSCOPE_API_KEY
+    return dashscope
+
+def recognize_pcm(pcm_bytes, sample_rate=16000):
+    """把一段整音频（16kHz 16bit 单声道 PCM）交给阿里云 Paraformer 识别，返回识别文本。"""
+    from dashscope.audio.asr import Recognition
+
+    class _Callback:
+        def on_open(self): pass
+        def on_complete(self): pass
+        def on_close(self): pass
+        def on_error(self, result): pass
+        def on_event(self, result): pass
+
+    if not pcm_bytes:
+        return ""
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".pcm", delete=False) as f:
+            f.write(pcm_bytes)
+            tmp = f.name
+        rec = Recognition(
+            model=DASHSCOPE_MODEL,
+            callback=_Callback(),
+            format="pcm",
+            sample_rate=int(sample_rate) or 16000,
+        )
+        result = rec.call(file=tmp)
+        if result is None or result.status_code != 200 or getattr(result, "output", None) is None:
+            msg = (getattr(result, "message", None)) or "识别失败"
+            code = getattr(result, "code", None) or ""
+            raise RuntimeError(f"{msg} ({code})".strip())
+        sentences = result.get_sentence() or []
+        text = " ".join((s.get("text") or "") for s in sentences).strip()
+        return text
+    finally:
+        if tmp:
+            try: os.unlink(tmp)
+            except OSError: pass
 
 # 代理：本地开发用 18080，云平台通过环境变量配置（不配置则直连）
 PROXY = os.environ.get("HTTP_PROXY") or os.environ.get("https_proxy") or ""
@@ -84,6 +139,8 @@ class Handler(SimpleHTTPRequestHandler):
                 self.handle_tts_dict(data)
             except json.JSONDecodeError:
                 self.send_error(400, "Invalid JSON body")
+        elif parsed.path == "/stt":
+            self.handle_stt()
         else:
             self.send_error(404, "Not found")
 
@@ -93,6 +150,41 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
+
+    def send_json(self, obj, status=200):
+        data = json.dumps(obj, ensure_ascii=False).encode('utf-8')
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(data)
+
+    def handle_stt(self):
+        """云端语音识别：接收浏览器上传的 raw PCM（16kHz 16bit 单声道，base64），
+        调用阿里云 DashScope Paraformer 识别，返回 {text} 或 {error}。"""
+        try:
+            content_len = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_len)
+            data = json.loads(body.decode('utf-8'))
+            audio_b64 = data.get("audio") or ""
+            if not audio_b64:
+                self.send_json({"error": "missing audio"}, status=400)
+                return
+            sample_rate = int(data.get("sample_rate") or 16000)
+            pcm = base64.b64decode(audio_b64)
+            if not pcm:
+                self.send_json({"error": "empty audio"}, status=400)
+                return
+            _get_dashscope()  # 确保 key 已配置
+            text = recognize_pcm(pcm, sample_rate)
+            # DashScope 对空/静音返回空串，统一交给前端按“未识别到内容”提示
+            self.send_json({"text": text})
+        except Exception as e:
+            try:
+                self.send_json({"error": str(e)}, status=500)
+            except Exception:
+                pass
 
     def handle_tts(self, params):
         text = params.get("text", [""])[0]
@@ -181,8 +273,10 @@ if __name__ == "__main__":
     print(f"TTS proxy: {PROXY}")
     print(f"TTS voices: {list(VOICES.keys())}")
     print(f"TTS cache: {CACHE_DIR}")
+    print(f"STT DashScope key: {'已配置' if DASHSCOPE_API_KEY else '未配置'}")
     print(f"Access: http://localhost:{PORT}/")
     print(f"TTS API: http://localhost:{PORT}/tts?text=hello&voice=jenny&rate=1")
+    print(f"STT API: http://localhost:{PORT}/stt (POST raw PCM base64)")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

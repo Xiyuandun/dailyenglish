@@ -22,6 +22,24 @@ const Speech = {
   _lastText: '',        // 记录上次朗读文本（用于 fallback）
   _lastRate: 1,         // 记录上次速率
   _cloudFailedCount: 0, // 云端失败计数（连续失败则禁用）
+
+  // 云端语音识别（阿里云 DashScope Paraformer）配置
+  // 由部署后端时在 index.html 的 window.DAILY_CFG.sttUrl 里指定；
+  // 若页面本身由后端提供（本地/渲染平台），也可用默认相对路径 /stt。
+  sttBase: (function () {
+    try {
+      if (typeof window !== 'undefined' && window.DAILY_CFG && window.DAILY_CFG.sttUrl) {
+        return window.DAILY_CFG.sttUrl;
+      }
+    } catch (e) {}
+    return '/stt';
+  })(),
+  _sttCtx: null,        // 云端识别用的 AudioContext
+  _sttStream: null,     // 麦克风 MediaStream（云端识别单独拿一根，避免与录音存档互斥）
+  _sttSource: null,     // MediaStreamSource
+  _sttNode: null,       // ScriptProcessor
+  _sttChunks: [],       // 采集到的 Int16 PCM 分片（16kHz 单声道）
+  _useCloud: false,     // 当前是否使用云端识别
   // 预缓存：key = voice|rate|text → value = objectURL
   _cache: new Map(),
   _pending: new Map(),  // 进行中的请求（避免重复请求）
@@ -154,10 +172,23 @@ const Speech = {
     }
 
     // 预加载 Vosk 离线语音识别模型（Web Speech API 在中国大陆不可用时的备选方案）
-    // 仅在静态环境（GitHub Pages）预加载，本地开发用 Web Speech API 即可
-    if (!isLocal && !isRender && typeof Vosk !== 'undefined') {
+    // 方案A：配置了云端识别后端(sttUrl)后，改为云端识别，不再下载 40MB 离线模型。
+    // 仅在静态环境（GitHub Pages）且未启用云端时预加载，本地开发用 Web Speech API 即可
+    if (!isLocal && !isRender && typeof Vosk !== 'undefined' && !this._useCloudSTT()) {
       this._preloadVoskModel();
     }
+  },
+
+  // 是否启用云端语音识别（方案A）：
+  // - sttUrl 配了绝对地址（GitHub Pages 前端 + 独立后端）→ 始终启用；
+  // - 默认相对路径 /stt 仅当页面本身由后端提供（本地/渲染平台）时有效。
+  _useCloudSTT() {
+    const b = this.sttBase;
+    if (!b) return false;
+    if (/^https?:/i.test(b)) return true;
+    const host = location.hostname;
+    return host.includes('localhost') || host.includes('127.0.0.1') ||
+      host.includes('lhr.life') || host.includes('onrender.com');
   },
 
   // 预加载 Vosk 语音识别模型（约 40MB，首次加载后浏览器会缓存）
@@ -907,7 +938,9 @@ const Speech = {
   },
 
   // 检查浏览器是否支持语音识别
+  // 云端识别（方案A）只要配置了后端即视为支持，无需 Web Speech API。
   isSupported() {
+    if (this._useCloudSTT()) return true;
     return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
   },
 
@@ -1126,40 +1159,182 @@ const Speech = {
     this._recLastInterim = '';
     this._recDone = false;
     this._recError = '';
+    this._useVosk = false;
+    this._useCloud = false;
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    // 优先使用 Vosk 离线识别：在中国大陆，Chrome/安卓的 Web Speech API 需要连接 Google，
-    // 常被网络屏蔽导致"录到了音却识别不出文字"。Vosk 完全离线、模型内置，录音即可识别，
-    // 是最稳妥的方案。（仅当 Vosk 库或模型不可用时才回退到 Web Speech API）
-    if (typeof window.Vosk !== 'undefined') {
-      this._useVosk = true;
+    // ===== 方案A：云端语音识别（阿里云 DashScope Paraformer）=====
+    // 配置后端后优先走云端，无需下载 40MB 离线模型，也绕开手机 Web Speech 被屏蔽的问题。
+    if (this._useCloudSTT()) {
+      this._useCloud = true;
       this._recActive = true;
-      // 同步启动录音存档（回放用，与 Vosk 各自独立拿麦克风，互不干扰）
+      // 同步启动录音存档（回放用，与云端识别各自独立拿麦克风）
       this.startRecording();
-      // 异步启动 Vosk 识别；若 Vosk 不可用（模型加载失败等）则回退到 Web Speech
-      this._startVoskRecognition(lang).then((ok) => {
+      // 异步初始化录音流；失败则回退到 Vosk / Web Speech
+      const self = this;
+      this._startCloudRecognition(lang).then((ok) => {
         if (ok) return;
-        this._useVosk = false;
-        if (SR) {
-          this._recActive = true;
-          this._recDone = false;
-          this._startWebSpeech(lang);
-        } else {
-          this._recActive = false;
-          if (typeof this.onResult === 'function') this.onResult('', 'start-failed');
-        }
+        self._useCloud = false;
+        self._fallbackStartRecognition(lang, SR);
+      }).catch(() => {
+        self._useCloud = false;
+        self._recActive = false;
+        if (typeof self.onResult === 'function') self.onResult('', 'start-failed');
       });
       return true;
     }
 
+    this._fallbackStartRecognition(lang, SR);
+    return true;
+  },
+
+  // 非云端识别回退：Vosk 离线识别 > Web Speech API
+  _fallbackStartRecognition(lang, SR) {
+    const self = this;
+    // Vosk 离线识别：中国大陆 Web Speech 需连 Google 常被屏蔽，Vosk 模型内置录音即可识别。
+    if (typeof window.Vosk !== 'undefined') {
+      this._useVosk = true;
+      this._recActive = true;
+      this.startRecording();
+      this._startVoskRecognition(lang).then((ok) => {
+        if (ok) return;
+        self._useVosk = false;
+        if (SR) {
+          self._recActive = true;
+          self._recDone = false;
+          self._startWebSpeech(lang);
+        } else {
+          self._recActive = false;
+          if (typeof self.onResult === 'function') self.onResult('', 'start-failed');
+        }
+      });
+      return;
+    }
     if (!SR) {
       console.warn('[录音] 既无 Vosk 库，浏览器也不支持 Web Speech API');
       this._recActive = false;
       if (typeof this.onResult === 'function') this.onResult('', 'unsupported');
-      return false;
+      return;
     }
     this._startWebSpeech(lang);
-    return true;
+  },
+
+  // 云端识别：用 ScriptProcessor 采集麦克风并重采样到 16kHz Int16 PCM
+  async _startCloudRecognition(lang) {
+    try {
+      this._sttChunks = [];
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      this._sttCtx = new Ctx();
+      this._sttStream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 }
+      });
+      const ctx = this._sttCtx;
+      const source = ctx.createMediaStreamSource(this._sttStream);
+      const node = ctx.createScriptProcessor(4096, 1, 1);
+      const self = this;
+      node.onaudioprocess = (e) => {
+        try {
+          const ch = e.inputBuffer.getChannelData(0);
+          const out = self._resamplePcm(ch, ctx.sampleRate, 16000);
+          const int16 = new Int16Array(out.length);
+          for (let i = 0; i < out.length; i++) {
+            let s = out[i];
+            if (s > 1) s = 1; else if (s < -1) s = -1;
+            int16[i] = s < 0 ? (s * 0x8000) : (s * 0x7fff);
+          }
+          self._sttChunks.push(new Uint8Array(
+            int16.buffer.slice(int16.byteOffset, int16.byteOffset + int16.byteLength)
+          ));
+        } catch (err) {}
+      };
+      source.connect(node);
+      node.connect(ctx.destination);
+      this._sttSource = source;
+      this._sttNode = node;
+      console.log('[语音识别] 云端识别已启动');
+      return true;
+    } catch (err) {
+      console.error('[语音识别] 云端识别启动失败:', err && (err.name || err.message));
+      this._stopCloudCapture();
+      return false;
+    }
+  },
+
+  // Float32 音频线性重采样到指定采样率
+  _resamplePcm(buf, inRate, outRate) {
+    if (!buf || !buf.length || inRate === outRate) return buf;
+    const step = inRate / outRate;
+    const outLen = Math.floor(buf.length / step);
+    const out = new Float32Array(outLen);
+    let t = 0;
+    for (let i = 0; i < outLen; i++) {
+      const i0 = Math.floor(t);
+      const i1 = Math.min(i0 + 1, buf.length - 1);
+      const frac = t - i0;
+      out[i] = buf[i0] * (1 - frac) + buf[i1] * frac;
+      t += step;
+    }
+    return out;
+  },
+
+  // 停止云端 PCM 采集
+  _stopCloudCapture() {
+    try { if (this._sttNode) { this._sttNode.disconnect(); this._sttNode = null; } } catch (e) {}
+    try { if (this._sttSource) { this._sttSource.disconnect(); this._sttSource = null; } } catch (e) {}
+    try { if (this._sttStream) { this._sttStream.getTracks().forEach(t => t.stop()); this._sttStream = null; } } catch (e) {}
+    try { if (this._sttCtx) { this._sttCtx.close(); this._sttCtx = null; } } catch (e) {}
+  },
+
+  // 汇总采集到的 PCM 为一段 Int16 字节
+  _gatherPcmBytes() {
+    const chunks = this._sttChunks || [];
+    if (!chunks.length) return null;
+    let total = 0;
+    for (const c of chunks) total += c.length;
+    const bytes = new Uint8Array(total);
+    let off = 0;
+    for (const c of chunks) { bytes.set(c, off); off += c.length; }
+    return bytes;
+  },
+
+  // 发送 PCM 到后端完成识别，返回文本
+  async _finishCloudRecognition() {
+    this._stopCloudCapture();
+    const pcm = this._gatherPcmBytes();
+    if (!pcm || !pcm.length) return '';
+    if (typeof this.onStatus === 'function') this.onStatus('cloud-uploading');
+    try {
+      const res = await fetch(this.sttBase, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audio: this._bytesToB64(pcm),
+          sample_rate: 16000,
+          format: 'pcm',
+          model: 'paraformer-realtime-v2'
+        })
+      });
+      if (!res.ok) { if (!this._recError) this._recError = 'network'; return ''; }
+      const data = await res.json();
+      if (!data || data.error) {
+        if (!this._recError) this._recError = 'network';
+        return '';
+      }
+      return (data.text || '').trim();
+    } catch (err) {
+      if (!this._recError) this._recError = 'network';
+      return '';
+    }
+  },
+
+  // Uint8Array → base64（按块避免栈溢出）
+  _bytesToB64(bytes) {
+    let bin = '';
+    const CHUNK = 0x8000;
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+    }
+    return btoa(bin);
   },
 
   // Web Speech API 语音识别（Vosk 不可用时的回退通道）
@@ -1249,6 +1424,20 @@ const Speech = {
   _completeRecognition() {
     if (this._recDone) return;
     this._recDone = true;
+
+    // 云端模式：需要联网识别，改为异步完成
+    if (this._useCloud) {
+      const self = this;
+      this._finishCloudRecognition().then(text => {
+        const error = self._recError || '';
+        console.log('[录音] 云端完成, 文本:', text, '错误:', error || '无');
+        if (typeof self.onResult === 'function') self.onResult(text, error);
+        self.stopRecording().then(recUrl => {
+          if (typeof self.onRecordingReady === 'function') self.onRecordingReady(recUrl);
+        });
+      });
+      return;
+    }
 
     let text, error;
     if (this._useVosk) {
