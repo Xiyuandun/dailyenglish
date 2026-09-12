@@ -7,6 +7,7 @@ const Speech = {
   rec: null,
   voices: [],
   queuedTimers: [],     // 排队朗读的定时器（便于一键停止）
+  _queueWatcher: null,  // 队列卡死监视定时器（某句不播放时强制推进）
 
   // 录音存档（MediaRecorder 录制麦克风音频）
   _mediaRecorder: null,   // MediaRecorder 实例
@@ -59,11 +60,15 @@ const Speech = {
           p.then(() => { ua.pause(); }).catch(() => {});
         }
       } catch (e) {}
-      // 2) Web Speech 预热（iOS Safari：首次 speak 前先读一个空串，避免真实朗读被吞）
+      // 2) Web Speech 预热（iOS Safari：首次真实 speak 偶发被吞，必须用一个【非空】极短串先解封引擎）
       try {
         if (this.synth) {
-          const warm = new SpeechSynthesisUtterance('');
+          this.synth.cancel();
+          this.synth.pause();
+          this.synth.resume();
+          const warm = new SpeechSynthesisUtterance('Hi');
           warm.volume = 0;
+          warm.rate = 10;
           this.synth.speak(warm);
         }
       } catch (e) {}
@@ -327,6 +332,39 @@ const Speech = {
     this._lastRate = item.rate;
     this._googleFallbackActive = false;
     this._dispatchSpeak(item.text, item.rate);
+    // 为当前句穿戴卡死监视：若不播放则强制推进，避免整段静默
+    this._armQueueWatcher(item);
+  },
+
+  // 队列卡死监视：估算该句朗读时长，超时仍未播放/推进则强制跳下一句
+  // 解决：iOS 首句偶发无声、iOS/有道某句卡住导致整段静默
+  _armQueueWatcher(item) {
+    this._clearQueueWatcher();
+    // iOS/桌面 Web Speech 用 synth.speaking 判断是否在播；安卓有道走 audio 播放状态
+    const useSpeech = !!this.synth && !this.isAndroid && !this._willUseYoudao();
+    // 估时：约 13 字符/秒 + 2 秒余量，最短 1.5s
+    const est = Math.max(1500, Math.round((item.text.length / 13 + 2) * 1000));
+    const self = this;
+    let attempts = 0;
+    const tick = () => {
+      self._queueWatcher = setTimeout(() => {
+        // 已推进完毕或队列被清空，结束监视
+        if (!self._queue || !self._queue.length) { self._queueWatcher = null; return; }
+        const playing = useSpeech
+          ? !!(self.synth && self.synth.speaking)
+          : !self.audio.paused;
+        if (playing && attempts < 3) { attempts++; tick(); return; } // 仍在播，继续观察
+        self._queueWatcher = null;
+        console.warn('[语音] 队列监视超时，强制跳下一句:', item.text.substring(0, 20));
+        try { if (useSpeech) self.synth.cancel(); else self.audio.pause(); } catch (e) {}
+        self._advanceQueue();
+      }, est);
+    };
+    tick();
+  },
+
+  _clearQueueWatcher() {
+    if (this._queueWatcher) { clearTimeout(this._queueWatcher); this._queueWatcher = null; }
   },
 
   // 长文本分句（有道 TTS 单次约 200 字符限制）
@@ -598,7 +636,12 @@ const Speech = {
       return;
     }
     // 取消之前的朗读
-    try { this.synth.cancel(); } catch {}
+    // iOS Safari：先 pause/resume 重置引擎，避免连续朗读中途静默或首句被吞
+    if (this.isIOS) {
+      try { this.synth.cancel(); this.synth.pause(); this.synth.resume(); } catch {}
+    } else {
+      try { this.synth.cancel(); } catch {}
+    }
 
     // 同步获取 voices（已加载则有，未加载则空，不等待）
     if (this.voices.length === 0 && this.synth.getVoices) {
@@ -623,6 +666,10 @@ const Speech = {
       this._speakYoudaoTTS(text, rate);
     };
     u.onend = () => {
+      if (this.isIOS) {
+        // iOS：重置引擎，保证下一句能继续出声
+        try { this.synth.pause(); this.synth.resume(); } catch {}
+      }
       if (this._queue && this._queue.length) this._advanceQueue();
     };
     try {
@@ -639,6 +686,8 @@ const Speech = {
   stop() {
     // 清空队列
     this._queue = [];
+    // 清除队列卡死监视器
+    this._clearQueueWatcher();
     // 清除 Google TTS 超时定时器（避免停止后误触发回退）
     if (this._googleTtsTimer) { clearTimeout(this._googleTtsTimer); this._googleTtsTimer = null; }
     // 兼容旧的定时器队列
