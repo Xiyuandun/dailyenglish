@@ -42,31 +42,75 @@ const Speech = {
     this.audio = new Audio();
     this.audio.preload = 'auto';
 
-    // 检测环境：GitHub Pages 等纯静态托管无 Python 后端，使用 FreeTTS API
+    // iOS Safari 音频 & 语音合成解锁：首次用户手势时
+    // 1) 用独立 Audio 元素播放静音音频解锁 Audio 播放能力
+    // 2) 用空 utterance "预热" speechSynthesis（iOS 首次 speak 偶发无声的已知修复）
+    this._audioUnlocked = false;
+    const unlock = () => {
+      if (this._audioUnlocked) return;
+      this._audioUnlocked = true;
+      // 1) Audio 解锁
+      try {
+        const ua = new Audio();
+        ua.volume = 0;
+        ua.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+        const p = ua.play();
+        if (p && typeof p.then === 'function') {
+          p.then(() => { ua.pause(); }).catch(() => {});
+        }
+      } catch (e) {}
+      // 2) Web Speech 预热（iOS Safari：首次 speak 前先读一个空串，避免真实朗读被吞）
+      try {
+        if (this.synth) {
+          const warm = new SpeechSynthesisUtterance('');
+          warm.volume = 0;
+          this.synth.speak(warm);
+        }
+      } catch (e) {}
+      console.log('[语音] iOS 音频/语音已解锁');
+    };
+    // 首次 touchend / click 解锁（用 * 捕获阶段确保最早触发）
+    document.addEventListener('touchend', unlock, { once: true, capture: true });
+    document.addEventListener('click', unlock, { once: true, capture: true });
+
+    // 检测设备类型（安卓 Web Speech 不可靠，很多国产机无 Google TTS 引擎）
+    const ua = navigator.userAgent || '';
+    this.isAndroid = /Android/i.test(ua);
+    this.isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+    // 检测环境：GitHub Pages 等纯静态托管无 Python 后端
     const host = location.hostname;
     const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('lhr.life');
     const isRender = host.includes('onrender.com');
     if (!isLocal && !isRender) {
       this.useCloudTTS = false;
-      // 静态环境使用 FreeTTS（免费云端 TTS，无需 API key，无登录跳转）
-      this.usePuter = true;
-      console.log('[语音] 静态环境，使用 FreeTTS 云端 TTS');
+      this.useGoogleTTS = false;
+      if (this.isAndroid) {
+        // 安卓：直接用有道 TTS（Web Speech 在安卓上不可靠，很多国产机无 Google TTS 引擎）
+        console.log('[语音] 安卓设备，使用有道 TTS');
+      } else {
+        // iOS / 桌面：优先浏览器内置语音（Web Speech API），失败时回退有道 TTS
+        console.log('[语音] 静态环境，使用浏览器内置语音（Web Speech API）');
+      }
     }
 
-    // Audio 播放失败 → 回退
+    // Audio 播放失败 → 回退（有道/Google TTS 失败时）
     this.audio.addEventListener('error', () => {
+      if (this._googleFallbackActive) return;
       if (this._queue && this._queue.length) {
         this._advanceQueue();
         return;
       }
-      this._cloudFailedCount++;
-      console.warn(`云端 TTS 失败 (${this._cloudFailedCount}次)`);
-      if (this._cloudFailedCount >= 3) {
-        this.usePuter = false;
-        console.warn('Puter.js 连续失败 3 次，切换到浏览器内置语音');
-      }
+      this._googleFallbackActive = true;
+      console.warn('Audio 播放失败，尝试回退');
+      this.useGoogleTTS = false;
       if (this._lastText) {
-        this._speakFallback(this._lastText, this._lastRate);
+        // 优先回退到浏览器内置语音；如不支持则用有道 TTS
+        if (this.synth) {
+          this._speakFallback(this._lastText, this._lastRate);
+        } else {
+          this._speakYoudaoTTS(this._lastText, this._lastRate);
+        }
       }
     });
 
@@ -88,18 +132,11 @@ const Speech = {
         const vs = this.synth.getVoices();
         if (vs && vs.length) {
           this.voices = vs;
-          console.log('[语音] 加载到', vs.length, '个语音');
+          console.log('[语音] 加载到', vs.length, '个浏览器语音');
         }
       };
       load();
       this.synth.onvoiceschanged = load;
-      // 某些浏览器需要触发一次空朗读才能激活语音引擎
-      // Safari/IOS 上首次调用可能无声，用这个"热身"
-      try {
-        const warmup = new SpeechSynthesisUtterance('');
-        warmup.volume = 0;
-        this.synth.speak(warmup);
-      } catch {}
     }
   },
 
@@ -112,80 +149,170 @@ const Speech = {
     this._advanceQueue();
   },
 
+  // 选择朗读方式（统一入口，供 speak / _advanceQueue 调用）
+  // 优先级：云端 TTS > Google TTS > [安卓:有道 TTS | 非安卓:浏览器内置语音] > 有道 TTS
+  _dispatchSpeak(text, rate) {
+    if (this.useCloudTTS) {
+      this._speakCloud(text, rate);
+    } else if (this.useGoogleTTS) {
+      this._speakGoogleTTS(text, rate);
+    } else if (this.isAndroid) {
+      // 安卓：直接用有道 TTS（Web Speech 在安卓上不可靠，很多国产机无 Google TTS 引擎）
+      this._speakYoudaoTTS(text, rate);
+    } else if (this.synth) {
+      this._speakFallback(text, rate);   // iOS / 桌面：浏览器内置语音合成
+    } else {
+      this._speakYoudaoTTS(text, rate);  // 无 speechSynthesis 时（如微信浏览器）用有道 TTS
+    }
+  },
+
   // 队列内部：播放下一句（不清空队列）
   _advanceQueue() {
     if (!this._queue || !this._queue.length) return;
     const item = this._queue.shift();
     this._lastText = item.text;
     this._lastRate = item.rate;
-    // 直接调用朗读，绕过 speak() 内部的 stop()
-    if (this.useCloudTTS) {
-      this._speakCloud(item.text, item.rate);
-    } else if (this.usePuter) {
-      this._speakPuter(item.text, item.rate);
-    } else {
-      this._speakFallback(item.text, item.rate);
+    this._googleFallbackActive = false;
+    this._dispatchSpeak(item.text, item.rate);
+  },
+
+  // 长文本分句（有道 TTS 单次约 200 字符限制）
+  // 按句号/问号/感叹号切分，每段不超过 maxLen 字符
+  _splitText(text, maxLen) {
+    const sentences = text.match(/[^.!?。！？]+[.!?。！？]?/g) || [text];
+    const chunks = [];
+    let cur = '';
+    for (const s of sentences) {
+      if ((cur + s).length > maxLen && cur) {
+        chunks.push(cur.trim());
+        cur = s;
+      } else {
+        cur += s;
+      }
     }
+    if (cur.trim()) chunks.push(cur.trim());
+    return chunks.length ? chunks : [text];
   },
 
   // 朗读英文（主入口）
   speak(text, rate = 1) {
     this.stop();
+    // 有道 TTS 有长度限制（约 200 字符），长文本自动分句后用队列播放
+    const useYoudao = !this.useCloudTTS && !this.useGoogleTTS && (this.isAndroid || !this.synth);
+    if (useYoudao && text && text.length > 180) {
+      const chunks = this._splitText(text, 180);
+      this.speakQueue(chunks, rate);
+      return;
+    }
     this._lastText = text;
     this._lastRate = rate;
+    // 重置 Google TTS 回退标记，允许本次重新尝试
+    this._googleFallbackActive = false;
+    this._dispatchSpeak(text, rate);
+  },
 
-    if (this.useCloudTTS) {
-      this._speakCloud(text, rate);
-    } else if (this.usePuter) {
-      this._speakPuter(text, rate);
-    } else {
+  // Google Translate TTS 朗读（静态环境使用，免费，无需 API key）
+  // 接口：GET https://translate.google.com/translate_tts?ie=UTF-8&q={text}&tl={lang}&client=tw-ob
+  // 直接返回 MP3 音频。<audio> 元素播放跨域资源不受 CORS 限制（仅读取音频数据才受限）
+  // 限制：单次约 200 字符，长文本需分句
+  // 注意：translate.google.com 在部分网络环境（如中国大陆）被屏蔽，
+  //       此时 audio 元素会挂起而非立即触发 error 事件，因此必须加超时回退。
+  _speakGoogleTTS(text, rate) {
+    console.log('[语音] Google TTS 请求:', text.substring(0, 30));
+
+    // 清除上一次的超时定时器
+    if (this._googleTtsTimer) { clearTimeout(this._googleTtsTimer); this._googleTtsTimer = null; }
+
+    // 语音 → 语言映射（Google Translate TTS 用 tl 参数控制语言/口音）
+    // 美式声音（jenny/aria/guy/davis/amber）→ en，英式声音（emma/brian）→ en-GB
+    const gbVoices = ['emma', 'brian'];
+    const tl = gbVoices.includes(this.voice) ? 'en-GB' : 'en';
+    // Google TTS 单次约 200 字符，截断保护
+    const safeText = (text || '').slice(0, 200);
+    const encodedText = encodeURIComponent(safeText);
+    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${tl}&client=tw-ob`;
+
+    this.audio.src = audioUrl;
+    // Google TTS 不支持服务端调速率，用 playbackRate 调整（iOS Safari 兼容）
+    try { this.audio.playbackRate = rate || 1; } catch {}
+    // 确保从头播放
+    try { this.audio.currentTime = 0; } catch {}
+
+    // 超时保护：800ms 内未开始播放 → 判定 Google TTS 不可用（被屏蔽/网络慢），立即回退到浏览器内置语音
+    // 标记本次是否已回退，避免 error 事件重复触发回退
+    let fallenBack = false;
+    const doFallback = (reason) => {
+      if (fallenBack) return;
+      fallenBack = true;
+      this._googleFallbackActive = true;
+      if (this._googleTtsTimer) { clearTimeout(this._googleTtsTimer); this._googleTtsTimer = null; }
+      console.warn('[语音] Google TTS 回退到浏览器内置语音:', reason);
+      // Google 被屏蔽则直接禁用，后续直接用浏览器内置语音（无延迟）
+      this.useGoogleTTS = false;
+      // 停止 audio 的后台加载，避免与 Web Speech 冲突
+      try { this.audio.pause(); this.audio.src = ''; } catch {}
       this._speakFallback(text, rate);
+    };
+
+    this._googleTtsTimer = setTimeout(() => {
+      doFallback('超时(800ms)未开始播放，可能被网络屏蔽');
+    }, 800);
+
+    const p = this.audio.play();
+    if (p && typeof p.then === 'function') {
+      p.then(() => {
+        if (fallenBack) return;
+        // 播放成功，清除超时
+        if (this._googleTtsTimer) { clearTimeout(this._googleTtsTimer); this._googleTtsTimer = null; }
+        console.log('[语音] Google TTS 播放中');
+      }).catch(err => {
+        // iOS Safari 在非用户手势上下文会拒绝 play()，或网络失败
+        console.warn('[语音] Google TTS 播放失败:', err && (err.name || err.message));
+        doFallback('play() 被拒绝或失败');
+      });
     }
   },
 
-  // Puter.js TTS 朗读（静态环境使用，免费云端 TTS）
-  // FreeTTS API 朗读（免费云端 TTS，无需 API key，无登录跳转）
-  // 文档：https://www.freetts.org/
-  _speakPuter(text, rate) {
-    console.log('[语音] FreeTTS 请求:', text.substring(0, 30));
-    const voiceName = (this.voiceOptions[this.voice] || this.voiceOptions.jenny).edge;
-    // FreeTTS 速率格式：+0%, -10%, +20% 等
-    const ratePct = rate >= 1 ? `+${Math.round((rate - 1) * 100)}%` : `${Math.round((rate - 1) * 100)}%`;
-    
-    fetch('https://freetts.org/api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: text,
-        voice: voiceName,
-        rate: ratePct,
-        pitch: '+0Hz'
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.file_id) {
-        const audioUrl = `https://freetts.org/api/audio/${data.file_id}`;
-        this.audio.src = audioUrl;
-        this.audio.playbackRate = 1; // FreeTTS 已在服务端处理 rate
-        this.audio.play().catch(err => {
-          console.error('[语音] FreeTTS 音频播放失败:', err);
-          this._speakFallback(text, rate);
-        });
-        console.log('[语音] FreeTTS 播放中');
-      } else {
-        throw new Error('无 file_id');
-      }
-    })
-    .catch(err => {
-      console.error('[语音] FreeTTS 失败:', err);
-      this._cloudFailedCount++;
-      if (this._cloudFailedCount >= 3) {
-        this.usePuter = false;
-        console.warn('FreeTTS 连续失败 3 次，切换到浏览器内置语音');
-      }
-      this._speakFallback(text, rate);
-    });
+  // 有道词典 TTS 朗读（浏览器无 speechSynthesis 时使用，如微信内置浏览器）
+  // 接口：GET https://dict.youdao.com/dictvoice?audio={text}&type={1|2}
+  // type=1 美式英语，type=2 英式英语；直接返回 MP3，无需 API key，中国大陆可访问
+  _speakYoudaoTTS(text, rate) {
+    console.log('[语音] 有道 TTS 请求:', text.substring(0, 30));
+    // 语音 → type 映射：英式声音用 type=2，其余用 type=1（美式）
+    const gbVoices = ['emma', 'brian'];
+    const type = gbVoices.includes(this.voice) ? 2 : 1;
+    // 有道 TTS 适合单词/短句，截断保护
+    const safeText = (text || '').slice(0, 200);
+    const audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(safeText)}&type=${type}`;
+
+    this.audio.src = audioUrl;
+    // 有道不支持服务端调速，用 playbackRate 调整
+    try { this.audio.playbackRate = rate || 1; } catch {}
+    try { this.audio.currentTime = 0; } catch {}
+
+    const p = this.audio.play();
+    if (p && typeof p.then === 'function') {
+      p.then(() => {
+        console.log('[语音] 有道 TTS 播放中');
+      }).catch(err => {
+        const name = err && err.name;
+        console.warn('[语音] 有道 TTS 播放失败:', name || err);
+        // NotAllowedError 是因为非用户手势调用（如控制台测试），真实点击不会出现
+        if (name === 'NotAllowedError') {
+          Toast.show('请点击朗读按钮触发播放');
+          return;
+        }
+        // 网络/加载失败：安卓上不回退 Google（国内被屏蔽），提示用户
+        this._cloudFailedCount++;
+        if (this.isAndroid) {
+          Toast.show('语音加载失败，请检查网络后重试');
+        } else {
+          // 非安卓：尝试 Google TTS（如能访问）
+          if (this._cloudFailedCount >= 3) this.useGoogleTTS = true;
+          this._speakGoogleTTS(text, rate);
+        }
+      });
+    }
   },
 
   // 生成缓存 key
@@ -304,85 +431,50 @@ const Speech = {
   },
 
   // Web Speech API fallback（浏览器内置语音）
+  // iOS Safari 关键限制：speechSynthesis.speak() 必须在用户手势的同步调用栈中执行，
+  // 任何 setTimeout / fetch / Promise 等异步操作都会破坏用户手势上下文，导致朗读被静默拒绝。
+  // 因此本方法绝不使用 setTimeout 等待 voices 加载——直接同步调用 speak()，浏览器用默认语音兜底。
   _speakFallback(text, rate) {
     if (!this.synth) {
-      console.warn('[语音] 浏览器不支持语音合成');
-      Toast.show('语音合成不可用，请使用 Chrome 或 Safari 浏览器');
+      console.warn('[语音] 浏览器不支持语音合成，回退到有道 TTS');
+      this._speakYoudaoTTS(text, rate);
       return;
     }
     // 取消之前的朗读
     try { this.synth.cancel(); } catch {}
 
-    const doSpeak = () => {
-      // 重新获取 voices（可能已加载）
-      if (this.voices.length === 0 && this.synth.getVoices) {
-        const vs = this.synth.getVoices();
-        if (vs && vs.length) this.voices = vs;
-      }
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'en-US';
-      u.rate = rate || 1;
-      u.volume = 1;
-      u.pitch = 1;
-      // 优先选择 Google/Samantha 等较自然语音
-      let v = this.voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'));
-      if (!v) v = this.voices.find(v => v.name.includes('Samantha'));
-      if (!v) v = this.voices.find(v => v.lang.startsWith('en-US'));
-      if (!v) v = this.voices.find(v => v.lang.startsWith('en'));
-      if (v) u.voice = v;
-      u.onerror = (e) => {
-        console.warn('[语音] 浏览器朗读错误:', e.error || e);
-        // 浏览器语音失败时，尝试用 FreeTTS 云端 TTS
-        if (!this._puterTried) {
-          this._puterTried = true;
-          console.log('[语音] 浏览器语音失败，切换到 FreeTTS');
-          this.usePuter = true;
-          this._speakPuter(text, rate);
-        } else {
-          Toast.show('朗读失败，请刷新页面重试');
-        }
-      };
-      u.onend = () => {
-        if (this._queue && this._queue.length) this._advanceQueue();
-      };
-      try {
-        this.synth.speak(u);
-        console.log('[语音] 朗读开始:', text.substring(0, 30));
-      } catch (err) {
-        console.error('[语音] speak() 异常:', err);
-        Toast.show('朗读失败：' + (err.message || '未知错误'));
-      }
-    };
+    // 同步获取 voices（已加载则有，未加载则空，不等待）
+    if (this.voices.length === 0 && this.synth.getVoices) {
+      const vs = this.synth.getVoices();
+      if (vs && vs.length) this.voices = vs;
+    }
 
-    // Safari/IOS 上 voices 异步加载，延迟一帧确保就绪
-    // 即使没有 voices，也强制朗读（浏览器会用默认语音）
-    if (this.voices.length === 0) {
-      // 尝试再获取一次
-      const vs = this.synth.getVoices ? this.synth.getVoices() : [];
-      if (vs && vs.length) {
-        this.voices = vs;
-        doSpeak();
-      } else {
-        // voices 未就绪，等 200ms 再试，最多等 1 秒
-        let tries = 0;
-        const wait = () => {
-          tries++;
-          const vs2 = this.synth.getVoices ? this.synth.getVoices() : [];
-          if (vs2 && vs2.length) {
-            this.voices = vs2;
-            doSpeak();
-          } else if (tries < 5) {
-            setTimeout(wait, 200);
-          } else {
-            // 超时，强制朗读（Safari 会用默认语音）
-            console.warn('[语音] voices 未加载，强制朗读');
-            doSpeak();
-          }
-        };
-        setTimeout(wait, 200);
-      }
-    } else {
-      doSpeak();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = rate || 1;
+    u.volume = 1;
+    u.pitch = 1;
+    // 优先选择 Google/Samantha 等较自然语音（未加载 voices 时跳过，用浏览器默认）
+    let v = this.voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'));
+    if (!v) v = this.voices.find(v => v.name.includes('Samantha'));
+    if (!v) v = this.voices.find(v => v.lang.startsWith('en-US'));
+    if (!v) v = this.voices.find(v => v.lang.startsWith('en'));
+    if (v) u.voice = v;
+    u.onerror = (e) => {
+      console.warn('[语音] 浏览器朗读错误:', e.error || e);
+      // 浏览器语音合成失败 → 回退到有道 TTS（中国大陆可用，无需 API key）
+      this._speakYoudaoTTS(text, rate);
+    };
+    u.onend = () => {
+      if (this._queue && this._queue.length) this._advanceQueue();
+    };
+    try {
+      // 必须同步调用，iOS Safari 才能在此用户手势上下文中播放
+      this.synth.speak(u);
+      console.log('[语音] 浏览器内置朗读开始:', text.substring(0, 30));
+    } catch (err) {
+      console.error('[语音] speak() 异常，回退到有道 TTS:', err);
+      this._speakYoudaoTTS(text, rate);
     }
   },
 
@@ -390,6 +482,8 @@ const Speech = {
   stop() {
     // 清空队列
     this._queue = [];
+    // 清除 Google TTS 超时定时器（避免停止后误触发回退）
+    if (this._googleTtsTimer) { clearTimeout(this._googleTtsTimer); this._googleTtsTimer = null; }
     // 兼容旧的定时器队列
     if (this.queuedTimers && this.queuedTimers.length) {
       this.queuedTimers.forEach(t => clearTimeout(t));
@@ -410,12 +504,17 @@ const Speech = {
       // 切换语音 → 清空旧缓存（voice 变了，旧音频不可复用）
       if (this.voice !== voiceId) this.clearCache();
       this.voice = voiceId;
-      // 仅在有后端 TTS 的环境重新启用云端 TTS
+      // 根据环境重置失败计数并重启用对应的 TTS 通道
       const host = location.hostname;
       const isStaticHost = !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('lhr.life') && !host.includes('onrender.com');
-      if (!isStaticHost) {
+      this._cloudFailedCount = 0;
+      if (isStaticHost) {
+        // 静态环境：保持使用浏览器内置语音（Web Speech API），不启用 Google TTS
+        // （Google TTS 仅在用户显式设置 Speech.useGoogleTTS = true 时启用）
+        this.useGoogleTTS = false;
+      } else {
+        // 有后端 TTS 的环境：重新启用云端 TTS
         this.useCloudTTS = true;
-        this._cloudFailedCount = 0;
       }
     }
   },
