@@ -58,6 +58,7 @@ const Store = {
       wordCorrect: 0,
       pronCount: 0,            // 发音练习次数
       writeScores: [],         // 写作得分历史
+      lastDay: null,           // 上次内容周期索引（用于跨天重置每日任务）
       dark: false,
       voice: 'jenny'           // 朗读语音（jenny/aria/guy/davis/amber/emma/brian）
     };
@@ -85,6 +86,19 @@ const Store = {
     this.save(s);
     this.refreshBadges();
     return true;
+  },
+  // 每日内容轮换：当天周期索引与上次记录不同时，重置每日任务完成标记。
+  // 积分、连击、周打卡历史、写作历史保留（这些是长期累计数据）。
+  applyNewDay(dayIndex) {
+    const s = this.get();
+    if (s.lastDay === dayIndex) return;
+    s.lastDay = dayIndex;
+    // 每日任务标记清零：单词测验/进度、场景对话、文章阅读
+    s.tasks = { word:false, dialogue:false, reading:false };
+    s.wordIndex = 0;
+    s.wordQuizDone = false;
+    s.wordCorrect = 0;
+    this.save(s);
   },
   refreshBadges() {
     const s = this.get();

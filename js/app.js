@@ -48,12 +48,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (switchBtn) switchBtn.onclick = applyUser;
   if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter') applyUser(); });
 
+  // 每日内容轮换：按当天索引填充当日单词/场景/文章，并处理跨天任务重置
+  if (typeof DayCycle !== 'undefined') DayCycle.bootstrap();
+
   // 初始化/刷新当前用户相关的 UI 与状态（切换用户时重新执行）
   function initUI() {
     const s = Store.get();
     // 日期显示
     const todayEl = document.getElementById('todayDate');
     if (todayEl) todayEl.textContent = new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+    // 周期天数标签
+    const dayEl = document.getElementById('dayLabel');
+    if (dayEl && typeof DayCycle !== 'undefined') dayEl.textContent = DayCycle.label();
 
     applyTheme(s.dark);
     document.getElementById('themeToggle').onclick = () => {
