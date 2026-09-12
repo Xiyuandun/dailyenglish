@@ -191,6 +191,37 @@ const Speech = {
       host.includes('lhr.life') || host.includes('onrender.com');
   },
 
+  // 按需动态加载 Vosk 离线识别库（5.4MB，仅在云端识别不可用、需要兜底时再加载，避免拖慢首屏）
+  _voskLibLoading: false,
+  _voskLibLoaded: null,   // Promise 缓存
+  _loadVoskLib() {
+    if (typeof window.Vosk !== 'undefined') return Promise.resolve();
+    if (this._voskLibLoaded) return this._voskLibLoaded;
+    this._voskLibLoading = true;
+    this._voskLibLoaded = new Promise((resolve, reject) => {
+      // 从当前页同目录解析 vendorg 脚本的绝对路径
+      let dir = '/';
+      if (typeof location !== 'undefined' && location.pathname) {
+        dir = location.pathname;
+        if (dir.charAt(0) !== '/') dir = '/' + dir;
+        const i = dir.lastIndexOf('/');
+        if (i > 0) dir = dir.substring(0, i + 1); else dir = '/';
+      }
+      const src = (location.origin || '') + dir + 'js/vendor/vosk-browser.js';
+      const s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => {
+        this._voskLibLoaded = null;
+        this._voskLibLoading = false;
+        reject(new Error('Vosk 库加载失败'));
+      };
+      document.head.appendChild(s);
+    });
+    return this._voskLibLoaded;
+  },
+
   // 预加载 Vosk 语音识别模型（约 40MB，首次加载后浏览器会缓存）
   _voskModel: null,
   _voskLoading: false,
@@ -1191,33 +1222,50 @@ const Speech = {
   // 非云端识别回退：Vosk 离线识别 > Web Speech API
   _fallbackStartRecognition(lang, SR) {
     const self = this;
-    // Vosk 离线识别：中国大陆 Web Speech 需连 Google 常被屏蔽，Vosk 模型内置录音即可识别。
-    if (typeof window.Vosk !== 'undefined') {
-      this._useVosk = true;
-      this._recActive = true;
-      this.startRecording();
-      this._startVoskRecognition(lang).then((ok) => {
-        if (ok) return;
-        self._useVosk = false;
-        if (SR) {
-          self._recActive = true;
-          self._recDone = false;
-          self._startWebSpeech(lang);
-        } else {
-          self._recActive = false;
-          if (typeof self.onResult === 'function') self.onResult('', 'start-failed');
-        }
-      });
-      return;
-    }
+    // 云端不可用时才走到这里。Vosk 采用按需动态加载，需先确保库已就绪。
+    this._loadVoskLib().then(() => {
+      return typeof window.Vosk !== 'undefined' ? self._startVosk(lang, SR) : null;
+    }).catch((err) => {
+      console.warn('[录音] Vosk 库动态加载失败，改用 Web Speech:', err && err.message);
+      if (SR) { self._startWebSpeech(lang); }
+      else {
+        self._recActive = false;
+        self._fallbackFail(SR);
+      }
+    });
+  },
+
+  _startVosk(lang, SR) {
+    const self = this;
+    if (typeof window.Vosk === 'undefined') { this._fallbackFail(SR); return; }
+    this._useVosk = true;
+    this._recActive = true;
+    this.startRecording();
+    this._startVoskRecognition(lang).then((ok) => {
+      if (ok) return;
+      self._useVosk = false;
+      if (SR) {
+        self._recActive = true;
+        self._recDone = false;
+        self._startWebSpeech(lang);
+      } else {
+        self._recActive = false;
+        self._fallbackFail(SR);
+      }
+    });
+  },
+
+  _fallbackFail(SR) {
     if (!SR) {
       console.warn('[录音] 既无 Vosk 库，浏览器也不支持 Web Speech API');
       this._recActive = false;
       if (typeof this.onResult === 'function') this.onResult('', 'unsupported');
       return;
     }
-    this._startWebSpeech(lang);
+    this._startWebSpeech(null);
   },
+
+  _fallbackToWebSpeech(lang, SR) { this._startWebSpeech(lang); },
 
   // 云端识别：用 ScriptProcessor 采集麦克风并重采样到 16kHz Int16 PCM
   async _startCloudRecognition(lang) {

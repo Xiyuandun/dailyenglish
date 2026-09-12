@@ -22,8 +22,6 @@
     }
   </script>
   <link rel="stylesheet" href="css/app.css" />
-  <!-- Vosk-Browser：离线语音识别（Web Speech API 在中国大陆不可用时的本地备选方案，已本地化以避免 CDN 被屏蔽） -->
-  <script src="js/vendor/vosk-browser.js"></script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors">
 
@@ -197,7 +195,7 @@
     // 手机录音优先走云端识别，不再需要下载 40MB 离线模型。
     window.DAILY_CFG = { sttUrl: 'https://dailyenglish-jdewireiku.cn-hangzhou.fcapp.run/stt' };
   </script>
-  <script src="js/speech.js?v=16"></script>
+  <script src="js/speech.js?v=17"></script>
   <script src="js/words.js?v=10"></script>
   <script src="js/dialogue.js?v=13"></script>
   <script src="js/reading.js?v=10"></script>
