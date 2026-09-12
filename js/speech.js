@@ -1010,32 +1010,53 @@ const Speech = {
       this._recSR.onstart = null;
       this._recSR = null;
     }
+    // 重置状态
+    this._recChunksText = [];
+    this._recLastInterim = '';
+    this._recDone = false;
+    this._recError = '';
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    // 优先使用 Web Speech API；不可用时尝试 Vosk 离线识别
-    if (!SR) {
-      console.log('[录音] Web Speech API 不可用，尝试 Vosk 离线识别');
+    // 优先使用 Vosk 离线识别：在中国大陆，Chrome/安卓的 Web Speech API 需要连接 Google，
+    // 常被网络屏蔽导致"录到了音却识别不出文字"。Vosk 完全离线、模型内置，录音即可识别，
+    // 是最稳妥的方案。（仅当 Vosk 库或模型不可用时才回退到 Web Speech API）
+    if (typeof window.Vosk !== 'undefined') {
       this._useVosk = true;
       this._recActive = true;
-      this._recDone = false;
-      this._recError = '';
-      // 同步启动录音存档
+      // 同步启动录音存档（回放用，与 Vosk 各自独立拿麦克风，互不干扰）
       this.startRecording();
-      // 异步启动 Vosk 识别
+      // 异步启动 Vosk 识别；若 Vosk 不可用（模型加载失败等）则回退到 Web Speech
       this._startVoskRecognition(lang).then((ok) => {
-        if (!ok) {
+        if (ok) return;
+        this._useVosk = false;
+        if (SR) {
+          this._recActive = true;
+          this._recDone = false;
+          this._startWebSpeech(lang);
+        } else {
           this._recActive = false;
+          if (typeof this.onResult === 'function') this.onResult('', 'start-failed');
         }
       });
       return true;
     }
 
+    if (!SR) {
+      console.warn('[录音] 既无 Vosk 库，浏览器也不支持 Web Speech API');
+      this._recActive = false;
+      if (typeof this.onResult === 'function') this.onResult('', 'unsupported');
+      return false;
+    }
+    this._startWebSpeech(lang);
+    return true;
+  },
+
+  // Web Speech API 语音识别（Vosk 不可用时的回退通道）
+  _startWebSpeech(lang) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     this._useVosk = false;
-    // 重置状态
-    this._recChunksText = [];
-    this._recLastInterim = '';
-    this._recDone = false;
     this._recActive = true;
+    this._recDone = false;
 
     const r = new SR();
     this._recSR = r;
@@ -1057,8 +1078,7 @@ const Speech = {
     };
     r.onerror = (e) => {
       const errType = e.error || 'unknown';
-      console.warn('[录音] 错误:', errType);
-      // 记录所有错误类型，便于 UI 给出准确提示
+      console.warn('[录音] Web Speech 错误:', errType);
       if (errType === 'not-allowed' || errType === 'service-not-allowed') {
         this._recError = 'no-permission';
       } else if (errType === 'network') {
@@ -1067,16 +1087,12 @@ const Speech = {
         this._recError = 'no-speech';
       } else if (errType === 'audio-capture') {
         this._recError = 'audio-capture';
-      } else if (errType === 'not-allowed') {
-        this._recError = 'no-permission';
       } else {
-        // 其他错误（如 language-not-supported、aborted 等）
         this._recError = errType;
       }
     };
     r.onend = () => {
       console.log('[录音] onend, final片段:', this._recChunksText.length);
-      // onend 触发时如果还在 active，说明是异常结束，也走完成流程
       if (this._recActive) {
         this._recActive = false;
         this._completeRecognition();
