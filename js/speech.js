@@ -24,15 +24,15 @@ const Speech = {
   _cloudFailedCount: 0, // 云端失败计数（连续失败则禁用）
 
   // 云端语音识别（阿里云 DashScope Paraformer）配置
-  // 由部署后端时在 index.html 的 window.DAILY_CFG.sttUrl 里指定；
-  // 若页面本身由后端提供（本地/渲染平台），也可用默认相对路径 /stt。
+  // 仅在 index.html 显式配置 window.DAILY_CFG.sttUrl 时才启用。
+  // 未配置（当前纯前端部署）则为空字符串 → 全程使用离线 Vosk / 浏览器 Web Speech，不依赖任何后端。
   sttBase: (function () {
     try {
       if (typeof window !== 'undefined' && window.DAILY_CFG && window.DAILY_CFG.sttUrl) {
         return window.DAILY_CFG.sttUrl;
       }
     } catch (e) {}
-    return '/stt';
+    return '';
   })(),
   _sttCtx: null,        // 云端识别用的 AudioContext
   _sttStream: null,     // 麦克风 MediaStream（云端识别单独拿一根，避免与录音存档互斥）
