@@ -8,6 +8,8 @@ const Speech = {
   voices: [],
   queuedTimers: [],     // 排队朗读的定时器（便于一键停止）
   _queueWatcher: null,  // 队列卡死监视定时器（某句不播放时强制推进）
+  _gen: 0,              // 会话代：stop() 时递增，用于作废所有在途的队列异步推进
+  _playToken: null,     // 当前队列播放令牌（= 启动时的 _gen），推进时校验
 
   // 录音存档（MediaRecorder 录制麦克风音频）
   _mediaRecorder: null,   // MediaRecorder 实例
@@ -494,7 +496,9 @@ const Speech = {
       }
     }
     this._queue = items;
-    this._advanceQueue();
+    // 用"当前会话代"作为本段队列的令牌；一旦 stop()/新朗读使 _gen 递增，令牌立即失效
+    this._playToken = this._gen;
+    this._advanceQueue(this._playToken);
   },
 
   // 静态预生成音频清单 helper（data/audio.js）
@@ -561,8 +565,12 @@ const Speech = {
     }
   },
 
-  // 队列内部：播放下一句（不清空队列）
-  _advanceQueue() {
+  // 队列内部：播放下一句（不清空队列）。token 用于校验会话是否已被 stop()/新朗读终止
+  _advanceQueue(token) {
+    const tk = (typeof token === 'number') ? token : this._playToken;
+    // 会话已终止（_gen 已被 stop() 递增，令牌过期）：跳过本次推进，
+    // 从根上阻止"停止后仍继续朗读到读完"
+    if (this._gen !== tk) return;
     if (!this._queue || !this._queue.length) return;
     const item = this._queue.shift();
     this._lastText = item.text;
@@ -570,12 +578,12 @@ const Speech = {
     this._googleFallbackActive = false;
     this._dispatchSpeak(item.text, item.rate);
     // 为当前句穿戴卡死监视：若不播放则强制推进，避免整段静默
-    this._armQueueWatcher(item);
+    this._armQueueWatcher(item, tk);
   },
 
   // 队列卡死监视：估算该句朗读时长，超时仍未播放/推进则强制跳下一句
   // 解决：安卓有道挂起、iOS 首句偶发无声、某句卡住导致整段静默
-  _armQueueWatcher(item) {
+  _armQueueWatcher(item, token) {
     this._clearQueueWatcher();
     // 该项朗读是否走 Web Speech（原生语音合成）：云端/Google 及安卓有道都走 audio
     const useSpeech = !this.useCloudTTS && !this.useGoogleTTS && !this._willUseYoudao() && !!this.synth;
@@ -598,10 +606,11 @@ const Speech = {
           stillPlaying = !self.audio.paused && active;
         }
         if (stillPlaying && attempts < 4) { attempts++; tick(); return; } // 仍在播，继续观察
+        if (self._gen !== token) { self._queueWatcher = null; return; } // 会话已停止，终止监视
         self._queueWatcher = null;
         console.warn('[语音] 队列监视超时，强制跳下一句:', item.text.substring(0, 20));
         try { if (useSpeech) self.synth.cancel(); else self.audio.pause(); } catch (e) {}
-        self._advanceQueue();
+        self._advanceQueue(token);
       }, est);
     };
     tick();
@@ -928,6 +937,9 @@ const Speech = {
 
   // 停止所有朗读（取消当前 + 清空队列）
   stop() {
+    // 递增"会话代"，使当前队列的所有在途异步推进（onend/ended/卡死监视/失败回调）立即失效，
+    // 彻底阻止"停止/切换模块后仍继续朗读直到读完"。
+    this._gen++;
     // 清空队列
     this._queue = [];
     // 清除队列卡死监视器
@@ -939,13 +951,18 @@ const Speech = {
       this.queuedTimers.forEach(t => clearTimeout(t));
       this.queuedTimers = [];
     }
-    // 停止云端 TTS 音频
+    // 停止音频通道（云端/静态/Google/有道）：暂停并复位，立即静音
     if (this.audio) {
-      this.audio.pause();
-      this.audio.currentTime = 0;
+      try { this.audio.pause(); this.audio.currentTime = 0; } catch (e) {}
     }
-    // 停止 Web Speech
-    if (this.synth) this.synth.cancel();
+    // 停止 Web Speech。部分浏览器（尤其 iOS/部分 Chrome）cancel() 不一定立刻终止，
+    // iOS 需追加 pause/resume 复位引擎，确保当前及后续朗读都被立即取消。
+    if (this.synth) {
+      try {
+        this.synth.cancel();
+        if (this.isIOS) { this.synth.pause(); this.synth.resume(); }
+      } catch (e) {}
+    }
   },
 
   // 切换语音

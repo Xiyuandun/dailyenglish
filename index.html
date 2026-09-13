@@ -118,8 +118,8 @@
     <section id="tab-words" class="tab-panel hidden">
       <div id="wordLearnView">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold">📖 单词训练 · 20 个新词挑战</h2>
-          <span id="wordProgress" class="text-sm text-slate-500">1 / 20</span>
+          <h2 class="text-xl font-bold">📖 单词训练 · <span id="wordTotalTitle">10</span> 个新词挑战</h2>
+          <span id="wordProgress" class="text-sm text-slate-500">1 / <span id="wordProgressTotal">10</span></span>
         </div>
         <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-6">
           <div id="wordBar" class="bg-brand-500 h-2 rounded-full transition-all" style="width:5%"></div>
@@ -141,7 +141,7 @@
       <div id="wordDoneView" class="hidden text-center bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm">
         <div class="text-5xl mb-3">🎉</div>
         <h3 class="text-2xl font-bold mb-2">今日单词任务完成！</h3>
-        <p class="text-slate-500 mb-4">已掌握 <span id="wordCorrectCount">0</span> / 20 个单词</p>
+        <p class="text-slate-500 mb-4">已掌握 <span id="wordCorrectCount">0</span> / <span id="wordTotalDone">10</span> 个单词</p>
         <button id="downloadPdf" class="px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">⬇️ 下载今日单词表 (PDF)</button>
       </div>
     </section>
@@ -190,15 +190,14 @@
   <!-- 提示 Toast -->
   <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity z-50 text-sm"></div>
 
-  <script src="data/words.js?v=10"></script>
   <script src="data/scenarios.js?v=10"></script>
   <script src="data/article.js?v=10"></script>
   <script src="data/audio.js?v=10"></script>
   <script src="js/store.js?v=11"></script>
-  <script src="data/days.js?v=2"></script>
-  <script src="js/daycycle.js?v=1"></script>
-  <script src="js/speech.js?v=23"></script>
-  <script src="js/words.js?v=10"></script>
+  <script src="data/days.js?v=3"></script>
+  <script src="js/daycycle.js?v=2"></script>
+  <script src="js/speech.js?v=24"></script>
+  <script src="js/words.js?v=11"></script>
   <script src="js/dialogue.js?v=15"></script>
   <script src="js/reading.js?v=10"></script>
   <script src="js/report.js?v=10"></script>
