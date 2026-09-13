@@ -1405,8 +1405,15 @@ const Speech = {
     r.interimResults = true;  // 实时结果（兜底用）
     r.maxAlternatives = 1;
 
+    // 每次 onresult 事件返回的是整段累积的 results 数组，
+    // 若每次都从 0 遍历，已 final 的片段会被反复追加（Safari/iPad 上尤其明显，会造成大量重复）。
+    // 所以记录已处理到的 resultIndex，只在新增区间内取值。
+    this._recLastResultIndex = 0;
+    this._recChunksText = [];
+    this._recLastInterim = '';
+
     r.onresult = (e) => {
-      for (let i = 0; i < e.results.length; i++) {
+      for (let i = this._recLastResultIndex; i < e.results.length; i++) {
         const res = e.results[i];
         if (res.isFinal) {
           const t = res[0].transcript.trim();
@@ -1415,6 +1422,7 @@ const Speech = {
           this._recLastInterim = res[0].transcript;
         }
       }
+      this._recLastResultIndex = e.results.length;
     };
     r.onerror = (e) => {
       const errType = e.error || 'unknown';

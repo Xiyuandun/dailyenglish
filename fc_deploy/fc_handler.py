@@ -139,6 +139,8 @@ def _recognize(pcm_bytes, sample_rate):
 
     sock, recv_frame = _ws_connect(WS_HOST, WS_PATH, DASHSCOPE_API_KEY)
     try:
+        # 分块阶段接收超时设短，便于快速跳出块间轮询；正式收结果前再调长
+        sock.settimeout(1)
         task_id = str(uuid.uuid4())
         run_task = {
             "header": {"action": "run-task", "task_id": task_id, "streaming": "duplex"},
@@ -169,8 +171,29 @@ def _recognize(pcm_bytes, sample_rate):
                 elif evt.get("header", {}).get("event") in ("task-failed",):
                     raise RuntimeError("task-failed: " + payload[:300])
 
-        # 发送音频（应可能分批，但小段可直接整段发）
-        _send(sock, 0x2, pcm_bytes)
+        # 分块发送音频（避免单帧超大，长对话必须流式），块约 1 秒 = 2*sample_rate 字节
+        CHUNK = max(1024, int(sample_rate) * 2)
+        offset = 0
+        total = len(pcm_bytes)
+        while offset < total:
+            block = pcm_bytes[offset:offset + CHUNK]
+            offset += CHUNK
+            _send(sock, 0x2, block)
+            if offset < total:
+                # 块间短暂接收，处理服务端中途推送（heartbeat/ping 等）
+                try:
+                    while True:
+                        kind, payload = recv_frame()
+                        if kind == "text":
+                            evt = json.loads(payload)
+                            event = evt.get("header", {}).get("event")
+                            if event == "task-failed":
+                                raise RuntimeError("task-failed: " + payload[:300])
+                        elif kind == "close":
+                            raise RuntimeError("识别连接被中途关闭")
+                except socket.timeout:
+                    pass
+
         # 结束任务
         finish = {
             "header": {"action": "finish-task", "task_id": task_id, "streaming": "duplex"},
@@ -183,6 +206,8 @@ def _recognize(pcm_bytes, sample_rate):
         }
         _send(sock, 0x1, json.dumps(finish, ensure_ascii=False).encode("utf-8"))
 
+        # 恢复较长超时，等待识别结果完成
+        sock.settimeout(90)
         # 收集最终识别结果直到 task-finished
         text_parts = []
         while True:
