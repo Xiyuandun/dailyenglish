@@ -643,6 +643,9 @@ const Speech = {
     this.stop();
     this._lastText = text;
     this._lastRate = rate;
+    // 单句也算一个会话。stop() 已递增 _gen，这里记下令牌，供 Web Speech 的
+    // onend/onerror 等异步回调校验，避免"停止后仍继续/重读"。
+    this._playToken = this._gen;
     // 重置 Google TTS 回退标记，允许本次重新尝试
     this._googleFallbackActive = false;
     this._dispatchSpeak(text, rate);
@@ -784,6 +787,8 @@ const Speech = {
     const pending = this._pending.get(key);
     if (pending) {
       pending.then(() => {
+        // 会话已终止：停止后不再播放这条到账的音频（避免"停止后又重读"）
+        if (this._gen !== this._playToken) return;
         const c = this._cache.get(key);
         if (c) this._playURL(c, text, rate);
         else this._speakFallback(text, rate);
@@ -793,6 +798,8 @@ const Speech = {
 
     // 3) 无缓存 → 发起请求
     const p = this._fetchTTS(text, rate).then(url => {
+      // 会话已终止：请求返回但已停止，放弃播放（避免"停止后又重读"）
+      if (this._gen !== this._playToken) return;
       this._playURL(url, text, rate);
     }).catch(err => {
       console.warn('云端 TTS 请求失败:', err);
@@ -913,16 +920,23 @@ const Speech = {
     if (!v) v = this.voices.find(v => v.lang.startsWith('en-US'));
     if (!v) v = this.voices.find(v => v.lang.startsWith('en'));
     if (v) u.voice = v;
+    // 记录本次朗读的会话代，供异步回调校验：停止/新朗读后 (_gen 已变)，回调立即失效
+    const speakGen = this._gen;
     u.onerror = (e) => {
+      // 会话已终止：丢弃该失败回调，避免"停止后回退重读"
+      if (this._gen !== speakGen) return;
       console.warn('[语音] 浏览器朗读错误:', e.error || e);
       // 浏览器语音合成失败 → 回退到有道 TTS（中国大陆可用，无需 API key）
       this._speakYoudaoTTS(text, rate);
     };
     u.onend = () => {
+      // 会话已终止：停止后的 onend 不再推进队列、不再复位引擎（避免重读）
+      if (this._gen !== speakGen) return;
       if (this.isIOS) {
-        // iOS：重置引擎，保证下一句能继续出声
+        // iOS：正常结束，重置引擎，保证下一句能继续出声
         try { this.synth.pause(); this.synth.resume(); } catch {}
       }
+      // 有队列则推进下一句（_advanceQueue 内部会再次校验会话代）
       if (this._queue && this._queue.length) this._advanceQueue();
     };
     try {
@@ -955,12 +969,14 @@ const Speech = {
     if (this.audio) {
       try { this.audio.pause(); this.audio.currentTime = 0; } catch (e) {}
     }
-    // 停止 Web Speech。部分浏览器（尤其 iOS/部分 Chrome）cancel() 不一定立刻终止，
-    // iOS 需追加 pause/resume 复位引擎，确保当前及后续朗读都被立即取消。
+    // 停止 Web Speech。部分浏览器（尤其 iOS/部分 Chrome）cancel() 不一定立刻终止。
+    // 注意：不能在 cancel() 后立即 resume()——在 iOS/部分引擎上 cancel 未真正清空时，
+    // resume() 会让当前句"重新从头朗读"，表现为"停止后又整句重读"。
+    // 因此只 cancel()，必要时 pause() 作暂停保险，绝不 resume()。
     if (this.synth) {
       try {
         this.synth.cancel();
-        if (this.isIOS) { this.synth.pause(); this.synth.resume(); }
+        if (this.isIOS) { this.synth.pause(); }
       } catch (e) {}
     }
   },
