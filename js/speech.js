@@ -1405,24 +1405,26 @@ const Speech = {
     r.interimResults = true;  // 实时结果（兜底用）
     r.maxAlternatives = 1;
 
-    // 每次 onresult 事件返回的是整段累积的 results 数组，
-    // 若每次都从 0 遍历，已 final 的片段会被反复追加（Safari/iPad 上尤其明显，会造成大量重复）。
-    // 所以记录已处理到的 resultIndex，只在新增区间内取值。
-    this._recLastResultIndex = 0;
+    // 每次 onresult 事件返回的是整段累积的 results 数组。
+    // 用 event.resultIndex（本次新增/状态变化的起始下标）来取值：
+    //  - 已 final 的句子会被记入 _recChunksText（一次性，不重复）
+    //  - interim → final 的转换会在后续事件中被再次读到，从而被正确收入 final
+    //  - 单独用 _recLastInterim 记录最后一个 interim，仅作兜底
     this._recChunksText = [];
     this._recLastInterim = '';
 
     r.onresult = (e) => {
-      for (let i = this._recLastResultIndex; i < e.results.length; i++) {
+      let lastInterim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
         const res = e.results[i];
         if (res.isFinal) {
           const t = res[0].transcript.trim();
           if (t) this._recChunksText.push(t);
         } else {
-          this._recLastInterim = res[0].transcript;
+          lastInterim = res[0].transcript;
         }
       }
-      this._recLastResultIndex = e.results.length;
+      if (lastInterim) this._recLastInterim = lastInterim;
     };
     r.onerror = (e) => {
       const errType = e.error || 'unknown';
@@ -1441,10 +1443,9 @@ const Speech = {
     };
     r.onend = () => {
       console.log('[录音] onend, final片段:', this._recChunksText.length);
-      if (this._recActive) {
-        this._recActive = false;
-        this._completeRecognition();
-      }
+      clearTimeout(this._webSpeechTimer);
+      this._recActive = false;
+      this._completeRecognition();
     };
     r.onstart = () => console.log('[录音] onstart');
     r.onspeechstart = () => console.log('[录音] 检测到说话');
@@ -1463,22 +1464,25 @@ const Speech = {
     return true;
   },
 
-  // 停止录音+识别，立即触发 onResult 和 onRecordingReady 回调
+  // 停止录音+识别，确保拿到最终识别结果后再回调 onResult
   stopRecognition() {
     if (!this._recActive) return;
-    // 先将 _recActive 设为 false，防止 onend 异步回调重复触发 _completeRecognition
-    this._recActive = false;
     if (this._useVosk) {
       // Vosk 模式：直接完成
       this._completeRecognition();
       return;
     }
-    // 停止语音识别（会异步触发 onend，但 _recActive 已为 false，不会重复执行）
+    // Web Speech：调用 stop 后会异步触发 onend，onend 自带最终结果 → 在 onend 里完成。
+    // 不能再这里立即 _completeRecognition，否则最终句子还没返回就结束，只能拿到一个零散单词。
     if (this._recSR) {
       try { this._recSR.stop(); } catch {}
     }
-    // 主动完成（不依赖 onend，避免延迟）
-    this._completeRecognition();
+    // 兜底：个别环境 onend 不触发时，超时后强制完成
+    clearTimeout(this._webSpeechTimer);
+    this._webSpeechTimer = setTimeout(() => {
+      this._recActive = false;
+      this._completeRecognition();
+    }, 1500);
   },
 
   // 完成识别：汇总文本 + 停止录音 + 触发回调
