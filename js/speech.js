@@ -171,10 +171,11 @@ const Speech = {
       this.synth.onvoiceschanged = load;
     }
 
-    // 预加载 Vosk 离线语音识别模型（Web Speech API 在中国大陆不可用时的备选方案）
-    // 方案A：配置了云端识别后端(sttUrl)后，改为云端识别，不再下载 40MB 离线模型。
-    // 仅在静态环境（GitHub Pages）且未启用云端时预加载，本地开发用 Web Speech API 即可
-    if (!isLocal && !isRender && typeof Vosk !== 'undefined' && !this._useCloudSTT()) {
+    // 预加载 Vosk 离线语音识别模型（Web Speech API 不可用时的备选方案）。
+    // 仅在静态环境（GitHub Pages）且未启用云端时，对【安卓或无 Web Speech 的设备】预加载；
+    // iOS/iPad 优先走浏览器 Web Speech API，无需下载 40MB 模型。
+    const hasSR = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+    if (!isLocal && !isRender && typeof Vosk !== 'undefined' && !this._useCloudSTT() && (this.isAndroid || !hasSR)) {
       this._preloadVoskModel();
     }
   },
@@ -1219,10 +1220,15 @@ const Speech = {
     return true;
   },
 
-  // 非云端识别回退：Vosk 离线识别 > Web Speech API
+  // 非云端识别回退：优先 Web Speech（iOS/iPad/桌面，无需下载模型）> Vosk 离线识别 > 无
   _fallbackStartRecognition(lang, SR) {
     const self = this;
-    // 云端不可用时才走到这里。Vosk 采用按需动态加载，需先确保库已就绪。
+    // iOS / iPad / 桌面：浏览器自带 Web Speech API 即可识别，无需下载 40MB 模型，直接走 Web Speech。
+    // 仅当浏览器无 Web Speech，或当前是安卓设备（Web Speech 被屏蔽）时才改用 Vosk 离线识别。
+    if (SR && !this.isAndroid) {
+      this._startWebSpeech(lang);
+      return;
+    }
     this._loadVoskLib().then(() => {
       return typeof window.Vosk !== 'undefined' ? self._startVosk(lang, SR) : null;
     }).catch((err) => {
