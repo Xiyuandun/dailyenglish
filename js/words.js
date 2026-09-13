@@ -9,6 +9,12 @@ const WordModule = {
     const s = Store.get();
     this.idx = s.wordIndex || 0;
     this.score = 0;
+    // 用当天的实际单词数量填充各处"总数"显示（标题/进度/完成页）
+    const total = (Array.isArray(window.DAILY_WORDS) && window.DAILY_WORDS.length) || 10;
+    for (const id of ['wordTotalTitle', 'wordProgressTotal', 'wordTotalDone']) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = total;
+    }
     document.getElementById('prevWord').onclick = () => this.prev();
     document.getElementById('nextWord').onclick = () => this.next();
     document.getElementById('downloadPdf').onclick = () => this.downloadPdf();
